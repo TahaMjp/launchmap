@@ -37,37 +37,7 @@ to keep output consistent and informative.
 """
 
 import ast
-
-def _get_kwarg(node, name):
-    for kw in node.keywords:
-        if kw.arg == name:
-            return kw.value
-    return None
-
-def _parse_value(val):
-    if isinstance(val, ast.Constant):
-        return val.value
-    elif isinstance(val, ast.Name):
-        return "<unresolved>"
-    elif isinstance(val, ast.Call) and isinstance(val.func, ast.Name):
-        if val.func.id == "LaunchConfiguration":
-            name = val.args[0].value if val.args else None
-            default = None
-            for kw in val.keywords:
-                if kw.arg == "name":
-                    name = _parse_value(kw.value)
-                if kw.arg == "default":
-                    default = _parse_value(kw.value)
-            if default:
-                return f"${{LaunchConfiguration:{name}:default={default}}}"
-            return f"${{LaunchConfiguration:{name}}}"
-    return "<unresolved>"
-
-def _parse_dict(node):
-    parsed = {}
-    for k, v in zip(node.keys, node.values):
-        parsed[_parse_value(k)] = _parse_value(v)
-    return parsed
+from parser.utils import get_kwarg, parse_value, parse_dict
 
 def handle_node(node: ast.Call) -> dict:
     if not isinstance(node, ast.Call):
@@ -77,12 +47,12 @@ def handle_node(node: ast.Call) -> dict:
     data = {}
 
     for field in fields:
-        value = _get_kwarg(node, field)
+        value = get_kwarg(node, field)
         if value:
-            data[field] = _parse_value(value)
+            data[field] = parse_value(value)
     
     # Parameters
-    params = _get_kwarg(node, "parameters")
+    params = get_kwarg(node, "parameters")
     parsed_params = []
 
     if isinstance(params, ast.List):
@@ -90,11 +60,11 @@ def handle_node(node: ast.Call) -> dict:
             if isinstance(elt, ast.Constant):
                 parsed_params.append(elt.value)
             elif isinstance(elt, ast.Dict):
-                parsed_params.append(_parse_dict(elt))
+                parsed_params.append(parse_dict(elt))
             else:
                 parsed_params.append("<unresolved>")
     elif isinstance(params, ast.Dict):
-        parsed_params.append(_parse_dict(params))
+        parsed_params.append(parse_dict(params))
     elif isinstance(params, ast.Name):
         parsed_params = "<unresolved>"
     
@@ -102,12 +72,12 @@ def handle_node(node: ast.Call) -> dict:
         data["parameters"] = parsed_params
 
     # Remappings
-    remaps = _get_kwarg(node, "remappings")
+    remaps = get_kwarg(node, "remappings")
     if remaps and isinstance(remaps, ast.List):
         pairs = []
         for elt in remaps.elts:
             if isinstance(elt, ast.Tuple) and len(elt.elts) == 2:
-                pairs.append([_parse_value(elt.elts[0]), _parse_value(elt.elts[1])])
+                pairs.append([parse_value(elt.elts[0]), parse_value(elt.elts[1])])
         data["remappings"] = pairs
     
     return data

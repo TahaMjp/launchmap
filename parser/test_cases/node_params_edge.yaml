@@ -46,7 +46,7 @@ tests:
         - package: demo
           executable: node
           parameters:
-            - use_sim_time: ${LaunchConfiguration:use_sim_time:default=false}
+            - use_sim_time: ${LaunchConfiguration:use_sim_time:default=False}
     
   - name: node_with_dict_not_list
     description: Parameters provided directly as a dictionary

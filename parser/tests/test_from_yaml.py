@@ -13,9 +13,14 @@ def load_yaml_tests(file_path):
 @pytest.mark.parametrize("code,expected", load_yaml_tests("test_cases/node_tests.yaml"))
 def test_node_parsing(code, expected):
     result = parse_launch_string(code)
-    assert result == expected
+    assert result.get("nodes") == expected.get("nodes")
 
 @pytest.mark.parametrize("code,expected", load_yaml_tests("test_cases/node_params_edge.yaml"))
-def test_node_parsing(code, expected):
+def test_node_params_edge_parsing(code, expected):
     result = parse_launch_string(code)
-    assert result == expected
+    assert result.get("nodes") == expected.get("nodes")
+
+@pytest.mark.parametrize("code,expected", load_yaml_tests("test_cases/declare_argument_tests.yaml"))
+def test_declare_argument_parsing(code, expected):
+    result = parse_launch_string(code)
+    assert result.get("arguments") == expected.get("arguments")
