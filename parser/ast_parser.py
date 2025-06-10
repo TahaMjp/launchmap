@@ -1,6 +1,7 @@
 import ast
 from parser.handlers.node_handler import handle_node
 from parser.handlers.declare_argument_handler import handle_declare_argument
+from parser.handlers.include_handler import handle_include
 
 class LaunchFileVisitor(ast.NodeVisitor):
     def __init__(self):
@@ -29,4 +30,9 @@ class LaunchFileVisitor(ast.NodeVisitor):
                 arg_data = handle_declare_argument(node)
                 if arg_data:
                     self.result["arguments"].append(arg_data)
+            
+            elif node.func.id == "IncludeLaunchDescription":
+                include_data = handle_include(node)
+                if include_data:
+                    self.result.setdefault("includes", []).append(include_data)
         

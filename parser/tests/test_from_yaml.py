@@ -24,3 +24,8 @@ def test_node_params_edge_parsing(code, expected):
 def test_declare_argument_parsing(code, expected):
     result = parse_launch_string(code)
     assert result.get("arguments") == expected.get("arguments")
+
+@pytest.mark.parametrize("code,expected", load_yaml_tests("test_cases/include_launch_tests.yaml"))
+def test_include_launch_parsing(code, expected):
+    result = parse_launch_string(code)
+    assert result.get("includes") == expected.get("includes")

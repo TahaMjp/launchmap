@@ -1,0 +1,142 @@
+tests:
+  - name: include_with_constant_path
+    description: Basic include with string path
+    input: |
+      from launch import LaunchDescription
+      from launch.actions import IncludeLaunchDescription
+      from launch.launch_description_sources import PythonLaunchDescriptionSource
+
+      def generate_launch_description():
+          return LaunchDescription([
+              IncludeLaunchDescription(
+                  PythonLaunchDescriptionSource('sub_launch.py')
+              )
+          ])
+    expected:
+      includes:
+        - path: sub_launch.py
+
+  - name: include_with_os_path_join
+    description: Include with os.path.join
+    input: |
+      import os
+      from launch import LaunchDescription
+      from launch.actions import IncludeLaunchDescription
+      from launch.launch_description_sources import PythonLaunchDescriptionSource
+
+      def generate_launch_description():
+          return LaunchDescription([
+              IncludeLaunchDescription(
+                  PythonLaunchDescriptionSource(
+                      os.path.join('my_pkg', 'launch', 'sub_launch.py')
+                  )
+              )
+          ])
+    expected:
+      includes:
+        - path: my_pkg/launch/sub_launch.py
+
+  - name: include_with_package_share
+    description: Include with get_package_share_directory + os.path.join
+    input: |
+      import os
+      from launch import LaunchDescription
+      from launch.actions import IncludeLaunchDescription
+      from launch.launch_description_sources import PythonLaunchDescriptionSource
+      from ament_index_python.packages import get_package_share_directory
+
+      def generate_launch_description():
+          return LaunchDescription([
+              IncludeLaunchDescription(
+                  PythonLaunchDescriptionSource(
+                      os.path.join(
+                          get_package_share_directory('my_robot_bringup'),
+                          'launch',
+                          'included.launch.py'
+                      )
+                  )
+              )
+          ])
+    expected:
+      includes:
+        - path: <pkg:my_robot_bringup>/launch/included.launch.py
+
+  - name: include_with_launch_arguments
+    description: Include with launch_arguments
+    input: |
+      from launch import LaunchDescription
+      from launch.actions import IncludeLaunchDescription
+      from launch.launch_description_sources import PythonLaunchDescriptionSource
+
+      def generate_launch_description():
+          return LaunchDescription([
+              IncludeLaunchDescription(
+                  PythonLaunchDescriptionSource('sub.launch.py'),
+                  launch_arguments={'use_sim_time': 'true'}.items()
+              )
+          ])
+    expected:
+      includes:
+        - path: sub.launch.py
+          launch_arguments:
+            use_sim_time: true
+
+  - name: include_with_variable_path
+    description: Include path from variable (unresolved)
+    input: |
+      from launch import LaunchDescription
+      from launch.actions import IncludeLaunchDescription
+      from launch.launch_description_sources import PythonLaunchDescriptionSource
+
+      path = 'some_path.py'
+
+      def generate_launch_description():
+          return LaunchDescription([
+              IncludeLaunchDescription(
+                  PythonLaunchDescriptionSource(path)
+              )
+          ])
+    expected:
+      includes:
+        - path: <unresolved>
+
+  - name: include_with_launch_config_path
+    description: Include with LaunchConfiguration path
+    input: |
+      from launch import LaunchDescription
+      from launch.actions import IncludeLaunchDescription
+      from launch.launch_description_sources import PythonLaunchDescriptionSource
+      from launch.substitutions import LaunchConfiguration
+
+      def generate_launch_description():
+          return LaunchDescription([
+              IncludeLaunchDescription(
+                  PythonLaunchDescriptionSource(
+                      LaunchConfiguration('launch_path')
+                  )
+              )
+          ])
+    expected:
+      includes:
+        - path: ${LaunchConfiguration:launch_path}
+
+  - name: include_with_env_var_path
+    description: Include with EnvironmentVariable path
+    input: |
+      from launch import LaunchDescription
+      from launch.actions import IncludeLaunchDescription
+      from launch.launch_description_sources import PythonLaunchDescriptionSource
+      from launch.substitutions import EnvironmentVariable
+
+      def generate_launch_description():
+          return LaunchDescription([
+              IncludeLaunchDescription(
+                  PythonLaunchDescriptionSource(
+                      EnvironmentVariable('LAUNCH_PATH')
+                  )
+              )
+          ])
+    expected:
+      includes:
+        - path: ${EnvironmentVariable:LAUNCH_PATH}
+    
