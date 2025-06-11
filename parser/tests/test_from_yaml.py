@@ -29,3 +29,8 @@ def test_declare_argument_parsing(code, expected):
 def test_include_launch_parsing(code, expected):
     result = parse_launch_string(code)
     assert result.get("includes") == expected.get("includes")
+
+@pytest.mark.parametrize("code,expected", load_yaml_tests("test_cases/group_action_tests.yaml"))
+def test_group_action_parsing(code, expected):
+    result = parse_launch_string(code)
+    assert result.get("groups") == expected.get("groups")

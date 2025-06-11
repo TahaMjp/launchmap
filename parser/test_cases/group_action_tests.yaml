@@ -1,0 +1,153 @@
+tests:
+  - name: group_with_namespace_and_node
+    description: GroupAction with PushRosNamespace and a Node
+    input: |
+      from launch import LaunchDescription
+      from launch.actions import GroupAction, PushRosNamespace
+      from launch_ros.actions import Node
+
+      def generate_launch_description():
+          return LaunchDescription([
+              GroupAction([
+                  PushRosNamespace('robot1'),
+                  Node(package='demo', executable='talker')
+              ])
+          ])
+    expected:
+      groups:
+        - namespace: robot1
+          nodes:
+            - package: demo
+              executable: talker
+
+  - name: group_with_namespace_and_include
+    description: GroupAction with PushRosNamespace and IncludeLaunchDescription
+    input: |
+      from launch import LaunchDescription
+      from launch.actions import GroupAction, PushRosNamespace, IncludeLaunchDescription
+      from launch.launch_description_sources import PythonLaunchDescriptionSource
+
+      def generate_launch_description():
+          return LaunchDescription([
+              GroupAction([
+                  PushRosNamespace('robot1'),
+                  IncludeLaunchDescription(
+                      PythonLaunchDescriptionSource('sub.launch.py')
+                  )
+              ])
+          ])
+    expected:
+      groups:
+        - namespace: robot1
+          includes:
+            - path: sub.launch.py
+
+  - name: group_with_no_namespace
+    description: GroupAction with Node but no PushRosNamespace
+    input: |
+      from launch import LaunchDescription
+      from launch.actions import GroupAction
+      from launch_ros.actions import Node
+
+      def generate_launch_description():
+          return LaunchDescription([
+              GroupAction([
+                  Node(package='demo', executable='listener')
+              ])
+          ])
+    expected:
+      groups:
+        - nodes:
+            - package: demo
+              executable: listener
+  
+  - name: nested_groups_with_namespace
+    description: GroupAction nested with another GroupAction + namespace
+    input: |
+      from launch import LaunchDescription
+      from launch.actions import GroupAction, PushRosNamespace
+      from launch_ros.actions import Node
+
+      def generate_launch_description():
+          return LaunchDescription([
+              GroupAction([
+                  PushRosNamespace('robot_ns'),
+                  GroupAction([
+                      PushRosNamespace('sensor_ns'),
+                      Node(package='demo', executable='sensor_node')
+                  ])
+              ])
+          ])
+    expected:
+      groups:
+        - namespace: robot_ns
+          groups:
+            - namespace: sensor_ns
+              nodes:
+                - package: demo
+                  executable: sensor_node
+    
+  - name: group_with_unresolved_namespace
+    description: GroupAction with namespace from a variable
+    input: |
+      from launch import LaunchDescription
+      from launch.actions import GroupAction, PushRosNamespace
+      from launch_ros.actions import Node
+
+      ns = 'dynamic_ns'
+
+      def generate_launch_description():
+          return LaunchDescription([
+              GroupAction([
+                  PushRosNamespace(ns),
+                  Node(package='demo', executable='dynamic_node')
+              ])
+          ])
+    expected:
+      groups:
+        - namespace: <unresolved>
+          nodes:
+            - package: demo
+              executable: dynamic_node
+  
+  - name: group_with_multiple_namespaces
+    description: Multiple PushRosNamespace calls in a group
+    input: |
+      from launch import LaunchDescription
+      from launch.actions import GroupAction, PushRosNamespace
+      from launch_ros.actions import Node
+
+      def generate_launch_description():
+          return LaunchDescription([
+              GroupAction([
+                  PushRosNamespace('robot1'),
+                  PushRosNamespace('override_ns'),
+                  Node(package='demo', executable='node')
+              ])
+          ])
+    expected:
+      groups:
+        - namespace: override_ns
+          nodes:
+            - package: demo
+              executable: node
+
+  - name: group_with_unhandled_action
+    description: GroupAction with an unsupported action
+    input: |
+      from launch import LaunchDescription
+      from launch.actions import GroupAction, LogInfo
+      from launch_ros.actions import Node
+
+      def generate_launch_description():
+          return LaunchDescription([
+              GroupAction([
+                  Node(package='demo', executable='node'),
+                  LogInfo(msg='This is a log')
+              ])
+          ])
+    expected:
+      groups:
+        - nodes:
+            - package: demo
+              executable: node
