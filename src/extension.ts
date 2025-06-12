@@ -66,12 +66,12 @@ function getWebviewHtml(webview: vscode.Webview, extensionUri: vscode.Uri): stri
         <html>
         <head>
             <meta charset="UTF-8">
-            <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline' ${webview.cspSource}; style-src ${webview.cspSource};">
+            <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline' 'unsafe-eval' ${webview.cspSource}; style-src ${webview.cspSource};">
             <link href="${styleUri}" rel="stylesheet">
         </head>
         <body>
             <div id="editor"></div>
-            <script src="${scriptUri}"></script>
+            <script src="${scriptUri}" type="module"></script>
         </body>
         </html>
     `

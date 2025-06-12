@@ -52,13 +52,33 @@
   border: 2px dashed #4caf50;
   border-radius: 10px;
   background-color: rgba(60, 80, 60, 0.2);
+  box-shadow: 0 0 10px #111;
   padding: 10px;
   position: absolute;
-  box-shadow: 0 0 10px #111;
+  display: block;
+  overflow: visible;
 }
 
 .group-title {
   font-weight: bold;
   color: #9efc9e;
   margin-bottom: 10px;
+}
+
+.group-box .node-block,
+.group-box .include-block {
+  position: absolute;
+}
+
+.node-block,
+.include-block,
+.arguments-block {
+  display: inline-block;
+  padding: 10px;
+  border-radius: 8px;
+  box-shadow: 2px 2px 4px #000;
+  width: fit-content;
+  max-width: none;
+  white-space: nowrap;
+  overflow: visible;
 }
