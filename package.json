@@ -1,0 +1,29 @@
+{
+    "name": "launchmap",
+    "displayName": "LaunchMap",
+    "description": "Visualize ROS2 Launch Files",
+    "version": "0.0.1",
+    "engines": {
+        "vscode": "^1.70.0"
+    },
+    "main": "./dist/extension.js",
+    "activationEvents": [
+        "onCommand:launchmap.openVisualizer"
+    ],
+    "contributes": {
+        "commands": [
+            {
+                "command": "launchmap.openVisualizer",
+                "title": "Open Launch Visualizer"
+            }
+        ]
+    },
+    "scripts": {
+        "compile": "tsc"
+    },
+    "devDependencies": {
+        "@types/node": "^24.0.1",
+        "@types/vscode": "^1.70.0",
+        "typescript": "^4.7.4"
+    }
+}
