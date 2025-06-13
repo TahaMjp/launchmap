@@ -1,0 +1,189 @@
+tests:
+  - name: node_parameter_usage
+    input: |
+      from launch import LaunchDescription, DeclareLaunchArgument
+      from launch.substitutions import LaunchConfiguration
+      from launch_ros.actions import Node
+
+      def generate_launch_description():
+          return LaunchDescription([
+              DeclareLaunchArgument("param1", default_value="false"),
+              Node(
+                  package="demo_pkg",
+                  executable="exe",
+                  parameters=[{"use_feature": LaunchConfiguration("param1")}]
+              )
+          ])
+    expected:
+      arguments:
+        - name: "param1"
+          default: false
+      nodes:
+        - package: "demo_pkg"
+          executable: "exe"
+          parameters:
+            - use_feature: "${LaunchConfiguration:param1}"
+      launch_argument_usages:
+        - argument: "param1"
+          field: "parameters"
+          path: "nodes[0]"
+  
+  - name: group_namespace_usage
+    input: |
+      from launch import LaunchDescription
+      from launch.actions import GroupAction, DeclareLaunchArgument
+      from launch_ros.actions import Node
+      from launch.substitutions import LaunchConfiguration
+
+      def generate_launch_description():
+          return LaunchDescription([
+              DeclareLaunchArgument("robot_name", default_value="robot1"),
+              GroupAction([
+                  PushRosNamespace(LaunchConfiguration("robot_name")),
+                  Node(package="demo_pkg", executable="listener")
+              ])
+          ])
+    expected:
+      arguments:
+        - name: "robot_name"
+          default: "robot1"
+      groups:
+        - namespace: "${LaunchConfiguration:robot_name}"
+          nodes:
+            - package: "demo_pkg"
+              executable: "listener"
+      launch_argument_usages:
+        - argument: "robot_name"
+          field: "namespace"
+          path: "groups[0]"
+  
+  - name: include_launch_arguments
+    input: |
+      from launch import LaunchDescription, DeclareLaunchArgument, IncludeLaunchDescription
+      from launch.substitutions import LaunchConfiguration, PathJoinSubstitution
+      from lauch.launch_description_sources import PythonLaunchDescriptionSource
+
+      def generate_launch_description():
+          return LaunchDescription([
+              DeclareLaunchArgument("use_sim_time", default_value="false"),
+              IncludeLaunchDescription(
+                  PythonLaunchDescriptionSource(
+                      PathJoinSubstitution(["my_pkg", "launch", "sub_launch.py"])
+                  ),
+                  launch_arguments={"use_sim_time": LaunchConfiguration("use_sim_time")}.items()
+              )
+          ])
+    expected:
+      arguments:
+        - name: "use_sim_time"
+          default: false
+      includes:
+        - path: "${PathJoinSubstitution:my_pkg/launch/sub_launch.py}"
+          launch_arguments:
+            use_sim_time: "${LaunchConfiguration:use_sim_time}"
+      launch_argument_usages:
+        - argument: "use_sim_time"
+          field: "launch_arguments"
+          path: "includes[0]"
+  
+  - name: multiple_usage_locations
+    input: |
+      from launch import LaunchDescription, DeclareLaunchArgument, GroupAction, IncludeLaunchDescription, PushRosNamespace
+      from launch_ros.actions import Node
+      from launch.substitutions import LaunchConfiguration
+      from launch.launch_description_sources import PythonLaunchDescriptionSource
+
+      def generate_launch_description():
+          return LaunchDescription([
+              DeclareLaunchArgument("robot_name", default_value="robot1"),
+              DeclareLaunchArgument("use_sim_time", default_value="true"),
+              Node(
+                  package="demo_nodes_cpp",
+                  executable="talker",
+                  parameters=[{"use_sim_time": LaunchConfiguration("use_sim_time")}]
+              ),
+              GroupAction([
+                  PushRosNamespace(LaunchConfiguration("robot_name")),
+                  Node(
+                      package="demo_nodes_cpp",
+                      executable="listener",
+                      parameters=[{"use_sim_time": LaunchConfiguration("use_sim_time")}]
+                  )
+              ])
+          ])
+    expected:
+      arguments:
+        - name: "robot_name"
+          default: "robot1"
+        - name: "use_sim_time"
+          default: true
+      nodes:
+        - package: "demo_nodes_cpp"
+          executable: "talker"
+          parameters:
+            - use_sim_time: "${LaunchConfiguration:use_sim_time}"
+      groups:
+        - namespace: "${LaunchConfiguration:robot_name}"
+          nodes:
+            - package: "demo_nodes_cpp"
+              executable: "listener"
+              parameters:
+                - use_sim_time: "${LaunchConfiguration:use_sim_time}"
+      launch_argument_usages:
+        - argument: "use_sim_time"
+          field: "parameters"
+          path: "nodes[0]"
+        - argument: "robot_name"
+          field: "namespace"
+          path: "groups[0]"
+        - argument: "use_sim_time"
+          field: "parameters"
+          path: "groups[0].nodes[0]"
+  
+  - name: group_and_node_different_index
+    input: |
+      from launch import LaunchDescription, DeclareLaunchArgument, GroupAction, PushRosNamespace
+      from launch_ros.actions import Node
+      from launch.substitutions import LaunchConfiguration
+
+      def generate_launch_description():
+          return LaunchDescription([
+              DeclareLaunchArgument("robot_ns", default_value="robotB"),
+              GroupAction([
+                  PushRosNamespace("robotA"),
+                  Node(package='pkg', executable="talker")
+              ]),
+              GroupAction([
+                  PushRosNamespace(LaunchConfiguration("robot_ns")),
+                  Node(package="pkg", executable="listener"),
+                  Node(
+                      package="pkg",
+                      executable="processor",
+                      parameters=[{"robot": LaunchConfiguration("robot_ns")}]
+                  )
+              ])
+          ])
+    expected:
+      arguments:
+        - name: "robot_ns"
+          default: "robotB"
+      groups:
+        - namespace: "robotA"
+          nodes:
+            - package: "pkg"
+              executable: "talker"
+        - namespace: "${LaunchConfiguration:robot_ns}"
+          nodes:
+            - package: "pkg"
+              executable: "listener"
+            - package: "pkg"
+              executable: "processor"
+              parameters:
+                - robot: "${LaunchConfiguration:robot_ns}"
+      launch_argument_usages:
+        - argument: "robot_ns"
+          field: "namespace"
+          path: "groups[1]"
+        - argument: "robot_ns"
+          field: "parameters"
+          path: "groups[1].nodes[1]"

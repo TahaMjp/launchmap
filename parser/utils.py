@@ -1,4 +1,5 @@
 import ast
+from parser.context import ParseContext
 
 def get_kwarg(node, name):
     for kw in node.keywords:
@@ -6,26 +7,28 @@ def get_kwarg(node, name):
             return kw.value
     return None
 
-def parse_dict(dict_node):
+def parse_dict(dict_node, ctx: ParseContext = None):
     parsed = {}
     for k, v in zip(dict_node.keys, dict_node.values):
-        parsed[parse_value(k)] = parse_value(v)
+        parsed[parse_value(k, ctx)] = parse_value(v, ctx)
     return parsed
 
-def parse_value(val):
+def parse_value(val, ctx: ParseContext = None):
     from parser.substitutions import parse_substitution
 
     if isinstance(val, ast.Constant):
         if isinstance(val.value, str) and val.value.lower() in ("true", "false"):
             return val.value.lower() == "true"
         return val.value
+    
     elif isinstance(val, ast.Name):
         return "<unresolved>"
+    
     elif isinstance(val, ast.Call):
         if isinstance(val.func, ast.Name) and val.func.id in {
             "LaunchConfiguration", "EnvironmentVariable", "PathJoinSubstitution"
         }:
-            return parse_substitution(val)
+            return parse_substitution(val, ctx)
         else:
             return parse_python_expression(val)
 

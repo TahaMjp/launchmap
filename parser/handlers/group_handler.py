@@ -31,11 +31,12 @@ and further downstream processing.
 """
 
 import ast
+from parser.context import ParseContext
 from parser.utils import parse_value, get_kwarg
 from parser.handlers.node_handler import handle_node
 from parser.handlers.include_handler import handle_include
 
-def handle_group_action(node: ast.Call, visitor) -> dict:
+def handle_group_action(node: ast.Call, ctx: ParseContext) -> dict:
     if not isinstance(node, ast.Call) or node.func.id != "GroupAction":
         return None
     
@@ -47,7 +48,11 @@ def handle_group_action(node: ast.Call, visitor) -> dict:
     for child in children:
         if isinstance(child, ast.Call) and getattr(child.func, 'id', None) == "PushRosNamespace":
             ns_arg = child.args[0] if child.args else None
-            namespace = parse_value(ns_arg) if ns_arg else "<unresolved>"
+            if ns_arg:
+                ns_ctx = ParseContext(visitor=ctx.visitor, field="namespace")
+                namespace = parse_value(ns_arg, ns_ctx)
+            else:
+                namespace = "<unresolved>"
     
     if namespace:
         group_data["namespace"] = namespace
@@ -55,6 +60,6 @@ def handle_group_action(node: ast.Call, visitor) -> dict:
     # Delegate all children back to visitor
     for child in children:
         if isinstance(child, ast.Call):
-            visitor._handle_action(child, into=group_data)
+            ctx.visitor._handle_action(child, into=group_data)
 
     return group_data if group_data else None

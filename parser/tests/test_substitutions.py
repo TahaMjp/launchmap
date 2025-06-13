@@ -22,6 +22,9 @@ def test_path_join_sub():
     ])"""
     assert _parse_call(code) == "${PathJoinSubstitution:/a/b/c}"
 
+    code = """PathJoinSubstitution(['/a', 'b', 'c'])"""
+    assert _parse_call(code) == "${PathJoinSubstitution:/a/b/c}"
+
 def test_string_boolean_parsing():
     assert _resolve_const(ast.Constant("true")) is True
     assert _resolve_const(ast.Constant("false")) is False

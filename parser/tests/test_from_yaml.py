@@ -34,3 +34,13 @@ def test_include_launch_parsing(code, expected):
 def test_group_action_parsing(code, expected):
     result = parse_launch_string(code)
     assert result.get("groups") == expected.get("groups")
+
+@pytest.mark.parametrize("code,expected", load_yaml_tests("test_cases/launch_argument_usage_tests.yaml"))
+def test_launch_argument_usage_tracking(code, expected):
+    result = parse_launch_string(code)
+    assert result.get("arguments", []) == expected.get("arguments", [])
+    assert result.get("groups", []) == expected.get("groups", [])
+    assert result.get("includes", []) == expected.get("includes", [])
+    print(result.get("launch_argument_usages", []))
+    print(expected.get("launch_argument_usages", []))
+    assert result.get("launch_argument_usages", []) == expected.get("launch_argument_usages", [])

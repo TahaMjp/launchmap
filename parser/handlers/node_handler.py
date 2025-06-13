@@ -37,9 +37,10 @@ to keep output consistent and informative.
 """
 
 import ast
+from parser.context import ParseContext
 from parser.utils import get_kwarg, parse_value, parse_dict
 
-def handle_node(node: ast.Call) -> dict:
+def handle_node(node: ast.Call, ctx: ParseContext) -> dict:
     if not isinstance(node, ast.Call):
         return None
     
@@ -49,7 +50,8 @@ def handle_node(node: ast.Call) -> dict:
     for field in fields:
         value = get_kwarg(node, field)
         if value:
-            data[field] = parse_value(value)
+            field_ctx = ParseContext(visitor=ctx.visitor, field=field)
+            data[field] = parse_value(value, field_ctx)
     
     # Parameters
     params = get_kwarg(node, "parameters")
@@ -57,14 +59,16 @@ def handle_node(node: ast.Call) -> dict:
 
     if isinstance(params, ast.List):
         for elt in params.elts:
+            param_ctx = ParseContext(visitor=ctx.visitor, field="parameters")
             if isinstance(elt, ast.Constant):
                 parsed_params.append(elt.value)
             elif isinstance(elt, ast.Dict):
-                parsed_params.append(parse_dict(elt))
+                parsed_params.append(parse_dict(elt, param_ctx))
             else:
                 parsed_params.append("<unresolved>")
     elif isinstance(params, ast.Dict):
-        parsed_params.append(parse_dict(params))
+        param_ctx = ParseContext(visitor=ctx.visitor, field="parameters")
+        parsed_params.append(parse_dict(params, param_ctx))
     elif isinstance(params, ast.Name):
         parsed_params = "<unresolved>"
     
@@ -77,7 +81,10 @@ def handle_node(node: ast.Call) -> dict:
         pairs = []
         for elt in remaps.elts:
             if isinstance(elt, ast.Tuple) and len(elt.elts) == 2:
-                pairs.append([parse_value(elt.elts[0]), parse_value(elt.elts[1])])
+                remap_ctx = ParseContext(visitor=ctx.visitor, field="remappings")
+                lhs = parse_value(elt.elts[0], remap_ctx)
+                rhs = parse_value(elt.elts[1], remap_ctx)
+                pairs.append([lhs, rhs])
         data["remappings"] = pairs
     
     return data

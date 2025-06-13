@@ -36,16 +36,21 @@ consistent, and meaningful output for visualization and further inspection.
 """
 
 import ast
+from parser.context import ParseContext
 from parser.utils import get_kwarg, parse_value, parse_dict
 
-def handle_include(node: ast.Call) -> dict:
+def handle_include(node: ast.Call, ctx: ParseContext) -> dict:
     include_data = {}
 
     # Extract source argument: PythonLaunchDescriptionSource(...)
     for arg in node.args:
         if isinstance(arg, ast.Call) and getattr(arg.func, 'id', None) == "PythonLaunchDescriptionSource":
             source_arg = arg.args[0] if arg.args else None
-            include_data["path"] = parse_value(source_arg) if source_arg else "<unresolved>"
+            if source_arg:
+                path_ctx = ParseContext(visitor=ctx.visitor, field="path")
+                include_data["path"] = parse_value(source_arg, path_ctx)
+            else:
+                include_data["path"] = "<unresolved>"
     
     # Handle launch arguments={...}.items()
     for kw in node.keywords:
@@ -54,6 +59,7 @@ def handle_include(node: ast.Call) -> dict:
             if isinstance(call.func, ast.Attribute) and call.func.attr == "items":
                 dict_node = call.func.value
                 if isinstance(dict_node, ast.Dict):
-                    include_data["launch_arguments"] = parse_dict(dict_node)
+                    args_ctx = ParseContext(visitor=ctx.visitor, field="launch_arguments")
+                    include_data["launch_arguments"] = parse_dict(dict_node, args_ctx)
     
     return include_data if "path" in include_data else None
