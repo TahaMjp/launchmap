@@ -51,13 +51,48 @@
 }
 
 .group-box {
+  position: absolute;
   border: 2px dashed #4caf50;
   border-radius: 10px;
-  background-color: rgba(60, 80, 60, 0.2);
   box-shadow: 0 0 10px #111;
+  overflow: visible;
+  z-index: 1;
+}
+
+.group-header {
+  background-color: #1f3b1f;
+  padding: 6px 10px;
+  border-bottom: 1px solid #4caf50;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  z-index: 2;
+  position: relative;
+}
+
+.group-body {
+  background-color: rgba(60, 80, 60, 0.2);
   padding: 10px;
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
+  position: relative;
+  z-index: 2;
+}
+
+.namespace-section {
   position: absolute;
-  display: block;
+  top: 10px;
+  left: 10px;
+  right: 10px;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.group-body {
+  position: absolute;
+  top: 70px;
+  left: 0;
+  right: 0;
+  bottom: 0;
   overflow: visible;
 }
 
@@ -93,4 +128,56 @@
   height: 100%;
   pointer-events: none;
   z-index: 0;
+}
+
+.edge-line {
+  fill: none;
+  stroke-width: 2;
+  stroke-opacity: 0.9;
+  filter: none;
+  stroke-linecap: round;
+}
+
+.section {
+  display: flex;
+  align-items: center;
+  margin: 4px 0;
+  position: relative;
+}
+
+.port {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #333;
+  flex-shrink: 0;
+}
+
+.port.left {
+  margin-right: 6px;
+}
+
+.port.right {
+  margin-left: auto;
+  margin-right: 6px;
+}
+
+.used-port {
+  background-color: #ff9800;
+  box-shadow: 0 0 4px #ff9800;
+}
+
+.content {
+  flex-grow: 1;
+  font-size: 0.85em;
+}
+
+.section ul {
+  list-style: none;
+  padding-left: 2px;
+  margin: 4px 0;
+}
+
+.section li {
+  margin: 2px 0;
 }

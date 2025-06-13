@@ -1,4 +1,5 @@
 import { makeDraggable } from '../drag.js';
+import { renderSection } from './renderSection.js';
 
 export function renderNodeGroup(container, nodes, namespace, layoutCtx, options={}) {
     nodes.forEach((node, idx) => {
@@ -15,18 +16,33 @@ export function renderNodeGroup(container, nodes, namespace, layoutCtx, options=
 function renderNode(node, namespace, layoutCtx, options) {
     const block = document.createElement("div");
     block.className = "node-block";
-
-    block.innerHTML = `
-    <div class="node-title">${namespace} /${node.name || node.executable}</div>
-    <div>📦 <code>${node.package}</code></div>
-    <div>▶️ <code>${node.executable}</code></div>
-    <div>🖥️ Output: ${node.output || "—"}</div>
-    ${renderParameters(node.parameters)}
-  `;
-
     block.style.left = `${layoutCtx.x}px`;
     block.style.top = `${layoutCtx.y}px`;
     block.style.position = "absolute";
+
+    // Title bar
+    const title = document.createElement("div");
+    title.className = "node-title";
+    title.innerText = `${namespace}/${node.name || node.executable}`;
+    block.appendChild(title);
+
+    // Fields
+    const renderOptions = { includeLeftPort: true, portIdPrefix: options.path, portRegistry: options.portRegistry };
+    block.appendChild(renderSection("package", "📦", "Package", `<code>${node.package}</code>`, renderOptions));
+    block.appendChild(renderSection("executable", "▶️", "Executable", `<code>${node.executable}</code>`, renderOptions));
+    block.appendChild(renderSection("output", "🖥️", "Output", node.output || "—", renderOptions));
+
+    if (node.parameters?.length > 0) {
+        let paramHtml = "<ul>";
+        for (const p of node.parameters) {
+            for (const [k, v] of Object.entries(p)) {
+                paramHtml += `<li><code>${k}</code>: <code>${v}</code></li>`;
+            }
+        }
+        paramHtml += "</ul>";
+        block.appendChild(renderSection("parameters", "⚙️", "Params", paramHtml, renderOptions));
+    }
+    
 
     if (options.path) {
         block.dataset.path = options.path;
@@ -40,24 +56,9 @@ function renderNode(node, namespace, layoutCtx, options) {
         ...options,
         onDrag: () => {
             if (options.renderEdges && options.parsedData && options.argumentRegistry && options.blockRegistry) {
-                options.renderEdges(options.parsedData, options.argumentRegistry, options.blockRegistry);
+                options.renderEdges(options.parsedData, options.portRegistry);
             }
         }
     });
     return block;
-}
-
-function renderParameters(params) {
-    if (!params || params.length === 0) return "";
-
-    let html = "<div>⚙️ Params:</div><ul>";
-    for (const p of params) {
-        for (const p of params) {
-            for (const [k, v] of Object.entries(p)) {
-                html += `<li><code>${k}</code>: <code>${v}</code></li>`;
-            }
-        }
-    }
-    html += "</ul>";
-    return html;
 }

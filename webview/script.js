@@ -6,6 +6,7 @@ import { renderEdges } from './render/renderEdges.js';
 
 const argumentRegistry = {};
 const blockRegistry = {};
+const portRegistry = {};
 
 window.addEventListener('message', (event) => {
     const message = event.data;
@@ -29,17 +30,17 @@ function renderAll(data) {
 
     // Top Level nodes and includes
     renderArguments(editor, data.arguments || [], layoutCtx, 
-        { argumentRegistry, blockRegistry, parsedData: data, renderEdges });
+        { argumentRegistry, blockRegistry, portRegistry, parsedData: data, renderEdges });
     renderNodeGroup(editor, data.nodes || [], "", layoutCtx, 
-        { pathPrefix: "nodes", blockRegistry, argumentRegistry, parsedData: data, renderEdges});
+        { pathPrefix: "nodes", blockRegistry, argumentRegistry, portRegistry, parsedData: data, renderEdges});
     renderIncludesGroup(editor, data.includes || [], "", layoutCtx, 
-        { pathPrefix: "includes", blockRegistry, argumentRegistry, parsedData: data, renderEdges });
+        { pathPrefix: "includes", blockRegistry, argumentRegistry, portRegistry, parsedData: data, renderEdges });
 
     // Recursively render groups
     (data.groups || []).forEach((group, idx) => {
         renderGroup(group, `groups[${idx}]`, editor, layoutCtx, 
-            { blockRegistry, argumentRegistry, parsedData: data, renderEdges });
+            { path: `groups[${idx}]`, blockRegistry, argumentRegistry, portRegistry, parsedData: data, renderEdges });
     });
 
-    renderEdges(data, argumentRegistry, blockRegistry)
+    renderEdges(data, portRegistry);
 }

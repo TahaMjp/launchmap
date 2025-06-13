@@ -1,6 +1,7 @@
 import { makeDraggable } from '../drag.js';
 import { renderNodeGroup } from './renderNode.js';
 import { renderIncludesGroup } from './renderInclude.js';
+import { renderSection } from './renderSection.js';
 
 export function renderGroup(group, prefix, container, layoutCtx, options = {}) {
     const ns = group.namespace || prefix;
@@ -10,16 +11,35 @@ export function renderGroup(group, prefix, container, layoutCtx, options = {}) {
     groupBox.style.top = `${layoutCtx.y}px`;
     groupBox.style.position = "absolute";
 
+    // Header
+    const header = document.createElement("div");
+    header.className = "group-header";
+
+    // Title
     const title = document.createElement("div");
     title.className = "group-title";
     title.innerText = `📦 Group: ${ns}`;
-    groupBox.appendChild(title);
+    header.appendChild(title);
+
+    // Namespace
+    if (group.namespace) {
+        const nsSection = renderSection("namespace", "🧭", "Namespace", `<code>${group.namespace}</code>`, 
+            { includeLeftPort: true, portIdPrefix: options.path, portRegistry: options.portRegistry });
+        nsSection.classList.add("namespace-section");
+        header.appendChild(nsSection);
+    }
+    groupBox.appendChild(header);
 
     groupBox.dataset.path = prefix;
     groupBox.dataset.type = "group";
     if (options.blockRegistry) {
         options.blockRegistry[prefix] = groupBox;
     }
+
+    // Body
+    const body = document.createElement("div");
+    body.className = "group-body";
+    groupBox.appendChild(body);
 
     const innerLayout = { x: 20, y: 40 };
     const childOptions = { 
@@ -29,10 +49,17 @@ export function renderGroup(group, prefix, container, layoutCtx, options = {}) {
         pathPrefix: `${prefix}.nodes`
     };
 
-    renderNodeGroup(groupBox, group.nodes || [], ns, innerLayout, childOptions);
-    renderIncludesGroup(groupBox, group.includes || [], ns, innerLayout, {
+    renderNodeGroup(body, group.nodes || [], ns, innerLayout, childOptions);
+    renderIncludesGroup(body, group.includes || [], ns, innerLayout, {
         ...childOptions,
         pathPrefix: `${prefix}.includes`
+    });
+    (group.groups || []).forEach((subgroup, idx) => {
+        const subPrefix = `${prefix}.groups[${idx}]`;
+        renderGroup(subgroup, subPrefix, body, innerLayout, {
+            ...childOptions,
+            path: subPrefix
+        });
     });
 
     container.appendChild(groupBox);
@@ -40,7 +67,7 @@ export function renderGroup(group, prefix, container, layoutCtx, options = {}) {
         ...childOptions,
         onDrag: () => {
             if (options.renderEdges && options.parsedData && options.argumentRegistry && options.blockRegistry) {
-                options.renderEdges(options.parsedData, options.argumentRegistry, options.blockRegistry);
+                options.renderEdges(options.parsedData, options.portRegistry);
             }
         }
     });

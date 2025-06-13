@@ -1,53 +1,32 @@
-export function renderEdges(data, argumentRegistry, blockRegistry) {
+export function renderEdges(data, portRegistry) {
     const svg = document.getElementById("edge-layer");
     svg.innerHTML = "";
 
     (data.launch_argument_usages || []).forEach(usage => {
-        const fromBlock = argumentRegistry[usage.argument];
-        const toBlock = blockRegistry[usage.path];
+        const fromPortId = `argument:${usage.argument}:argument`;
+        const toPortId = `${usage.path}:${usage.field}`
 
-        if (!fromBlock || !toBlock) return;
+        const fromPort = portRegistry[fromPortId];
+        const toPort = portRegistry[toPortId];
 
-        const from = getAnchorPoint(fromBlock, "argument");
-        const to = getAnchorPoint(toBlock, usage.field);
+        if (!fromPort || !toPort) return;
+
+        fromPort.classList.add("used-port");
+        toPort.classList.add("used-port");
+
+        const from = getCenter(fromPort);
+        const to = getCenter(toPort);
 
         drawEdge(svg, from, to, usage.field);
     });
 }
 
-function getAnchorPoint(block, role) {
-    const rect = block.getBoundingClientRect();
-    const scrollX = window.scrollX;
-    const scrollY = window.scrollY;
-
-    const anchor = {
-        x: rect.left + scrollX,
-        y: rect.top + scrollY
+function getCenter(el) {
+    const rect = el.getBoundingClientRect();
+    return {
+        x: rect.left + rect.width / 2 + window.scrollX,
+        y: rect.top + rect.height / 2 + window.scrollY
     };
-
-    switch (role) {
-        case "argument":
-            anchor.x += rect.width;
-            anchor.y += rect.height / 2;
-            break;
-        case "parameters":
-            anchor.x += 0;
-            anchor.y += rect.height * 0.6;
-            break;
-        case "namespace":
-            anchor.x += 0;
-            anchor.y += rect.height * 0.3;
-            break;
-        case "launch_arguments":
-            anchor.x += 0;
-            anchor.y += rect.height * 0.45;
-            break;
-        default:
-            anchor.x += 0;
-            anchor.y += rect.height / 2;
-    }
-
-    return anchor;
 }
 
 function drawEdge(svg, from, to, field) {

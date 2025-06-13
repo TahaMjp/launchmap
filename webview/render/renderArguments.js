@@ -1,4 +1,5 @@
 import { makeDraggable } from '../drag.js';
+import { renderSection } from './renderSection.js';
 
 export function renderArguments(container, argumentsList, layoutCtx, options) {
     if (!argumentsList || argumentsList.length == 0) return;
@@ -6,15 +7,13 @@ export function renderArguments(container, argumentsList, layoutCtx, options) {
     argumentsList.forEach((arg, idx) => {
         const block = document.createElement("div");
         block.className = "argument-block";
-
-        block.innerHTML = `
-            <div class="arg-title">🚀 ${arg.name}</div>
-            <div>Default: <code>${arg.default}</code></div>
-        `;
-
         block.style.left = `${layoutCtx.x}px`;
         block.style.top = `${layoutCtx.y + idx * 80}px`;
         block.style.position = "absolute";
+
+        const argSection = renderSection("argument", "🚀", arg.name, `<code>${arg.default}</code>`, 
+            { includeRightPort: true, portIdPrefix: `argument:${arg.name}`, portRegistry: options.portRegistry });
+        block.appendChild(argSection);
 
         block.dataset.argument = arg.name;
         options.argumentRegistry[arg.name] = block;
@@ -25,7 +24,7 @@ export function renderArguments(container, argumentsList, layoutCtx, options) {
             ...options,
             onDrag: () => {
                 if (options.renderEdges && options.parsedData && options.argumentRegistry && options.blockRegistry) {
-                    options.renderEdges(options.parsedData, options.argumentRegistry, options.blockRegistry);
+                    options.renderEdges(options.parsedData, options.portRegistry);
                 }
             }
         });
