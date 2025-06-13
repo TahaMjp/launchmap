@@ -37,15 +37,17 @@
   color: #ffc;
 }
 
-.arguments-block {
-  border: 2px solid #888;
-  background-color: #1b1b1b;
+.argument-block {
+  border: 2px solid gold;
+  background-color: #2e2e00;
   border-radius: 8px;
   padding: 10px;
-  min-width: 220px;
-  color: #b5e853;
+  color: #ffd700;
+  min-width: 180px;
+  max-width: 240px;
+  white-space: nowrap;
   font-size: 13px;
-  box-shadow: 1px 1px 3px #000;
+  box-shadow: 2px 2px 5px #000;
 }
 
 .group-box {
@@ -72,7 +74,7 @@
 
 .node-block,
 .include-block,
-.arguments-block {
+.argument-block {
   display: inline-block;
   padding: 10px;
   border-radius: 8px;
@@ -81,4 +83,14 @@
   max-width: none;
   white-space: nowrap;
   overflow: visible;
+}
+
+.edge-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
 }

@@ -2,7 +2,8 @@ import { makeDraggable } from '../drag.js';
 
 export function renderNodeGroup(container, nodes, namespace, layoutCtx, options={}) {
     nodes.forEach((node, idx) => {
-        const block = renderNode(node, namespace, layoutCtx, options);
+        const path = options.pathPrefix ? `${options.pathPrefix}[${idx}]` : "";
+        const block = renderNode(node, namespace, layoutCtx, { ...options, path });
         container.appendChild(block);
         layoutCtx.y += 100;
     });
@@ -27,7 +28,22 @@ function renderNode(node, namespace, layoutCtx, options) {
     block.style.top = `${layoutCtx.y}px`;
     block.style.position = "absolute";
 
-    makeDraggable(block, options);
+    if (options.path) {
+        block.dataset.path = options.path;
+        block.dataset.type = "node";
+        if (options.blockRegistry) {
+            options.blockRegistry[options.path] = block;
+        }
+    }
+
+    makeDraggable(block, {
+        ...options,
+        onDrag: () => {
+            if (options.renderEdges && options.parsedData && options.argumentRegistry && options.blockRegistry) {
+                options.renderEdges(options.parsedData, options.argumentRegistry, options.blockRegistry);
+            }
+        }
+    });
     return block;
 }
 

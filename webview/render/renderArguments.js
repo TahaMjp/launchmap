@@ -1,23 +1,35 @@
 import { makeDraggable } from '../drag.js';
 
-export function renderArguments(container, argumentsList, layoutCtx) {
+export function renderArguments(container, argumentsList, layoutCtx, options) {
     if (!argumentsList || argumentsList.length == 0) return;
 
-    const block = document.createElement("div");
-    block.className = "arguments-block";
+    argumentsList.forEach((arg, idx) => {
+        const block = document.createElement("div");
+        block.className = "argument-block";
 
-    block.innerHTML = `<div class="node-title">🚀 Launch Arguments</div><ul>`;
-    argumentsList.forEach(arg => {
-        block.innerHTML += `<li><code>${arg.name}</code> = <code>${arg.default}</code></li>`;
+        block.innerHTML = `
+            <div class="arg-title">🚀 ${arg.name}</div>
+            <div>Default: <code>${arg.default}</code></div>
+        `;
+
+        block.style.left = `${layoutCtx.x}px`;
+        block.style.top = `${layoutCtx.y + idx * 80}px`;
+        block.style.position = "absolute";
+
+        block.dataset.argument = arg.name;
+        options.argumentRegistry[arg.name] = block;
+
+        container.appendChild(block);
+        makeDraggable(block, {
+            stopPropagation: true,
+            ...options,
+            onDrag: () => {
+                if (options.renderEdges && options.parsedData && options.argumentRegistry && options.blockRegistry) {
+                    options.renderEdges(options.parsedData, options.argumentRegistry, options.blockRegistry);
+                }
+            }
+        });
     });
-    block.innerHTML += `</ul>`;
 
-    block.style.left = `${layoutCtx.x}px`;
-    block.style.top = `${layoutCtx.y}px`;
-    block.style.position = "absolute";
-
-    container.appendChild(block);
-    makeDraggable(block, { stopPropagation: true });
-
-    layoutCtx.y += 120;
+    layoutCtx.x += 250;
 }

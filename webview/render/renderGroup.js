@@ -2,8 +2,8 @@ import { makeDraggable } from '../drag.js';
 import { renderNodeGroup } from './renderNode.js';
 import { renderIncludesGroup } from './renderInclude.js';
 
-export function renderGroup(group, index, container, layoutCtx) {
-    const ns = group.namespace || `group_${index}`;
+export function renderGroup(group, prefix, container, layoutCtx, options = {}) {
+    const ns = group.namespace || prefix;
     const groupBox = document.createElement("div");
     groupBox.className = "group-box";
     groupBox.style.left = `${layoutCtx.x}px`;
@@ -15,12 +15,35 @@ export function renderGroup(group, index, container, layoutCtx) {
     title.innerText = `📦 Group: ${ns}`;
     groupBox.appendChild(title);
 
+    groupBox.dataset.path = prefix;
+    groupBox.dataset.type = "group";
+    if (options.blockRegistry) {
+        options.blockRegistry[prefix] = groupBox;
+    }
+
     const innerLayout = { x: 20, y: 40 };
-    const options = { stopPropagation: true, constrainToParent: true};
-    renderNodeGroup(groupBox, group.nodes || [], ns, innerLayout, options);
-    renderIncludesGroup(groupBox, group.includes || [], ns, innerLayout, options);
+    const childOptions = { 
+        ...options,
+        stopPropagation: true, 
+        constrainToParent: true,
+        pathPrefix: `${prefix}.nodes`
+    };
+
+    renderNodeGroup(groupBox, group.nodes || [], ns, innerLayout, childOptions);
+    renderIncludesGroup(groupBox, group.includes || [], ns, innerLayout, {
+        ...childOptions,
+        pathPrefix: `${prefix}.includes`
+    });
+
     container.appendChild(groupBox);
-    makeDraggable(groupBox);
+    makeDraggable(groupBox, {
+        ...childOptions,
+        onDrag: () => {
+            if (options.renderEdges && options.parsedData && options.argumentRegistry && options.blockRegistry) {
+                options.renderEdges(options.parsedData, options.argumentRegistry, options.blockRegistry);
+            }
+        }
+    });
 
     requestAnimationFrame(() => {
         const children = groupBox.querySelectorAll(".node-block, .include-block");

@@ -46,6 +46,10 @@ export function makeDraggable(element, options={}) {
 
         element.style.left = `${newLeft}px`;
         element.style.top = `${newTop}px`;
+
+        if (typeof options.onDrag === "function") {
+            requestAnimationFrame(() => options.onDrag());
+        }
     }
 
     function stopDrag() {
