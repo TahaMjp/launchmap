@@ -27,6 +27,12 @@ def parse_value(val, ctx: ParseContext = None):
             if resolved:
                 return parse_value(resolved, ctx)
         return "<unresolved>"
+
+    elif isinstance(val, ast.List):
+        return [parse_value(elt, ctx) for elt in val.elts]
+    
+    elif isinstance(val, ast.Dict):
+        return parse_dict(val, ctx)
     
     elif isinstance(val, ast.Call):
         if isinstance(val.func, ast.Name) and val.func.id in {

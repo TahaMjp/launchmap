@@ -42,7 +42,14 @@ def handle_group_action(node: ast.Call, ctx: ParseContext) -> dict:
     
     group_data = {}
     namespace = None
-    children = node.args[0].elts if node.args and isinstance(node.args[0], ast.List) else []
+    children = []
+
+    if node.args and isinstance(node.args[0], ast.List):
+        children = node.args[0].elts
+    else:
+        for kw in node.keywords:
+            if kw.arg == "actions" and isinstance(kw.value, ast.List):
+                children = kw.value.elts
 
     # PushRosNamespace
     for child in children:

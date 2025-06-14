@@ -89,5 +89,6 @@ tests:
       nodes:
         - package: demo
           executable: node
-          parameters: "<unresolved>"
+          parameters:
+            - use_sim_time: true
     
