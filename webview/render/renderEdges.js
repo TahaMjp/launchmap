@@ -23,9 +23,12 @@ export function renderEdges(data, portRegistry) {
 
 function getCenter(el) {
     const rect = el.getBoundingClientRect();
+    const parentSvg = document.getElementById("edge-layer");
+    const svgRect = parentSvg.getBoundingClientRect();
+
     return {
-        x: rect.left + rect.width / 2 + window.scrollX,
-        y: rect.top + rect.height / 2 + window.scrollY
+        x: rect.left - svgRect.left + rect.width / 2 ,
+        y: rect.top - svgRect.top + rect.height / 2
     };
 }
 

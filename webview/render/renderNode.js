@@ -35,8 +35,12 @@ function renderNode(node, namespace, layoutCtx, options) {
     if (node.parameters?.length > 0) {
         let paramHtml = "<ul>";
         for (const p of node.parameters) {
-            for (const [k, v] of Object.entries(p)) {
-                paramHtml += `<li><code>${k}</code>: <code>${v}</code></li>`;
+            if (typeof p === "object" && !Array.isArray(p) && p !== null) {
+                for (const [k, v] of Object.entries(p)) {
+                    paramHtml += `<li><code>${k}</code>: <code>${escapeHtml(String(v))}</code></li>`;
+                }
+            } else {
+                paramHtml += `<li><code>${escapeHtml(String(p))}</code></li>`
             }
         }
         paramHtml += "</ul>";
@@ -61,4 +65,12 @@ function renderNode(node, namespace, layoutCtx, options) {
         }
     });
     return block;
+}
+
+function escapeHtml(text) {
+    return text
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
 }
