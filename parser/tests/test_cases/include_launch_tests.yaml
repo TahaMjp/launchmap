@@ -82,7 +82,7 @@ tests:
             use_sim_time: true
 
   - name: include_with_variable_path
-    description: Include path from variable (unresolved)
+    description: Include path from variable
     input: |
       from launch import LaunchDescription
       from launch.actions import IncludeLaunchDescription
@@ -98,7 +98,7 @@ tests:
           ])
     expected:
       includes:
-        - path: <unresolved>
+        - path: some_path.py
 
   - name: include_with_launch_config_path
     description: Include with LaunchConfiguration path

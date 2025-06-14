@@ -87,7 +87,7 @@ tests:
                 - package: demo
                   executable: sensor_node
     
-  - name: group_with_unresolved_namespace
+  - name: group_with_variable_namespace
     description: GroupAction with namespace from a variable
     input: |
       from launch import LaunchDescription
@@ -105,7 +105,7 @@ tests:
           ])
     expected:
       groups:
-        - namespace: <unresolved>
+        - namespace: dynamic_ns
           nodes:
             - package: demo
               executable: dynamic_node

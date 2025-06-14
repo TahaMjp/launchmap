@@ -44,3 +44,20 @@ def test_launch_argument_usage_tracking(code, expected):
     print(result.get("launch_argument_usages", []))
     print(expected.get("launch_argument_usages", []))
     assert result.get("launch_argument_usages", []) == expected.get("launch_argument_usages", [])
+
+@pytest.mark.parametrize("code,expected", load_yaml_tests("test_cases/variable_assignment_tests.yaml"))
+def test_variable_assignment(code, expected):
+    result = parse_launch_string(code)
+    assert result.get("arguments", []) == expected.get("arguments", [])
+    assert result.get("groups", []) == expected.get("groups", [])
+    assert result.get("includes", []) == expected.get("includes", [])
+
+@pytest.mark.parametrize("code,expected", load_yaml_tests("test_cases/undeclared_arguments_tests.yaml"))
+def test_undeclared_arguments(code, expected):
+    result = parse_launch_string(code)
+    assert result.get("arguments", []) == expected.get("arguments", [])
+    assert result.get("nodes", []) == expected.get("nodes", [])
+    print(result.get("launch_argument_usages"))
+    print(expected.get("launch_argument_usages"))
+    assert result.get("launch_argument_usages", []) == expected.get("launch_argument_usages", [])
+    assert result.get("undeclared_launch_configurations", []) == expected.get("undeclared_launch_configurations", [])

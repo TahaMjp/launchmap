@@ -87,4 +87,10 @@ def handle_node(node: ast.Call, ctx: ParseContext) -> dict:
                 pairs.append([lhs, rhs])
         data["remappings"] = pairs
     
+    # Arguments
+    arguments = get_kwarg(node, "arguments")
+    if arguments and isinstance(arguments, ast.List):
+        arg_ctx = ParseContext(visitor=ctx.visitor, field="arguments")
+        data["arguments"] = [parse_value(arg, arg_ctx) for arg in arguments.elts]
+    
     return data

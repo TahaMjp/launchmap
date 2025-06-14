@@ -22,6 +22,10 @@ def parse_value(val, ctx: ParseContext = None):
         return val.value
     
     elif isinstance(val, ast.Name):
+        if ctx is not None:
+            resolved = ctx.visitor.assignments.get(val.id)
+            if resolved:
+                return parse_value(resolved, ctx)
         return "<unresolved>"
     
     elif isinstance(val, ast.Call):

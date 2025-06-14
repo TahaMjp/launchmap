@@ -1,0 +1,99 @@
+tests:
+  - name: group_action_with_variable
+    description: Assign GroupAction to a variable and add it via ld.add_action()
+    input: |
+      from launch import LaunchDescription
+      from launch.actions import GroupAction, PushRosNamespace
+      from launch_ros.actions import Node
+
+      group = GroupAction([
+          PushRosNamespace('robot1'),
+          Node(package='demo', executable='talker')
+      ])
+
+      def generate_launch_description():
+          ld = LaunchDescription()
+          ld.add_action(group)
+          return ld
+    expected:
+      groups:
+        - namespace: "robot1"
+          nodes:
+            - package: "demo"
+              executable: "talker"
+
+  - name: node_field_from_variable
+    description: Node with field assigned from variable
+    input: |
+      from launch import LaunchDescription
+      from launch_ros.actions import Node
+      from launch.substitutions import LaunchConfiguration
+
+      def generate_launch_description():
+          robot_name = LaunchConfiguration('robot_name')
+          return LaunchDescription([
+              Node(
+                  package='demo',
+                  executable='listener',
+                  name=robot_name
+              )
+          ])
+    expected:
+      arguments: []
+      nodes:
+        - package: demo
+          executable: listener
+          name: "${LaunchConfiguration:robot_name}"
+
+  - name: multiple_launch_actions_with_variables
+    description: Assign multiple launch actions to variables add add via ld.add_action()
+    input: |
+      from launch import LaunchDescription
+      from launch.actions import DeclareLaunchArgument, GroupAction, PushRosNamespace, IncludeLaunchDescription
+      from launch.substitutions import LaunchConfiguration
+      from launch.launch_argument_sources import PythonLaunchDescriptionSource
+      from launch_ros.actions import Node
+
+      declare_arg = DeclareLaunchArgument('use_sim_time', default_value='false')
+
+      node = Node(
+          package='demo_nodes_cpp',
+          executable='talker',
+          name='talker_main',
+          output='screen',
+          parameters=[{'use_sim_time': LaunchConfiguration('use_sim_time')}]
+      )
+
+      group = GroupAction([
+          PushRosNamespace('robot1'),
+          node
+      ])
+
+      include = IncludeLaunchDescription(
+          PythonLaunchDescriptionSource('bringup/launch/navigation.launch.py'),
+          launch_arguments={'use_sim_time': LaunchConfiguration('use_sim_time')}.items()
+      )
+
+      def generate_launch_description():
+          ld = LaunchDescription()
+          ld.add_action(declare_arg)
+          ld.add_action(group)
+          ld.add_action(include)
+          return ld
+    expected:
+      arguments:
+        - name: use_sim_time
+          default: false
+      groups:
+        - namespace: "robot1"
+          nodes:
+            - package: "demo_nodes_cpp"
+              executable: "talker"
+              name: "talker_main"
+              output: "screen"
+              parameters:
+                - use_sim_time: "${LaunchConfiguration:use_sim_time}"
+      includes:
+        - path: "bringup/launch/navigation.launch.py"
+          launch_arguments:
+            use_sim_time: "${LaunchConfiguration:use_sim_time}"

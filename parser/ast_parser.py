@@ -12,11 +12,17 @@ class LaunchFileVisitor(ast.NodeVisitor):
             "arguments": [],
             "includes": [],
             "groups": [],
-            "launch_argument_usages": []    
+            "launch_argument_usages": [],
+            "undeclared_launch_configurations": []
         }
+
+        self.declared_arguments = set()
+        self.used_arguments = []
 
         self.launch_arguments = set()
         self.path_stack = []
+
+        self.assignments = {}
     
     def visit_Call(self, node: ast.Call):
         # Detect LaunchDescription([...])
@@ -26,6 +32,33 @@ class LaunchFileVisitor(ast.NodeVisitor):
                     for elt in arg.elts:
                         self._handle_action(elt)
         self.generic_visit(node)
+
+    def visit_Assign(self, node):
+        if isinstance(node.targets[0], ast.Name):
+            var_name = node.targets[0].id
+            self.assignments[var_name] = node.value
+    
+    def visit_Expr(self, node):
+        if isinstance(node.value, ast.Call):
+            call = node.value
+            if isinstance(call.func, ast.Attribute) and call.func.attr == "add_action":
+                arg = call.args[0]
+                if isinstance(arg, ast.Name):
+                    var_name = arg.id
+                    action_node = self.assignments.get(var_name)
+                    if action_node:
+                        self._handle_action(action_node)
+    
+    def visit(self, node):
+        super().visit(node)
+
+        undeclared = []
+        for usage in self.used_arguments:
+            if usage not in self.declared_arguments:
+                undeclared.append(usage)
+        
+        if undeclared:
+            self.result["undeclared_launch_configurations"] = undeclared
 
     def track_launch_arg_usage(self, arg_name, field):
         usage = {
@@ -56,7 +89,8 @@ class LaunchFileVisitor(ast.NodeVisitor):
                 target.setdefault("nodes", []).append(node_data)
         
         elif func_id == "DeclareLaunchArgument":
-            arg_data = handle_declare_argument(node)
+            arg_index = next_index("arguments")
+            arg_data = self.with_path(f"arguments[{arg_index}]", handle_declare_argument, node)
             if arg_data:
                 target.setdefault("arguments", []).append(arg_data)
         

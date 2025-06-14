@@ -73,6 +73,7 @@ def _parse_launch_configuration(node: ast.Call, ctx: ParseContext = None) -> str
     
     if ctx:
         ctx.track_launch_arg_usage(name)
+        ctx.visitor.used_arguments.append(name)
     
     return f"${{LaunchConfiguration:{name}:default={default}}}" if default is not None else f"${{LaunchConfiguration:{name}}}"
 

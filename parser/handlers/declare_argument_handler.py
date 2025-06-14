@@ -36,9 +36,10 @@ the resulting representation.
 """
 
 import ast
+from parser.context import ParseContext
 from parser.utils import get_kwarg, parse_value
 
-def handle_declare_argument(node: ast.Call) -> dict:
+def handle_declare_argument(node: ast.Call, ctx: ParseContext) -> dict:
     if not isinstance(node, ast.Call):
         return None
     
@@ -62,5 +63,8 @@ def handle_declare_argument(node: ast.Call) -> dict:
     desc = get_kwarg(node, "description")
     if desc:
         data["description"] = parse_value(desc)
+
+    if ctx:
+        ctx.visitor.declared_arguments.add(data["name"])
     
     return data if "name" in data else None

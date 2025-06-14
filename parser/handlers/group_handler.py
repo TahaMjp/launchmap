@@ -59,7 +59,11 @@ def handle_group_action(node: ast.Call, ctx: ParseContext) -> dict:
     
     # Delegate all children back to visitor
     for child in children:
-        if isinstance(child, ast.Call):
-            ctx.visitor._handle_action(child, into=group_data)
+        actual_node = child
+        if isinstance(child, ast.Name) and child.id in ctx.visitor.assignments:
+            actual_node = ctx.visitor.assignments[child.id]
+
+        if isinstance(actual_node, ast.Call):
+            ctx.visitor._handle_action(actual_node, into=group_data)
 
     return group_data if group_data else None
