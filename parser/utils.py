@@ -26,7 +26,7 @@ def parse_value(val, ctx: ParseContext = None):
             resolved = ctx.visitor.assignments.get(val.id)
             if resolved:
                 return parse_value(resolved, ctx)
-        return "<unresolved>"
+        return f"${{{val.id}}}"
 
     elif isinstance(val, ast.List):
         return [parse_value(elt, ctx) for elt in val.elts]
@@ -39,38 +39,53 @@ def parse_value(val, ctx: ParseContext = None):
             "LaunchConfiguration", "EnvironmentVariable", "PathJoinSubstitution"
         }:
             return parse_substitution(val, ctx)
-        else:
-            return parse_python_expression(val)
-
-    return "<unresolved>"
-
-def parse_python_expression(val):
-    # Handle os.path.join
-    if isinstance(val, ast.Call):
-        if isinstance(val.func, ast.Attribute) and val.func.attr == "join":
-            path_attr = val.func.value
-            if isinstance(path_attr, ast.Attribute) and path_attr.attr == "path":
-                parts = []
-                for arg in val.args:
-                    part = parse_value(arg)
-                    parts.append(part if isinstance(part, str) else "<unresolved>")
-                return "/".join(parts)
-            
-        # Handle os.path.join(package_share_directory(...), ...)
-        if isinstance(val.func, ast.Attribute) and val.func.attr == "join":
-            first_arg = val.args[0]
-            if (
-                isinstance(first_arg, ast.Call)
-                and isinstance(first_arg.func, ast.Name)
-                and first_arg.func.id == "get_package_share_directory"
-            ):
-                pkg_name = parse_value(first_arg.args[0])
-                rest = [parse_value(arg) for arg in val.args[1:]]
-                return f"<pkg:{pkg_name}>/" + "/".join(rest)
         
-        # Direct get_package_share_directory(...)
-        if isinstance(val.func, ast.Name) and val.func.id == "get_package_share_directory":
-            pkg_name = parse_value(val.args[0]) if val.args else "<unknown>"
-            return f"<pkg:{pkg_name}>"
-    
+        else:
+            return parse_python_expression(val, ctx)
+
     return "<unresolved>"
+
+def parse_python_expression(val, ctx: ParseContext = None):
+    if not isinstance(val, ast.Call):
+        return "<unresolved>"
+    
+    func = val.func
+
+    # Handle get_package_share_directory
+    if isinstance(func, ast.Name) and func.id == "get_package_share_directory":
+        if val.args:
+            pkg_name = parse_value(val.args[0], ctx)
+            return f"<pkg:{pkg_name}>"
+        return "<pkg:?>"
+
+    # Handle os.path.join
+    if isinstance(func, ast.Attribute) and func.attr == "join":
+        is_os_path_join = (
+            isinstance(func.value, ast.Attribute)
+            and getattr(func.value.value, "id", None) == "os"
+            and func.value.attr == "path"
+        )
+        if is_os_path_join:
+            parts = [parse_value(arg, ctx) for arg in val.args]
+            parts_str = [p if isinstance(p, str) else "<unresolved>" for p in parts]
+
+            # first arg is get_package_share_directory
+            if (
+                isinstance(val.args[0], ast.Call)
+                and isinstance(val.args[0].func, ast.Name)
+                and val.args[0].func.id == "get_package_share_directory"
+            ):
+                pkg_part = parse_value(val.args[0], ctx)
+                rest = parts_str[1:]
+                return f"{pkg_part}/{'/'.join(rest)}"
+            
+            return "/".join(parts_str)
+        
+    # Fallback
+    func_name = (
+        func.id if isinstance(func, ast.Name)
+        else func.attr if isinstance(func, ast.Attribute)
+        else "unknown"
+    )
+    arg_values = [parse_value(arg, ctx) for arg in val.args]
+    return f"${{Call:{func_name}({', '.join(map(str, arg_values))})}}"

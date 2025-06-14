@@ -97,8 +97,8 @@ tests:
         - name: map
           default: ${LaunchConfiguration:default_map}
 
-  - name: declare_with_unresolvable_variable
-    description: Argument using a variable (unresolved)
+  - name: declare_with_variable
+    description: Argument using a variable
     input: |
       from launch import LaunchDescription
       from launch.actions import DeclareLaunchArgument
@@ -112,7 +112,7 @@ tests:
     expected:
       arguments:
         - name: frame
-          default: <unresolved>
+          default: base
 
   - name: declare_with_environment_variable
     description: DeclareLaunchArgument with EnvironmentVariable default

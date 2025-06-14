@@ -21,5 +21,5 @@ def test_parse_real_launch_files(filename, code):
 
     print(f"\nParsed output for {filename}:\n", json.dumps(result, indent=2))
 
-    assert not isinstance(result, dict), f"{filename} did not return a dict"
+    assert isinstance(result, dict), f"{filename} did not return a dict"
     assert any(k in result for k in ("nodes", "includes", "groups")), f"{filename} returned empyt or incomplete structure."

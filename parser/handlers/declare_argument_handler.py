@@ -47,22 +47,22 @@ def handle_declare_argument(node: ast.Call, ctx: ParseContext) -> dict:
 
     # positional `name`
     if node.args:
-        data["name"] = parse_value(node.args[0])
+        data["name"] = parse_value(node.args[0], ctx)
     
     # keyword `name`
     name_kwarg = get_kwarg(node, "name")
     if name_kwarg:
-        data["name"] = parse_value(name_kwarg)
+        data["name"] = parse_value(name_kwarg, ctx)
 
     # default_value
     default = get_kwarg(node, "default_value")
     if default:
-        data["default"] = parse_value(default)
+        data["default"] = parse_value(default, ctx)
     
     # description
     desc = get_kwarg(node, "description")
     if desc:
-        data["description"] = parse_value(desc)
+        data["description"] = parse_value(desc, ctx)
 
     if ctx:
         ctx.visitor.declared_arguments.add(data["name"])
