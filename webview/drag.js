@@ -19,8 +19,11 @@ export function makeDraggable(element, options={}) {
 
     function elementDrag(e) {
         e.preventDefault();
-        offsetX = e.clientX - startX;
-        offsetY = e.clientY - startY;
+
+        const zoomScale = window.zoomState?.scale || 1;
+
+        offsetX = (e.clientX - startX) / zoomScale;
+        offsetY = (e.clientY - startY) / zoomScale;
         startX = e.clientX;
         startY = e.clientY;
 

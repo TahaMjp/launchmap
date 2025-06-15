@@ -22,13 +22,15 @@ export function renderEdges(data, portRegistry) {
 }
 
 function getCenter(el) {
+    const zoomLayer = document.getElementById("zoom-layer");
+    const zoomRect = zoomLayer.getBoundingClientRect();
     const rect = el.getBoundingClientRect();
-    const parentSvg = document.getElementById("edge-layer");
-    const svgRect = parentSvg.getBoundingClientRect();
+
+    const zoom = window.zoomState?.scale || 1;
 
     return {
-        x: rect.left - svgRect.left + rect.width / 2 ,
-        y: rect.top - svgRect.top + rect.height / 2
+        x: (rect.left - zoomRect.left + rect.width / 2) / zoom ,
+        y: (rect.top - zoomRect.top + rect.height / 2) / zoom
     };
 }
 

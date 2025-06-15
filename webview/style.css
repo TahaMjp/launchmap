@@ -8,6 +8,11 @@
   font-family: monospace;
 }
 
+#zoom-layer {
+    transform-origin: 0 0;
+    will-change: transform;
+}
+
 .node-block {
   border: 2px solid #555;
   border-radius: 8px;
@@ -124,8 +129,8 @@
   position: absolute;
   top: 0;
   left: 0;
-  min-width: 3000px;
-  min-height: 3000px;
+  min-width: 5000px;
+  min-height: 5000px;
   pointer-events: none;
   z-index: 0;
 }
