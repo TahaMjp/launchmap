@@ -70,7 +70,9 @@ function getWebviewHtml(webview: vscode.Webview, extensionUri: vscode.Uri): stri
             <link href="${styleUri}" rel="stylesheet">
         </head>
         <body>
-            <div id="editor"></div>
+            <div id="editor">
+            
+            </div>
             <script src="${scriptUri}" type="module"></script>
         </body>
         </html>
