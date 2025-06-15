@@ -46,7 +46,19 @@ function renderNode(node, namespace, layoutCtx, options) {
         paramHtml += "</ul>";
         block.appendChild(renderSection("parameters", "⚙️", "Params", paramHtml, renderOptions));
     }
-    
+
+    if (node.arguments?.length > 0) {
+        const argsHtml = "<ul>" + node.arguments.map(arg =>
+            `<li><code>${arg}</code></li>`).join("") + "</ul>";
+            
+        block.appendChild(renderSection(
+            "arguments", "💬", "Args", argsHtml, {
+                includeLeftPort: true,
+                portIdPrefix: options.path,
+                portRegistry: options.portRegistry
+            }
+        ));
+    }
 
     if (options.path) {
         block.dataset.path = options.path;
