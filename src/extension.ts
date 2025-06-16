@@ -70,8 +70,10 @@ function getWebviewHtml(webview: vscode.Webview, extensionUri: vscode.Uri): stri
             <link href="${styleUri}" rel="stylesheet">
         </head>
         <body>
+            <div id="mvp-banner">
+                🛠️ Some components like <code>ComposableNode</code>, <code>IfCondition</code> aren’t visualized yet. This is an early version — more coming soon!
+            </div>
             <div id="editor">
-            
             </div>
             <script src="${scriptUri}" type="module"></script>
         </body>
