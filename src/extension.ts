@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import * as cp from 'child_process';
 import * as path from 'path';
+import * as which from 'which';
 
 let lastParsedData: any = null;
 
@@ -45,16 +46,39 @@ export function activate(context: vscode.ExtensionContext) {
 
 async function runPythonParser(filePath: string): Promise<string> {
     return new Promise((resolve, reject) => {
+        const pythonCmd = detectPythonCommand();
+
+        if (!pythonCmd) {
+            vscode.window.showErrorMessage(
+                "Python iterpreter not found. Please install Python 3 and make sure it is available in your PATH."  
+            );
+            return reject(new Error("No Python interpreter found."));
+        }
+
         const scriptPath = path.join(__dirname, '..', 'parse.py');
-        cp.exec(`python3 "${scriptPath}" "${filePath}"`, (err, stdout, stderr) => {
+        const cmd = `"${pythonCmd}" "${scriptPath}" "${filePath}"`;
+
+        cp.exec(cmd, (err, stdout, stderr) => {
             if (err) {
                 vscode.window.showErrorMessage("Parser error: " + stderr);
-                reject(err);
-            } else {
-                resolve(stdout);
+                return reject(err);
             }
+            resolve(stdout);
         });
     });
+}
+
+function detectPythonCommand(): string | null {
+    const candidates = ['python3', 'python', 'py'];
+    for (const cmd of candidates) {
+        try {
+            which.sync(cmd);
+            return cmd;
+        } catch (_) {
+            continue;
+        }
+    }
+    return null;
 }
 
 function getWebviewHtml(webview: vscode.Webview, extensionUri: vscode.Uri): string {
