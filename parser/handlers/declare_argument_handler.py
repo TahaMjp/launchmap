@@ -1,39 +1,16 @@
-"""
-DeclareLaunchArgument Handler for ROS 2 Launch File AST Parser
-
-This module statically parses the 'DeclareLaunchArgument' action from a ROS 2
-launch file, extracting metadata about launch-time arguments such as their
-names, default values, and descriptions.
-
-✅ Supported Fields (Static Parsing):
-- name (str): 
-    - Supports both positional and keyword usage
-- default_value:
-    - Constant values (e.g., strings, numbers, booleans)
-    - Boolean strings ('true', 'false') → parsed as Python bools
-    - LaunchConfiguration substitution (with or without default)
-    - EnvironmentVariable substitution
-    - PathJoinSubstitution (with inline TextSubstitution)
-- description:
-    - Constant string descriptions
-
-⚠️ Partially Supported / Fallback as "<unresolved>":
-- default_value assigned from a variable or function
-- LaunchConfiguration with a variable name
-- Substitutions with nested or computed expressions
-- TextSubstitution or PathJoinSubstitution with dynamic arguments
-
-🛑 Not Supported by Static Parsing:
-- Arguments declared conditionally (e.g., inside if/else or loop)
-- Arguments defined via helper/wrapper functions
-- Arguments generated dynamically or via unpacking (*args, **kwargs)
-- Substitutions requiring runtime context (e.g., Command, FindExecutable)
-
-For unsupported or ambiguous expressions, the parser assigns safe fallback
-placeholders such as "<unresolved>" or symbolic substitution strings
-(e.g., "${LaunchConfiguration:foo}") to maintain consistency and clarity in
-the resulting representation.
-"""
+# Copyright (c) 2025 Kodo Robotics
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
 import ast
 from parser.context import ParseContext

@@ -4,6 +4,29 @@
     "description": "Visualize ROS2 Launch Files",
     "publisher": "kodorobotics",
     "icon": "assets/launchmap-logo.png",
+    "homepage": "https://github.com/Kodo-Robotics/launchmap",
+    "bugs": "https://github.com/Kodo-Robotics/launchmap/issues",
+    "license": "Apache-2.0",
+    "galleryBanner": {
+        "color": "#121212",
+        "theme": "dark"
+    },
+    "categories": [
+        "Visualization",
+        "Programming Languages",
+        "Other"
+    ],
+    "keywords": [
+        "ROS2",
+        "launch",
+        "robotics",
+        "launch.py",
+        "visualization",
+        "graph",
+        "ros",
+        "ros2 launch",
+        "launch file"
+    ],
     "repository": {
         "type": "git",
         "url": "https://github.com/Kodo-Robotics/launchmap"

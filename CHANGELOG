@@ -1,0 +1,32 @@
+# Changelog
+
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/).
+
+---
+
+## [0.0.2] - 2024-06-17
+
+### Fixed
+- 🐞 Dragging bug affecting grouped nodes
+
+### Added
+- 📄 Copyright and license details
+
+---
+
+## [0.0.1] - 2024-06-16
+
+### Added
+- Initial public release
+- Visual graph support for:
+  - `Node`
+  - `IncludeLaunchDescription`
+  - `DeclareLaunchArgument`
+  - `GroupAction`
+  - `LaunchConfiguration`
+- Banner to indicate unsupported constructs (e.g. `ComposableNode`, `SetParameter`)
+- VSCode command to open visualizer
+- Extension icon, README, and demo GIF

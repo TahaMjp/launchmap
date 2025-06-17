@@ -1,39 +1,16 @@
-"""
-IncludeLaunchDescription Handler for ROS 2 Launch File AST Parser
-
-This module extracts and parses the 'IncludeLaunchDescription' action from a ROS 2
-launch file. It statically analyzes how other launch files are included and how
-arguments are passed to them, without executing any code or following includes recursively.
-
-✅ Supported Include Patterns (Static Parsing):
-- PythonLaunchDescriptionSource with:
-    - Direct string path
-    - os.path.join(...) with constant strings
-    - get_package_share_directory(...) → <pkg:package_name>
-    - Combination of get_package_share_directory + os.path.join
-    - LaunchConfiguration(...) → ${LaunchConfiguration:name}
-    - EnvironmentVariable(...) → ${EnvironmentVariable:VAR}
-- launch_arguments passed via:
-    - Inline dict with `.items()`
-
-⚠️ Partially Supported / Fallback as "<unresolved>":
-- launch_arguments passed via variable
-- Include path set via a variable
-- Nested or complex substitutions
-- Arguments or paths returned from functions
-- Includes inside GroupAction or other structures (only parsed if statically reachable)
-
-🛑 Not Supported by Static Parsing:
-- Conditional includes (e.g., inside if/else branches)
-- Includes inside loops or lambdas
-- Includes returned from helper/factory functions
-- Deep recursion or evaluation of included files
-- Any dynamic logic requiring runtime or execution context
-
-For unsupported or ambiguous cases, the handler inserts fallback values
-such as "<unresolved>" or symbolic placeholders to maintain safe,
-consistent, and meaningful output for visualization and further inspection.
-"""
+# Copyright (c) 2025 Kodo Robotics
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
 import ast
 from parser.context import ParseContext

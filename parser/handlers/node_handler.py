@@ -1,40 +1,16 @@
-"""
-Node Handler for ROS 2 Launch File AST Parser
-
-This module extracts and parses the 'Node' action from a ROS 2 launch file,
-handling common fields and launch-time configurations.
-
-✅ Supported Node Fields (Static Parsing):
-- package (str)
-- executable (str)
-- name (str, optional)
-- namespace (str, optional)
-- output (e.g., "screen", optional)
-- parameters:
-    - List of inline dictionaries
-    - YAML file paths as strings
-    - LaunchConfiguration with/without default
-    - Direct dictionary (not in a list)
-- remappings:
-    - List of 2-element tuples
-
-⚠️ Partially Supported / Fallback as "<unresolved>":
-- Parameters set via variable reference
-- LaunchConfiguration combined with other substitutions
-- Fields assigned from variables
-- Mixed types or nested launch expressions
-
-🛑 Not Supported by Static Parsing:
-- Node constructed conditionally (e.g., in if/else or loops)
-- Node returned from factory/helper functions
-- Parameters returned from functions (e.g., load_params())
-- Any dynamic logic requiring runtime evaluation
-
-For unsupported or ambiguous cases, the handler inserts a fallback value
-(e.g., "<unresolved>" or symbolic LaunchConfiguration placeholder)
-to keep output consistent and informative.
-
-"""
+# Copyright (c) 2025 Kodo Robotics
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
 import ast
 from parser.context import ParseContext

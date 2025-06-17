@@ -1,35 +1,16 @@
-"""
-Substitution Parser for ROS 2 Launch File AST Parser
-
-This module extracts and formats launch-time substitution expressions used in
-ROS 2 launch files, such as LaunchConfiguration, EnvironmentVariable, and
-PathJoinSubstitution. It is designed to work safely using static AST parsing,
-without executing any Python code.
-
-✅ Supported Substitutions (Static Parsing):
-- LaunchConfiguration('name')
-- LaunchConfiguration('name', default='value')
-- EnvironmentVariable('VAR_NAME')
-- PathJoinSubstitution([...TextSubstitution(text=...)])
-- Boolean string literals ("true", "false") → parsed as bool
-
-⚠️ Partially Supported / Fallback as "<unresolved>":
-- Substitutions passed as variables
-- LaunchConfiguration(default=EnvironmentVariable(...)) — no nested resolution
-- PathJoinSubstitution with non-constant arguments
-- Any substitution containing unknown or dynamic input
-
-🛑 Not Supported by Static Parsing:
-- Command([...]) or FindExecutable(...) — require subprocess/runtime environment
-- Custom/unimported substitution types
-- Nested or computed substitutions
-- Default values derived from functions or variables
-
-For unsupported or ambiguous substitutions, the parser returns symbolic
-placeholders (e.g., "<unresolved>", "<unhandled:SubType>") to preserve structure
-and enable graceful degradation in the visual output.
-
-"""
+# Copyright (c) 2025 Kodo Robotics
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
 import ast
 from parser.context import ParseContext

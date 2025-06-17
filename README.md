@@ -76,7 +76,7 @@ code --install-extension KodoRobotics.launchmap
 ## 📜 License
 
 Licensed under the Apache 2.0 License.
-Copyright © 2024 Kodo Robotics.
+Copyright © 2025 Kodo Robotics.
 
 ---
 
