@@ -2,10 +2,12 @@
     "name": "launchmap",
     "displayName": "LaunchMap",
     "description": "Visualize ROS2 Launch Files",
+    "version": "0.0.3",
     "publisher": "kodorobotics",
     "icon": "assets/launchmap-logo.png",
-    "homepage": "https://github.com/Kodo-Robotics/launchmap",
-    "bugs": "https://github.com/Kodo-Robotics/launchmap/issues",
+    "bugs": {
+        "url": "https://github.com/Kodo-Robotics/launchmap/issues"
+    },
     "license": "Apache-2.0",
     "galleryBanner": {
         "color": "#121212",
@@ -31,7 +33,6 @@
         "type": "git",
         "url": "https://github.com/Kodo-Robotics/launchmap"
     },
-    "version": "0.0.2",
     "engines": {
         "vscode": "^1.70.0"
     },

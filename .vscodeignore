@@ -1,10 +1,15 @@
 # Ignore dev/build tools
 .vscode/
-node_modules/
 scripts/
 test/
 tests/
 __tests__/
+**/.venv/
+
+# Ignore everything except runtime dependencies
+node_modules/
+!node_modules/which/**
+!node_modules/isexe/**
 
 # Ignore source TypeScript files (we only need dist/)
 src/
@@ -30,11 +35,12 @@ Thumbs.db
 .git/
 .gitignore
 
-# README & assets are included automatically — don't exclude them
-# Ensure these are NOT ignored:
-# dist/
-# assets/
-# media/
-# README.md
-# CHANGELOG.md
-# LICENSE
+# ⬇️ Ensure dist is included
+!dist/
+!dist/**
+
+# ⬇️ Ensure README, logo and assets are included
+!README.md
+!CHANGELOG.md
+!LICENSE
+!assets/
