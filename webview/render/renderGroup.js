@@ -64,7 +64,7 @@ export function renderGroup(group, prefix, container, layoutCtx, options = {}) {
 
     container.appendChild(groupBox);
     makeDraggable(groupBox, {
-        ...childOptions,
+        ...options,
         onDrag: () => {
             if (options.renderEdges && options.parsedData && options.argumentRegistry && options.blockRegistry) {
                 options.renderEdges(options.parsedData, options.portRegistry);
