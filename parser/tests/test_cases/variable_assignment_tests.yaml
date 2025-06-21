@@ -149,6 +149,29 @@ tests:
     expected:
       nodes:
         - package: demo
-          executable: listener
+          executable: talker
         - package: demo
           executable: listener
+
+  - name: group_action_with_star
+    deescription: GroupAction with starred list of nodes
+    input: |
+      from launch import LaunchDescription
+      from launch.actions import GroupAction
+      from launch_ros.actions import Node
+
+      def generate_launch_description():
+          node1 = Node(package='demo', executable='talker')
+          node2 = Node(package='demo', executable='listener')
+          node_list = [node1, node2]
+
+          return LaunchDescription([
+              GroupAction([*node_list])
+          ])
+    expected:
+      groups:
+        - nodes:
+          - package: demo
+            executable: talker
+          - package: demo
+            executable: listener

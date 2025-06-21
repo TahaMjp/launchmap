@@ -43,7 +43,8 @@ def parse_value(val, ctx: ParseContext = None):
         return f"${{{val.id}}}"
 
     elif isinstance(val, ast.List):
-        return [parse_value(elt, ctx) for elt in val.elts]
+        items = resolve_starred_list(val.elts, ctx.visitor if ctx else None)
+        return [parse_value(item, ctx) for item in items]
     
     elif isinstance(val, ast.Dict):
         return parse_dict(val, ctx)
@@ -103,3 +104,21 @@ def parse_python_expression(val, ctx: ParseContext = None):
     )
     arg_values = [parse_value(arg, ctx) for arg in val.args]
     return f"${{Call:{func_name}({', '.join(map(str, arg_values))})}}"
+
+def resolve_starred_list(node_list, visitor):
+    result = []
+    for elt in node_list:
+        if isinstance(elt, ast.Starred):
+            name = elt.value.id if isinstance(elt.value, ast.Name) else None
+            if name and name in visitor.assignments:
+                assigned = visitor.assignments[name]
+                if isinstance(assigned, ast.List):
+                    result.extend(assigned.elts)
+                else:
+                    result.append(assigned)
+            else:
+                result.append(elt)
+        else:
+            result.append(elt)
+    return result
+                

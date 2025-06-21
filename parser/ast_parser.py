@@ -18,6 +18,7 @@ from parser.handlers.node_handler import handle_node
 from parser.handlers.declare_argument_handler import handle_declare_argument
 from parser.handlers.include_handler import handle_include
 from parser.handlers.group_handler import handle_group_action
+from parser.utils import resolve_starred_list
 
 class LaunchFileVisitor(ast.NodeVisitor):
     def __init__(self):
@@ -43,7 +44,7 @@ class LaunchFileVisitor(ast.NodeVisitor):
         if isinstance(node.func, ast.Name) and node.func.id == "LaunchDescription":
             for arg in node.args:
                 if isinstance(arg, ast.List):
-                    for elt in arg.elts:
+                    for elt in resolve_starred_list(arg.elts, self):
                         self._handle_action(elt)
         self.generic_visit(node)
 
