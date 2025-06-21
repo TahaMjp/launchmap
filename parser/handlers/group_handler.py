@@ -14,9 +14,7 @@
 
 import ast
 from parser.context import ParseContext
-from parser.utils import parse_value, get_kwarg
-from parser.handlers.node_handler import handle_node
-from parser.handlers.include_handler import handle_include
+from parser.utils import parse_value, resolve_starred_list
 
 def handle_group_action(node: ast.Call, ctx: ParseContext) -> dict:
     if not isinstance(node, ast.Call) or node.func.id != "GroupAction":
@@ -27,7 +25,7 @@ def handle_group_action(node: ast.Call, ctx: ParseContext) -> dict:
     children = []
 
     if node.args and isinstance(node.args[0], ast.List):
-        children = node.args[0].elts
+        children = resolve_starred_list(node.args[0].elts, ctx.visitor)
     else:
         for kw in node.keywords:
             if kw.arg == "actions" and isinstance(kw.value, ast.List):

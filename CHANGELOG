@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [0.0.4] - 2025-06-21
+### Fixed
+- Error because of variable resolution for launch actions passed indirectly through assignments (example, `LaunchDescription([my_node])`)
+
+### Added
+- Support for unpacking starred expressions like `*some_list` inside `LaunchDescription(...)`
+
 ## [0.0.3] - 2025-06-18
 ### Fixed
 - Bundled missing `which` module for proper activation.

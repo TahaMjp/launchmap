@@ -97,3 +97,81 @@ tests:
         - path: "bringup/launch/navigation.launch.py"
           launch_arguments:
             use_sim_time: "${LaunchConfiguration:use_sim_time}"
+
+  - name: variable_node_launchdescription
+    description: Node assigned to variable and passed into LaunchDescription
+    input: |
+      from launch import LaunchDescription
+      from launch_ros.actions import Node
+
+      def generate_launch_description():
+          load_node = Node(
+              package='demo_nodes_cpp',
+              executable='talker',
+              name='talker_node'
+          )
+          return LaunchDescription([load_node])
+    expected:
+      nodes:
+        - package: demo_nodes_cpp
+          executable: talker
+          name: talker_node
+
+  - name: launchdescription_starred_args
+    description: Starred expression used in LaunchDescription
+    input: |
+      from launch import LaunchDescription
+      from launch_ros.actions import Node
+
+      def generate_launch_description():
+          node1 = Node(package='demo', executable='talker')
+          node2 = Node(package='demo', executable='listener')
+          list_of_args = [node1, node2]
+          return LaunchDescription([*list_of_args])
+    expected:
+      nodes:
+        - package: demo
+          executable: talker
+        - package: demo
+          executable: listener
+
+  - name: launchdescription_mixed_starred
+    description: Mixed direct and starred args in LaunchDescription
+    input: |
+      from launch import LaunchDescription
+      from launch_ros.actions import Node
+
+      def generate_launch_description():
+          node1 = Node(package='demo', executable='talker')
+          node2 = Node(package='demo', executable='listener')
+          extras = [node2]
+          return LaunchDescription([node1, *extras])
+    expected:
+      nodes:
+        - package: demo
+          executable: talker
+        - package: demo
+          executable: listener
+
+  - name: group_action_with_star
+    deescription: GroupAction with starred list of nodes
+    input: |
+      from launch import LaunchDescription
+      from launch.actions import GroupAction
+      from launch_ros.actions import Node
+
+      def generate_launch_description():
+          node1 = Node(package='demo', executable='talker')
+          node2 = Node(package='demo', executable='listener')
+          node_list = [node1, node2]
+
+          return LaunchDescription([
+              GroupAction([*node_list])
+          ])
+    expected:
+      groups:
+        - nodes:
+          - package: demo
+            executable: talker
+          - package: demo
+            executable: listener

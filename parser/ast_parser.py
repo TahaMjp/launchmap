@@ -18,6 +18,7 @@ from parser.handlers.node_handler import handle_node
 from parser.handlers.declare_argument_handler import handle_declare_argument
 from parser.handlers.include_handler import handle_include
 from parser.handlers.group_handler import handle_group_action
+from parser.utils import resolve_starred_list
 
 class LaunchFileVisitor(ast.NodeVisitor):
     def __init__(self):
@@ -43,7 +44,7 @@ class LaunchFileVisitor(ast.NodeVisitor):
         if isinstance(node.func, ast.Name) and node.func.id == "LaunchDescription":
             for arg in node.args:
                 if isinstance(arg, ast.List):
-                    for elt in arg.elts:
+                    for elt in resolve_starred_list(arg.elts, self):
                         self._handle_action(elt)
         self.generic_visit(node)
 
@@ -56,12 +57,7 @@ class LaunchFileVisitor(ast.NodeVisitor):
         if isinstance(node.value, ast.Call):
             call = node.value
             if isinstance(call.func, ast.Attribute) and call.func.attr == "add_action":
-                arg = call.args[0]
-                if isinstance(arg, ast.Name):
-                    var_name = arg.id
-                    action_node = self.assignments.get(var_name)
-                    if action_node:
-                        self._handle_action(action_node)
+                self._handle_action(call.args[0])
     
     def visit(self, node):
         super().visit(node)
@@ -91,6 +87,14 @@ class LaunchFileVisitor(ast.NodeVisitor):
 
     def _handle_action(self, node: ast.Call, into=None):
         target = into if into is not None else self.result
+
+        # Resolve variable assignment
+        if isinstance(node, ast.Name) and node.id in self.assignments:
+            node = self.assignments[node.id]
+        
+        if not isinstance(node, ast.Call):
+            return
+
         func_id = getattr(node.func, 'id', None)
 
         def next_index(key):

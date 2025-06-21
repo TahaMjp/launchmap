@@ -13,42 +13,35 @@
 # limitations under the License.
 
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument, GroupAction, IncludeLaunchDescription, PushRosNamespace
-from launch.substitutions import LaunchConfiguration, PathJoinSubstitution
+from launch.actions import DeclareLaunchArgument
+from launch.substitutions import LaunchConfiguration, TextSubstitution
+
 from launch_ros.actions import Node
-from launch.launch_description_sources import PythonLaunchDescriptionSource
-import os
+
 
 def generate_launch_description():
-    return LaunchDescription([
-        # Declare arguments
-        DeclareLaunchArgument('use_sim_time', default_value='false'),
-        DeclareLaunchArgument('robot_name', default_value='robot1'),
-        # Top-level node
-        Node(
-            package='demo_nodes_cpp', executable='talker', name='talker_main',
-            parameters=[{'use_sim_time': LaunchConfiguration('use_sim_time')}],
-            output='screen'
-        ),
-        # Include another launch file
-        IncludeLaunchDescription(
-            PythonLaunchDescriptionSource(
-                PathJoinSubstitution(['bringup', 'launch', 'sensors.launch.py'])
-            ),
-            launch_arguments={'use_sim_time': LaunchConfiguration('use_sim_time')}.items()
-        ),
-        # Grouped actions with namespace
-        GroupAction([
-            PushRosNamespace(LaunchConfiguration('robot_name')),
-            Node(
-                package='demo_nodes_cpp', executable='listener', name='listener_ns',
-                parameters=[{'use_sim_time': LaunchConfiguration('use_sim_time')}],
-                output='screen'
-            ),
-            IncludeLaunchDescription(
-                PythonLaunchDescriptionSource(
-                    os.path.join('bringup', 'launch', 'navigation.launch.py')
-                )
-            )
-        ])
-    ])
+   background_r_launch_arg = DeclareLaunchArgument(
+      'background_r', default_value=TextSubstitution(text='0')
+   )
+   background_g_launch_arg = DeclareLaunchArgument(
+      'background_g', default_value=TextSubstitution(text='84')
+   )
+   background_b_launch_arg = DeclareLaunchArgument(
+      'background_b', default_value=TextSubstitution(text='122')
+   )
+
+   nodes = [background_r_launch_arg, background_g_launch_arg, background_b_launch_arg]
+
+   return LaunchDescription([
+      *nodes,
+      Node(
+         package='turtlesim',
+         executable='turtlesim_node',
+         name='sim',
+         parameters=[{
+            'background_r': LaunchConfiguration('background_r'),
+            'background_g': LaunchConfiguration('background_g'),
+            'background_b': LaunchConfiguration('background_b'),
+         }]
+      ),
+   ])
