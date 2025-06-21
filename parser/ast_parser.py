@@ -56,12 +56,7 @@ class LaunchFileVisitor(ast.NodeVisitor):
         if isinstance(node.value, ast.Call):
             call = node.value
             if isinstance(call.func, ast.Attribute) and call.func.attr == "add_action":
-                arg = call.args[0]
-                if isinstance(arg, ast.Name):
-                    var_name = arg.id
-                    action_node = self.assignments.get(var_name)
-                    if action_node:
-                        self._handle_action(action_node)
+                self._handle_action(call.args[0])
     
     def visit(self, node):
         super().visit(node)
@@ -91,6 +86,14 @@ class LaunchFileVisitor(ast.NodeVisitor):
 
     def _handle_action(self, node: ast.Call, into=None):
         target = into if into is not None else self.result
+
+        # Resolve variable assignment
+        if isinstance(node, ast.Name) and node.id in self.assignments:
+            node = self.assignments[node.id]
+        
+        if not isinstance(node, ast.Call):
+            return
+
         func_id = getattr(node.func, 'id', None)
 
         def next_index(key):

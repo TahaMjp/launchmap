@@ -62,6 +62,7 @@ def test_launch_argument_usage_tracking(code, expected):
 @pytest.mark.parametrize("code,expected", load_yaml_tests("test_cases/variable_assignment_tests.yaml"))
 def test_variable_assignment(code, expected):
     result = parse_launch_string(code)
+    assert result.get("nodes", []) == expected.get("nodes", [])
     assert result.get("arguments", []) == expected.get("arguments", [])
     assert result.get("groups", []) == expected.get("groups", [])
     assert result.get("includes", []) == expected.get("includes", [])
