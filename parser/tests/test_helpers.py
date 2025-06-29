@@ -18,13 +18,23 @@ import pytest
 from parser.entrypoint.parser_runner import parse_launch_file
 from parser.entrypoint.user_interface import parse_and_format_launch_file
 
-def load_yaml_tests(file_path):
+def load_yaml_tests(file_path, with_files = False):
     with open(file_path, 'r') as f:
         data = yaml.safe_load(f)
-        return [
-            pytest.param(test["input"], test["expected"], id=test["name"])
-            for test in data["tests"]
-        ]
+    
+    tests = []
+    for test in data["tests"]:
+        code = test["input"]
+        expected = test["expected"]
+        test_id = test.get("name", "Unnamed Test")
+
+        if with_files:
+            files = test.get("files", {})
+            tests.append(pytest.param(code, expected, files, id=test_id))
+        else:
+            tests.append(pytest.param(code, expected, id=test_id))
+
+    return tests
 
 def parse_launch_string(code: str) -> dict:
     with tempfile.NamedTemporaryFile("w", suffix=".py", delete=False) as tmp:

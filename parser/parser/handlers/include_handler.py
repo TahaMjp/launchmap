@@ -15,6 +15,7 @@
 import ast
 from parser.context import ParseContext
 from parser.parser.registry import register_handler
+from parser.parser.utils.symbolic import is_symbolic
 from parser.resolution.utils import resolve_call_signature
 
 @register_handler("IncludeLaunchDescription", "launch.actions.IncludeLaunchDescription")
@@ -26,16 +27,21 @@ def handle_include(node: ast.Call, context: ParseContext) -> dict:
     """
     args, kwargs = resolve_call_signature(node, context.engine)
 
-    launch_source = kwargs.get("launch_description_source")
-    if not launch_source and args:
-        launch_source = args[0]
-
-    launch_args = kwargs.get("launch_arguments", [])
-    if not launch_args and len(args) > 1:
-        launch_args = args[1]
+    launch_source = kwargs.get("launch_description_source") or (args[0] if args else None)
+    launch_args = kwargs.get("launch_arguments") or (args[1] if len(args) > 1 else {})
 
     if not isinstance(launch_source, dict) or "filename" not in launch_source:
         raise ValueError("Could not resolve include path from launch_description_source")
+    
+    file_value = launch_source["filename"]
+
+    # If symbolic, just return metadata (for now)
+    if is_symbolic(file_value):
+        return {
+            "type": "IncludeLaunchDescription",
+            "launch_description_source": file_value,
+            "launch_arguments": launch_args
+        }
     
     # Load and parse included file
     from parser.includes.resolver import resolve_included_launch_file

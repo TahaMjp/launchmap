@@ -1,0 +1,29 @@
+tests:
+  - name: recursive_include_basic
+    description: Includes child which defines a node
+    input: |
+      from launch import LaunchDescription
+      from launch.actions import IncludeLaunchDescription
+      from launch.launch_description_sources import PythonLaunchDescriptionSource
+
+      def generate_launch_description():
+          return LaunchDescription([
+              IncludeLaunchDescription(PythonLaunchDescriptionSource("child.py"))
+          ])
+    expected:
+      includes:
+        - launch_description_source: child.py
+          launch_arguments: {}
+      nodes:
+        - package: demo
+          executable: child_node
+    files:
+      child.py: |
+        from launch import LaunchDescription
+        from launch_ros.actions import Node
+
+        def generate_launch_description():
+            return LaunchDescription([
+                Node(package="demo", executable="child_node")
+            ])
+    

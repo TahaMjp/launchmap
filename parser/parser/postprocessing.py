@@ -24,6 +24,13 @@ def simplify_launch_configurations(obj):
         elif obj.get("type") == "IfCondition":
             expression = simplify_launch_configurations(obj.get("expression"))
             return f"${{IfCondition:{expression}}}"
+        elif obj.get("type") == "PathJoinSubstitution":
+            format_symbolic_part = lambda p: simplify_launch_configurations(p) if isinstance(p, dict) else f"'{p}'" if isinstance(p, str) else str(p)
+            parts = ", ".join(format_symbolic_part(p) for p in obj.get("parts"))
+            return f"${{PathJoinSubstitution:[{parts}]}}"
+        elif obj.get("type") == "FindPackageShare":
+            package = obj.get("package")
+            return f"FindPackageShare('{package}')"
         
         return {k: simplify_launch_configurations(v) for k, v in obj.items()}
 

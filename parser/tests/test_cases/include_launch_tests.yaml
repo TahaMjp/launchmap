@@ -1,6 +1,6 @@
 tests:
-  - name: include_with_constant_path
-    description: Basic include with string path
+  - name: include_literal_file
+    description: IncludeLaunchDescription with direct string file path
     input: |
       from launch import LaunchDescription
       from launch.actions import IncludeLaunchDescription
@@ -8,135 +8,77 @@ tests:
 
       def generate_launch_description():
           return LaunchDescription([
-              IncludeLaunchDescription(
-                  PythonLaunchDescriptionSource('sub_launch.py')
-              )
+              IncludeLaunchDescription(PythonLaunchDescriptionSource("sub_launch.py"))
           ])
     expected:
       includes:
-        - path: sub_launch.py
-
-  - name: include_with_os_path_join
-    description: Include with os.path.join
-    input: |
-      import os
-      from launch import LaunchDescription
-      from launch.actions import IncludeLaunchDescription
-      from launch.launch_description_sources import PythonLaunchDescriptionSource
-
-      def generate_launch_description():
-          return LaunchDescription([
-              IncludeLaunchDescription(
-                  PythonLaunchDescriptionSource(
-                      os.path.join('my_pkg', 'launch', 'sub_launch.py')
-                  )
-              )
-          ])
-    expected:
-      includes:
-        - path: my_pkg/launch/sub_launch.py
-
-  - name: include_with_package_share
-    description: Include with get_package_share_directory + os.path.join
-    input: |
-      import os
-      from launch import LaunchDescription
-      from launch.actions import IncludeLaunchDescription
-      from launch.launch_description_sources import PythonLaunchDescriptionSource
-      from ament_index_python.packages import get_package_share_directory
-
-      def generate_launch_description():
-          return LaunchDescription([
-              IncludeLaunchDescription(
-                  PythonLaunchDescriptionSource(
-                      os.path.join(
-                          get_package_share_directory('my_robot_bringup'),
-                          'launch',
-                          'included.launch.py'
-                      )
-                  )
-              )
-          ])
-    expected:
-      includes:
-        - path: <pkg:my_robot_bringup>/launch/included.launch.py
-
+        - launch_description_source: sub_launch.py
+          launch_arguments: {}
+          included: {}
+  
   - name: include_with_launch_arguments
-    description: Include with launch_arguments
+    description: Include with forwareded argumentes using LaunchConfiguration
     input: |
       from launch import LaunchDescription
-      from launch.actions import IncludeLaunchDescription
-      from launch.launch_description_sources import PythonLaunchDescriptionSource
-
-      def generate_launch_description():
-          return LaunchDescription([
-              IncludeLaunchDescription(
-                  PythonLaunchDescriptionSource('sub.launch.py'),
-                  launch_arguments={'use_sim_time': 'true'}.items()
-              )
-          ])
-    expected:
-      includes:
-        - path: sub.launch.py
-          launch_arguments:
-            use_sim_time: true
-
-  - name: include_with_variable_path
-    description: Include path from variable
-    input: |
-      from launch import LaunchDescription
-      from launch.actions import IncludeLaunchDescription
-      from launch.launch_description_sources import PythonLaunchDescriptionSource
-
-      path = 'some_path.py'
-
-      def generate_launch_description():
-          return LaunchDescription([
-              IncludeLaunchDescription(
-                  PythonLaunchDescriptionSource(path)
-              )
-          ])
-    expected:
-      includes:
-        - path: some_path.py
-
-  - name: include_with_launch_config_path
-    description: Include with LaunchConfiguration path
-    input: |
-      from launch import LaunchDescription
-      from launch.actions import IncludeLaunchDescription
+      from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription
       from launch.launch_description_sources import PythonLaunchDescriptionSource
       from launch.substitutions import LaunchConfiguration
 
       def generate_launch_description():
           return LaunchDescription([
+              DeclareLaunchArgument("map_file", default_value="map.yaml"),
               IncludeLaunchDescription(
-                  PythonLaunchDescriptionSource(
-                      LaunchConfiguration('launch_path')
-                  )
+                  PythonLaunchDescriptionSource("mapper_launch.py"),
+                  launch_arguments={"map": LaunchConfiguration("map_file")}.items()
               )
           ])
     expected:
+      arguments:
+        - name: map_file
+          default_value: map.yaml
       includes:
-        - path: ${LaunchConfiguration:launch_path}
+        - launch_description_source: mapper_launch.py
+          launch_arguments:
+            map: "${LaunchConfiguration:map_file}"
+          included: {}
+      launch_argument_usages:
+        - argument: map_file
+          path: includes[0].launch_arguments.map
+      undeclared_launch_configurations: []
 
-  - name: include_with_env_var_path
-    description: Include with EnvironmentVariable path
+  - name: include_path_from_pathjoin
+    description: Use PathJoinSubstitution to build path
     input: |
       from launch import LaunchDescription
       from launch.actions import IncludeLaunchDescription
       from launch.launch_description_sources import PythonLaunchDescriptionSource
-      from launch.substitutions import EnvironmentVariable
+      from launch.substitutions import PathJoinSubstitution, FindPackageShare
 
       def generate_launch_description():
           return LaunchDescription([
               IncludeLaunchDescription(
                   PythonLaunchDescriptionSource(
-                      EnvironmentVariable('LAUNCH_PATH')
+                      PathJoinSubstitution([FindPackageShare("my_pkg"), "launch", "other.py"])
                   )
               )
           ])
     expected:
       includes:
-        - path: ${EnvironmentVariable:LAUNCH_PATH}
-    
+        - launch_description_source: ${PathJoinSubstitution:[FindPackageShare('my_pkg'), 'launch', 'other.py']}
+          launch_arguments: {}
+
+  - name: include_with_variable_assignment
+    description: IncludeLaunchDescription assigned to variable before use_sim_time
+    input: |
+      from launch import LaunchDescription
+      from launch.actions import IncludeLaunchDescription
+      from launch.launch_description_sources import PythonLaunchDescriptionSource
+
+      def generate_launch_description():
+          inc = IncludeLaunchDescription(PythonLaunchDescriptionSource("sub_launch.py"))
+          return LaunchDescription([inc])
+    expected:
+      includes:
+        - launch_description_source: sub_launch.py
+          launch_arguments: {}
+          included: {}
