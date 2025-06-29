@@ -14,6 +14,7 @@
 
 import ast
 from parser.context import ParseContext
+from parser.parser.utils.ast_utils import collect_function_defs
 from parser.resolution.resolution_engine import ResolutionEngine
 
 def parse_launch_file(filepath: str) -> dict:
@@ -39,6 +40,7 @@ def parse_launch_file(filepath: str) -> dict:
             engine.resolve(node)
         
         elif isinstance(node, ast.FunctionDef) and node.name == "generate_launch_description":
+            collect_function_defs(node.body, context)
             parsed.extend(_parse_launch_function_body(node.body, context, engine))
         
     return {

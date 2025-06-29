@@ -23,10 +23,16 @@ def test_node_parsing(code, expected):
 @pytest.mark.parametrize("code,expected", load_yaml_tests("test_cases/launch_config_tests.yaml"))
 def test_launch_configuration_parsing(code, expected):
     result = parse_launch_string(code)
-    print(result)
-    print(expected)
     for key in ["nodes", "arguments", "includes", "groups", "parameters", 
                 "launch_argument_usages", "undeclared_launch_configurations"]:
+        assert result.get(key, []) == expected.get(key, [])
+
+@pytest.mark.parametrize("code,expected", load_yaml_tests("test_cases/group_action_tests.yaml"))
+def test_group_action_parsing(code, expected):
+    result = parse_launch_string(code)
+    print(result.get("groups", []))
+    print(expected.get("groups", []))
+    for key in ["nodes", "arguments", "includes", "groups", "launch_argument_usages"]:
         assert result.get(key, []) == expected.get(key, [])
 
 # @pytest.mark.parametrize("code,expected", load_yaml_tests("test_cases/node_params_edge.yaml"))
@@ -43,11 +49,6 @@ def test_launch_configuration_parsing(code, expected):
 # def test_include_launch_parsing(code, expected):
 #     result = parse_launch_string(code)
 #     assert result.get("includes") == expected.get("includes")
-
-# @pytest.mark.parametrize("code,expected", load_yaml_tests("test_cases/group_action_tests.yaml"))
-# def test_group_action_parsing(code, expected):
-#     result = parse_launch_string(code)
-#     assert result.get("groups") == expected.get("groups")
 
 # @pytest.mark.parametrize("code,expected", load_yaml_tests("test_cases/launch_argument_usage_tests.yaml"))
 # def test_launch_argument_usage_tracking(code, expected):

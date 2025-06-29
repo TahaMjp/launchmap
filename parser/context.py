@@ -14,11 +14,15 @@
 
 from parser.introspection.tracker import IntrospectionTracker
 from typing import Any
+import ast
 
 class ParseContext:
     def __init__(self):
         # Variable assignments within the launch file
         self.variables: dict[str, Any] = {}
+
+        # Function definitions by name
+        self.functions: dict[str, ast.FunctionDef] = {}
 
         # Current launch file being parsed (useful for trace/debug)
         self.current_file: str | None = None

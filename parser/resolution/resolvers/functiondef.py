@@ -13,20 +13,10 @@
 # limitations under the License.
 
 import ast
-from parser.context import ParseContext
-from parser.parser.registry import register_handler
-from parser.parser.utils.common import flatten_once
-from parser.resolution.utils import resolve_call_signature
+from parser.resolution.resolution_registry import register_resolver
 
-
-@register_handler("LaunchDescription", "launch.LaunchDescription")
-def handle_launch_description(node: ast.Call, context: ParseContext) -> dict:
-    _, kwargs = resolve_call_signature(node, context.engine)
-
-    if node.args:
-        arg = context.engine.resolve(node.args[0])
-        if isinstance(arg, list):
-            return flatten_once(arg)
-        return arg
-
-    return []
+@register_resolver(ast.FunctionDef)
+def resolve_function_def(node: ast.FunctionDef, engine):
+    # Register in context
+    engine.context.functions[node.name] = node
+    return None

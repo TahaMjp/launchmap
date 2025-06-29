@@ -15,7 +15,7 @@
 import ast
 from parser.context import ParseContext
 from parser.parser.registry import register_handler
-from parser.parser.utils import flatten_once
+from parser.parser.utils.common import flatten_once, group_entities_by_type
 from parser.resolution.utils import resolve_call_signature
 
 @register_handler("GroupAction", "launch.actions.GroupAction")
@@ -27,27 +27,31 @@ def handle_group_action(node: ast.Call, context: ParseContext) -> dict:
     """
     args, kwargs = resolve_call_signature(node, context.engine)
 
-    raw_actions = kwargs.get("actions", args[0] if args else [])
-    parsed_actions = []
+    # Resolve 'actions' argument (can be list, var, starred)
+    raw_expr = kwargs.get("actions") or (args[0] if args else [])
+    resolved_flat = flatten_once(raw_expr)
 
-    temp_ns = None
-    for raw in raw_actions:
-        resolved = raw
-        if isinstance(resolved, dict) and resolved.get("type") == "PushRosNamespace":
-            temp_ns = resolved.get("namespace")
-            context.push_namespace(temp_ns)
-            continue
+    namespace = None
+    actions = []
 
-        if isinstance(resolved, list):
-            parsed_actions.extend(flatten_once(resolved))
+    for item in resolved_flat:
+        if isinstance(item, dict) and item.get("type") == "PushRosNamespace":
+            namespace = item.get("namespace")
+            context.push_namespace(namespace)
         else:
-            parsed_actions.append(resolved)
+            actions.append(item)
     
-    if temp_ns:
+    grouped = group_entities_by_type(actions)
+
+    if namespace:
         context.pop_namespace()
 
     return {
         "type": "GroupAction",
-        "namespace": temp_ns,
-        "actions": parsed_actions
+        "namespace": namespace,
+        "actions": grouped
+    } if namespace else {
+        "type": "GroupAction",
+        "actions": grouped
     }
+        

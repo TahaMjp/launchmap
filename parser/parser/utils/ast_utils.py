@@ -14,19 +14,18 @@
 
 import ast
 from parser.context import ParseContext
-from parser.parser.registry import register_handler
-from parser.parser.utils.common import flatten_once
-from parser.resolution.utils import resolve_call_signature
 
-
-@register_handler("LaunchDescription", "launch.LaunchDescription")
-def handle_launch_description(node: ast.Call, context: ParseContext) -> dict:
-    _, kwargs = resolve_call_signature(node, context.engine)
-
-    if node.args:
-        arg = context.engine.resolve(node.args[0])
-        if isinstance(arg, list):
-            return flatten_once(arg)
-        return arg
-
-    return []
+def collect_function_defs(body: list[ast.stmt], context: ParseContext):
+    """
+    Recursively collect all FunctionDef nodes inside a body list
+    and register them into the context.
+    """
+    for stmt in body:
+        if isinstance(stmt, ast.FunctionDef):
+            context.functions[stmt.name] = stmt
+        
+        # Recursively handle compound statements
+        for attr in ("body", "orelse", "finalbody"):
+            inner = getattr(stmt, attr, None)
+            if isinstance(inner, list):
+                collect_function_defs(inner, context)

@@ -101,9 +101,9 @@ tests:
       groups:
         - namespace: "${LaunchConfiguration:robot_namespace}"
           actions:
-            - type: Node
-              package: demo
-              executable: x
+            nodes:
+              - package: demo
+                executable: x
       launch_argument_usages:
         - argument: robot_namespace
           path: groups[0].namespace

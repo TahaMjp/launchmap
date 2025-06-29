@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from parser.parser.type_mapping import TYPE_KEY_MAP
+
 def flatten_once(items):
     """
     Flatten a list one level deep.
@@ -24,3 +26,22 @@ def flatten_once(items):
         else:
             flattened.append(item)
     return flattened
+
+def group_entities_by_type(entities: list) -> dict:
+    grouped = {}
+
+    for item in entities:
+        if not isinstance(item, dict):
+            continue
+        type_key = item.get("type")
+        if not type_key:
+            continue
+
+        group_key = TYPE_KEY_MAP.get(type_key)
+        if not group_key:
+            continue
+
+        clean_item = {k: v for k, v in item.items() if k != "type"}
+        grouped.setdefault(group_key, []).append(clean_item)
+    
+    return {k: v for k, v in grouped.items() if v}
