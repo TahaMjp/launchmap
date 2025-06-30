@@ -17,7 +17,7 @@ import { renderSection } from './renderSection.js';
 
 export function renderIncludesGroup(container, includes, namespace, layoutCtx, options={}) {
     includes.forEach((include, idx) => {
-        const path = options.pathPrefix ? `${options.pathPrefix}[${idx}]` : "";
+        const path = options.pathPrefix ? `${options.pathPrefix}[${idx}]` : `includes[${idx}]`;
         const block = renderInclude(include, namespace, layoutCtx, { ...options, path });
         container.appendChild(block);
         layoutCtx.y += 100;
@@ -43,18 +43,11 @@ function renderInclude(include, namespace, layoutCtx, options) {
     // Path
     const renderOptions = { includeLeftPort: true, portIdPrefix: options.path, portRegistry: options.portRegistry };
     const path = include.launch_description_source || "<unresolved>";
-    block.appendChild(renderSection("path", "📂", "Path", `<code>${path}</code>`, renderOptions));
+    block.appendChild(renderSection("launch_description_source", "📂", "Path", path, renderOptions));
     
     // Launch arguments
     const args = include.launch_arguments || {};
-    if (Object.keys(args).length > 0) {
-        let argsHTML = "<ul>";
-        for (const [k, v] of Object.entries(args)) {
-            argsHTML += `<li><code>${k}</code>: <code>${v}</code></li>`;
-        }
-        argsHTML += "</ul>";
-        block.appendChild(renderSection("launch_arguments", "📥", "Args", argsHTML, renderOptions));
-    }
+    block.appendChild(renderSection("launch_arguments", "📥", "Args", args, renderOptions))
 
     if (options.path) {
         block.dataset.path = options.path;

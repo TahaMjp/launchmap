@@ -23,13 +23,15 @@ def generate_launch_description():
     return LaunchDescription([
         # Declare a launch argument
         DeclareLaunchArgument("namespace", default_value="robot1", description="Robot namespace"),
+        DeclareLaunchArgument("use_sim_time", default_value="true"),
 
         # Top-level Node
         Node(
             package="demo_nodes",
             executable="talker",
             name="talker_node",
-            output="screen"
+            output="screen",
+            parameters=[{"use_sim_time": LaunchConfiguration("use_sim_time")}, {"use_sim_time": LaunchConfiguration("use_sim_time")}]
         ),
 
         # Include another launch file

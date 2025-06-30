@@ -17,7 +17,7 @@ import { renderNodeGroup } from './renderNode.js';
 import { renderIncludesGroup } from './renderInclude.js';
 import { renderSection } from './renderSection.js';
 
-export function renderGroupGroup(container, groups, layoutCtx, options = {}) {
+export function renderGroupGroup(container, groups, namespace, layoutCtx, options = {}) {
     groups.forEach((group, idx) => {
         const path = options.pathPrefix ? `${options.pathPrefix}[${idx}]` : `groups[${idx}]`;
         renderGroup(group, path, container, layoutCtx, { ...options, path });
@@ -47,7 +47,7 @@ export function renderGroup(group, prefix, container, layoutCtx, options = {}) {
 
     // Namespace
     if (group.namespace) {
-        const nsSection = renderSection("namespace", "🧭", "Namespace", `<code>${group.namespace}</code>`, 
+        const nsSection = renderSection("namespace", "🧭", "Namespace", group.namespace, 
             { includeLeftPort: true, portIdPrefix: options.path, portRegistry: options.portRegistry });
         nsSection.classList.add("namespace-section");
         header.appendChild(nsSection);
@@ -74,7 +74,7 @@ export function renderGroup(group, prefix, container, layoutCtx, options = {}) {
     };
 
     const actions = group.actions;
-    
+
     renderNodeGroup(body, actions.nodes || [], ns, innerLayout, childOptions);
     renderIncludesGroup(body, actions.includes || [], ns, innerLayout, {
         ...childOptions,

@@ -17,7 +17,7 @@ import { renderSection } from './renderSection.js';
 
 export function renderNodeGroup(container, nodes, namespace, layoutCtx, options={}) {
     nodes.forEach((node, idx) => {
-        const path = options.pathPrefix ? `${options.pathPrefix}[${idx}]` : "";
+        const path = options.pathPrefix ? `${options.pathPrefix}[${idx}]` : `nodes[${idx}]`;
         const block = renderNode(node, namespace, layoutCtx, { ...options, path });
         container.appendChild(block);
         layoutCtx.y += 100;
@@ -42,36 +42,16 @@ function renderNode(node, namespace, layoutCtx, options) {
 
     // Fields
     const renderOptions = { includeLeftPort: true, portIdPrefix: options.path, portRegistry: options.portRegistry };
-    block.appendChild(renderSection("package", "📦", "Package", `<code>${node.package}</code>`, renderOptions));
-    block.appendChild(renderSection("executable", "▶️", "Executable", `<code>${node.executable}</code>`, renderOptions));
+    block.appendChild(renderSection("package", "📦", "Package", node.package, renderOptions));
+    block.appendChild(renderSection("executable", "▶️", "Executable", node.executable, renderOptions));
     block.appendChild(renderSection("output", "🖥️", "Output", node.output || "—", renderOptions));
 
     if (node.parameters?.length > 0) {
-        let paramHtml = "<ul>";
-        for (const p of node.parameters) {
-            if (typeof p === "object" && !Array.isArray(p) && p !== null) {
-                for (const [k, v] of Object.entries(p)) {
-                    paramHtml += `<li><code>${k}</code>: <code>${escapeHtml(String(v))}</code></li>`;
-                }
-            } else {
-                paramHtml += `<li><code>${escapeHtml(String(p))}</code></li>`
-            }
-        }
-        paramHtml += "</ul>";
-        block.appendChild(renderSection("parameters", "⚙️", "Params", paramHtml, renderOptions));
+        block.appendChild(renderSection("parameters", "⚙️", "Params", node.parameters, renderOptions));
     }
 
     if (node.arguments?.length > 0) {
-        const argsHtml = "<ul>" + node.arguments.map(arg =>
-            `<li><code>${arg}</code></li>`).join("") + "</ul>";
-            
-        block.appendChild(renderSection(
-            "arguments", "💬", "Args", argsHtml, {
-                includeLeftPort: true,
-                portIdPrefix: options.path,
-                portRegistry: options.portRegistry
-            }
-        ));
+        block.appendChild(renderSection("arguments", "💬", "Args", node.arguments, renderOptions));
     }
 
     if (options.path) {

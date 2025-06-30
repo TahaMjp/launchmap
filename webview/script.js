@@ -65,6 +65,7 @@ function renderAll(data) {
         }
     }
 
+    console.log(portRegistry);
     renderEdges(data, portRegistry);
     enableZoomAndPan(editor, zoomLayer, () => renderEdges(data, portRegistry));
 }

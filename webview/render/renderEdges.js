@@ -17,11 +17,13 @@ export function renderEdges(data, portRegistry) {
     svg.innerHTML = "";
 
     (data.launch_argument_usages || []).forEach(usage => {
-        const fromPortId = `argument:${usage.argument}:argument`;
-        const toPortId = `${usage.path}:${usage.field}`
+        const fromPortId = `argument:${usage.argument}.argument`;
+        const toPortId = `${usage.path}`;
 
         const fromPort = portRegistry[fromPortId];
         const toPort = portRegistry[toPortId];
+
+        console.log(fromPortId, toPortId);
 
         if (!fromPort || !toPort) return;
 

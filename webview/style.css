@@ -187,17 +187,28 @@
   box-shadow: 0 0 4px #ff9800;
 }
 
-.content {
-  flex-grow: 1;
-  font-size: 0.85em;
+.section {
+  display: flex;
+  align-items: center;
+  margin: 4px 0;
+  position: relative;
 }
 
-.section ul {
+.section.has-nested {
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.section-nested {
+  width: 100%;
+}
+
+.section-nested > ul {
   list-style: none;
   padding-left: 2px;
   margin: 4px 0;
 }
 
-.section li {
+.section-nested > li {
   margin: 2px 0;
 }
