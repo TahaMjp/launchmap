@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { makeDraggable } from '../drag.js';
-import { renderComponent } from '../renderComponent.js';
+import { makeDraggable } from '../utils/drag.js';
+import { renderComponent } from './renderComponent.js';
 import { renderSection } from './renderSection.js';
 
 export function renderGroupGroup(container, groups, namespace, layoutCtx, options = {}) {
@@ -55,9 +55,6 @@ export function renderGroup(group, prefix, container, layoutCtx, options = {}) {
 
     groupBox.dataset.path = prefix;
     groupBox.dataset.type = "group";
-    if (options.blockRegistry) {
-        options.blockRegistry[prefix] = groupBox;
-    }
 
     // Body
     const body = document.createElement("div");
@@ -81,7 +78,7 @@ export function renderGroup(group, prefix, container, layoutCtx, options = {}) {
     makeDraggable(groupBox, {
         ...options,
         onDrag: () => {
-            if (options.renderEdges && options.parsedData && options.argumentRegistry && options.blockRegistry) {
+            if (options.renderEdges && options.parsedData) {
                 options.renderEdges(options.parsedData, options.portRegistry);
             }
         }

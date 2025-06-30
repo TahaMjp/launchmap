@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { makeDraggable } from '../drag.js';
+import { makeDraggable } from '../utils/drag.js';
 import { renderSection } from './renderSection.js';
 
 export function renderNodeGroup(container, nodes, namespace, layoutCtx, options={}) {
@@ -57,26 +57,15 @@ function renderNode(node, namespace, layoutCtx, options) {
     if (options.path) {
         block.dataset.path = options.path;
         block.dataset.type = "node";
-        if (options.blockRegistry) {
-            options.blockRegistry[options.path] = block;
-        }
     }
 
     makeDraggable(block, {
         ...options,
         onDrag: () => {
-            if (options.renderEdges && options.parsedData && options.argumentRegistry && options.blockRegistry) {
+            if (options.renderEdges && options.parsedData) {
                 options.renderEdges(options.parsedData, options.portRegistry);
             }
         }
     });
     return block;
-}
-
-function escapeHtml(text) {
-    return text
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;");
 }

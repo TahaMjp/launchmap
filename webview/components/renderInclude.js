@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { makeDraggable } from '../drag.js';
+import { makeDraggable } from '../utils/drag.js';
 import { renderSection } from './renderSection.js';
 
 export function renderIncludesGroup(container, includes, namespace, layoutCtx, options={}) {
@@ -52,15 +52,12 @@ function renderInclude(include, namespace, layoutCtx, options) {
     if (options.path) {
         block.dataset.path = options.path;
         block.dataset.type = "include";
-        if (options.blockRegistry) {
-            options.blockRegistry[options.path] = block;
-        }
     }
 
     makeDraggable(block, {
         ...options,
         onDrag: () => {
-            if (options.renderEdges && options.parsedData && options.argumentRegistry && options.blockRegistry) {
+            if (options.renderEdges && options.parsedData) {
                 options.renderEdges(options.parsedData, options.portRegistry);
             }
         }

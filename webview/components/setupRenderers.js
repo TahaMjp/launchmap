@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { registerRenderer } from "../renderRegistry.js";
+import { registerRenderer } from "../core/dispatcher.js";
 import { renderArguments } from "./renderArguments.js";
 import { renderIncludesGroup } from "./renderInclude.js";
 import { renderNodeGroup } from "./renderNode.js";

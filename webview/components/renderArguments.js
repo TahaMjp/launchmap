@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { makeDraggable } from '../drag.js';
+import { makeDraggable } from '../utils/drag.js';
 import { renderSection } from './renderSection.js';
 
 export function renderArguments(container, argumentsList, layoutCtx, options) {
@@ -30,14 +30,13 @@ export function renderArguments(container, argumentsList, layoutCtx, options) {
         block.appendChild(argSection);
 
         block.dataset.argument = arg.name;
-        options.argumentRegistry[arg.name] = block;
 
         container.appendChild(block);
         makeDraggable(block, {
             stopPropagation: true,
             ...options,
             onDrag: () => {
-                if (options.renderEdges && options.parsedData && options.argumentRegistry && options.blockRegistry) {
+                if (options.renderEdges && options.parsedData) {
                     options.renderEdges(options.parsedData, options.portRegistry);
                 }
             }

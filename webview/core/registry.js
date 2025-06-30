@@ -12,12 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import './components/setupRenderers.js';
-import { renderAll } from './core/renderAll.js';
-
-window.addEventListener('message', (event) => {
-    const message = event.data;
-    if (message.type == 'launchmap-data') {
-        renderAll(message.data);
-    }
-});
+export const registrySystem = {
+    portRegistry: {},
+}

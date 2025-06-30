@@ -23,8 +23,6 @@ export function renderEdges(data, portRegistry) {
         const fromPort = portRegistry[fromPortId];
         const toPort = portRegistry[toPortId];
 
-        console.log(fromPortId, toPortId);
-
         if (!fromPort || !toPort) return;
 
         fromPort.classList.add("used-port");
