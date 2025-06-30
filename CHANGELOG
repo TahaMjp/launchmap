@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [0.0.5] - 2025-06-30
+
+### Changed
+- Major internal refactor of both the parser and visualizer to support a more modular and extensible architecture.
+- Actions are now processed using a registry dispatcher system, making it easier to add support for more launch constructs.
+
 ## [0.0.4] - 2025-06-21
 ### Fixed
 - Error because of variable resolution for launch actions passed indirectly through assignments (example, `LaunchDescription([my_node])`)
