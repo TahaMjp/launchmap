@@ -13,8 +13,7 @@
 // limitations under the License.
 
 import { makeDraggable } from '../drag.js';
-import { renderNodeGroup } from './renderNode.js';
-import { renderIncludesGroup } from './renderInclude.js';
+import { renderComponent } from '../renderComponent.js';
 import { renderSection } from './renderSection.js';
 
 export function renderGroupGroup(container, groups, namespace, layoutCtx, options = {}) {
@@ -70,25 +69,15 @@ export function renderGroup(group, prefix, container, layoutCtx, options = {}) {
         ...options,
         stopPropagation: true, 
         constrainToParent: true,
-        pathPrefix: `${prefix}.nodes`
+        pathPrefix: prefix
     };
 
-    const actions = group.actions;
-
-    renderNodeGroup(body, actions.nodes || [], ns, innerLayout, childOptions);
-    renderIncludesGroup(body, actions.includes || [], ns, innerLayout, {
-        ...childOptions,
-        pathPrefix: `${prefix}.includes`
-    });
-    (actions.groups || []).forEach((subgroup, idx) => {
-        const subPrefix = `${prefix}.groups[${idx}]`;
-        renderGroup(subgroup, subPrefix, body, innerLayout, {
-            ...childOptions,
-            path: subPrefix
-        });
-    });
-
+    const actions = group.actions || {};
+    for (const [key, value] of Object.entries(actions)) {
+        renderComponent({ type: key, value: value, namespace: ns }, body, innerLayout, childOptions);
+    }
     container.appendChild(groupBox);
+
     makeDraggable(groupBox, {
         ...options,
         onDrag: () => {
@@ -99,7 +88,7 @@ export function renderGroup(group, prefix, container, layoutCtx, options = {}) {
     });
 
     requestAnimationFrame(() => {
-        const children = groupBox.querySelectorAll(".node-block, .include-block");
+        const children = groupBox.querySelectorAll('[class$="-block"]');
         let maxRight = 0;
         let maxBottom = 0;
 
