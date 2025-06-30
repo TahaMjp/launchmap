@@ -25,7 +25,7 @@ export function renderArguments(container, argumentsList, layoutCtx, options) {
         block.style.top = `${layoutCtx.y + idx * 80}px`;
         block.style.position = "absolute";
 
-        const argSection = renderSection("argument", "🚀", arg.name, `<code>${arg.default}</code>`, 
+        const argSection = renderSection("argument", "🚀", arg.name, `<code>${arg.default_value}</code>`, 
             { includeRightPort: true, portIdPrefix: `argument:${arg.name}`, portRegistry: options.portRegistry });
         block.appendChild(argSection);
 

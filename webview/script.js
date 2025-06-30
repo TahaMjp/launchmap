@@ -12,12 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { renderArguments } from './render/renderArguments.js';
-import { renderNodeGroup } from './render/renderNode.js';
-import { renderIncludesGroup } from './render/renderInclude.js';
-import { renderGroup } from './render/renderGroup.js';
+import { renderComponent } from './renderComponent.js';
+import './render/setupRenderers.js';
 import { renderEdges } from './render/renderEdges.js';
 import { enableZoomAndPan } from './zoomPanController.js';
+import { getRegisteredRenderKeys } from './renderRegistry.js';
 
 const argumentRegistry = {};
 const blockRegistry = {};
@@ -45,22 +44,26 @@ function renderAll(data) {
     edgeLayer.classList.add("edge-layer");
     zoomLayer.appendChild(edgeLayer);
 
-    // Graph Nodes
+    // Render
     const layoutCtx = { x: 100, y: 100 };
+    const context = {
+        parsedData: data,
+        blockRegistry,
+        argumentRegistry,
+        portRegistry,
+        renderEdges
+    };
 
-    // Top Level nodes and includes
-    renderArguments(zoomLayer, data.arguments || [], layoutCtx, 
-        { argumentRegistry, blockRegistry, portRegistry, parsedData: data, renderEdges });
-    renderNodeGroup(zoomLayer, data.nodes || [], "", layoutCtx, 
-        { pathPrefix: "nodes", blockRegistry, argumentRegistry, portRegistry, parsedData: data, renderEdges});
-    renderIncludesGroup(zoomLayer, data.includes || [], "", layoutCtx, 
-        { pathPrefix: "includes", blockRegistry, argumentRegistry, portRegistry, parsedData: data, renderEdges });
+    const renderKeys = getRegisteredRenderKeys();
 
-    // Recursively render groups
-    (data.groups || []).forEach((group, idx) => {
-        renderGroup(group, `groups[${idx}]`, zoomLayer, layoutCtx, 
-            { path: `groups[${idx}]`, blockRegistry, argumentRegistry, portRegistry, parsedData: data, renderEdges });
-    });
+    for (const key of Object.keys(data)) {
+        if (renderKeys.includes(key)) {
+            const value = data[key];
+            const typeHint = Array.isArray(value) ? key : value.type || key;
+            renderComponent({ value: value, type: typeHint }, zoomLayer, layoutCtx, context);
+            layoutCtx.y += 100;
+        }
+    }
 
     renderEdges(data, portRegistry);
     enableZoomAndPan(editor, zoomLayer, () => renderEdges(data, portRegistry));

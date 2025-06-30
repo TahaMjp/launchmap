@@ -17,6 +17,16 @@ import { renderNodeGroup } from './renderNode.js';
 import { renderIncludesGroup } from './renderInclude.js';
 import { renderSection } from './renderSection.js';
 
+export function renderGroupGroup(container, groups, layoutCtx, options = {}) {
+    groups.forEach((group, idx) => {
+        const path = options.pathPrefix ? `${options.pathPrefix}[${idx}]` : `groups[${idx}]`;
+        renderGroup(group, path, container, layoutCtx, { ...options, path });
+    });
+
+    layoutCtx.x += 350;
+    layoutCtx.y = 100;
+}
+
 export function renderGroup(group, prefix, container, layoutCtx, options = {}) {
     const ns = group.namespace || prefix;
     const groupBox = document.createElement("div");
@@ -63,12 +73,14 @@ export function renderGroup(group, prefix, container, layoutCtx, options = {}) {
         pathPrefix: `${prefix}.nodes`
     };
 
-    renderNodeGroup(body, group.nodes || [], ns, innerLayout, childOptions);
-    renderIncludesGroup(body, group.includes || [], ns, innerLayout, {
+    const actions = group.actions;
+    
+    renderNodeGroup(body, actions.nodes || [], ns, innerLayout, childOptions);
+    renderIncludesGroup(body, actions.includes || [], ns, innerLayout, {
         ...childOptions,
         pathPrefix: `${prefix}.includes`
     });
-    (group.groups || []).forEach((subgroup, idx) => {
+    (actions.groups || []).forEach((subgroup, idx) => {
         const subPrefix = `${prefix}.groups[${idx}]`;
         renderGroup(subgroup, subPrefix, body, innerLayout, {
             ...childOptions,

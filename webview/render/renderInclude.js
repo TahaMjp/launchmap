@@ -42,7 +42,7 @@ function renderInclude(include, namespace, layoutCtx, options) {
 
     // Path
     const renderOptions = { includeLeftPort: true, portIdPrefix: options.path, portRegistry: options.portRegistry };
-    const path = include.path || "<unresolved>";
+    const path = include.launch_description_source || "<unresolved>";
     block.appendChild(renderSection("path", "📂", "Path", `<code>${path}</code>`, renderOptions));
     
     // Launch arguments
