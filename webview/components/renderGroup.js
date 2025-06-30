@@ -12,7 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { makeDraggable } from '../utils/drag.js';
+import { createBaseBlock } from '../utils/baseBlock.js';
+import { renderAutoResizableBody } from './renderAutoResizableBody.js';
 import { renderComponent } from './renderComponent.js';
 import { renderSection } from './renderSection.js';
 
@@ -28,11 +29,16 @@ export function renderGroupGroup(container, groups, namespace, layoutCtx, option
 
 export function renderGroup(group, prefix, container, layoutCtx, options = {}) {
     const ns = group.namespace || prefix;
-    const groupBox = document.createElement("div");
-    groupBox.className = "group-box";
-    groupBox.style.left = `${layoutCtx.x}px`;
-    groupBox.style.top = `${layoutCtx.y}px`;
-    groupBox.style.position = "absolute";
+
+    const groupBox = createBaseBlock({
+        type: "group",
+        label: ns,
+        layoutCtx,
+        options: {
+            ...options,
+            path: prefix
+        }
+    });
 
     // Header
     const header = document.createElement("div");
@@ -53,9 +59,6 @@ export function renderGroup(group, prefix, container, layoutCtx, options = {}) {
     }
     groupBox.appendChild(header);
 
-    groupBox.dataset.path = prefix;
-    groupBox.dataset.type = "group";
-
     // Body
     const body = document.createElement("div");
     body.className = "group-body";
@@ -75,33 +78,7 @@ export function renderGroup(group, prefix, container, layoutCtx, options = {}) {
     }
     container.appendChild(groupBox);
 
-    makeDraggable(groupBox, {
-        ...options,
-        onDrag: () => {
-            if (options.renderEdges && options.parsedData) {
-                options.renderEdges(options.parsedData, options.portRegistry);
-            }
-        }
-    });
-
-    requestAnimationFrame(() => {
-        const children = groupBox.querySelectorAll('[class$="-block"]');
-        let maxRight = 0;
-        let maxBottom = 0;
-
-        children.forEach(child => {
-            const rect = child.getBoundingClientRect();
-            const parentRect = groupBox.getBoundingClientRect();
-            const right = rect.right - parentRect.left;
-            const bottom = rect.bottom - parentRect.top;
-
-            if (right > maxRight) maxRight = right;
-            if (bottom > maxBottom) maxBottom = bottom;
-        });
-
-        groupBox.style.width = `${maxRight + 20}px`;
-        groupBox.style.height = `${maxBottom + 20}px`;
-    });
+    renderAutoResizableBody(groupBox, "block");
 
     layoutCtx.x += 350;
 }

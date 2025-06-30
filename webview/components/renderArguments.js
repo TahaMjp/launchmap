@@ -12,36 +12,40 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { createBaseBlock } from '../utils/baseBlock.js';
 import { makeDraggable } from '../utils/drag.js';
 import { renderSection } from './renderSection.js';
 
 export function renderArguments(container, argumentsList, layoutCtx, options) {
-    if (!argumentsList || argumentsList.length == 0) return;
+    if (!argumentsList || argumentsList.length === 0) return;
 
     argumentsList.forEach((arg, idx) => {
-        const block = document.createElement("div");
-        block.className = "argument-block";
-        block.style.left = `${layoutCtx.x}px`;
-        block.style.top = `${layoutCtx.y + idx * 80}px`;
-        block.style.position = "absolute";
-
-        const argSection = renderSection("argument", "🚀", arg.name, arg.default_value, 
-            { includeRightPort: true, portIdPrefix: `argument:${arg.name}`, portRegistry: options.portRegistry });
-        block.appendChild(argSection);
-
-        block.dataset.argument = arg.name;
-
-        container.appendChild(block);
-        makeDraggable(block, {
-            stopPropagation: true,
+        const path = `${options.pathPrefix || "arguments"}[${idx}]`;
+        const block = renderArgument(arg, layoutCtx, {
             ...options,
-            onDrag: () => {
-                if (options.renderEdges && options.parsedData) {
-                    options.renderEdges(options.parsedData, options.portRegistry);
-                }
-            }
+            path
         });
+        container.appendChild(block);
+        layoutCtx.y += 80;
     });
 
     layoutCtx.x += 250;
+    layoutCtx.y = 100;
+}
+
+export function renderArgument(arg, layoutCtx, options) {
+    const block = createBaseBlock({
+        type: "argument",
+        label: arg.name,
+        layoutCtx,
+        options
+    });
+
+    const argSection = renderSection("argument", "🚀", arg.name, arg.default_value, 
+        { includeRightPort: true, portIdPrefix: `argument:${arg.name}`, portRegistry: options.portRegistry });
+    block.appendChild(argSection);
+
+    block.dataset.argument = arg.name;
+
+    return block;
 }

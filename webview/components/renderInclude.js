@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { makeDraggable } from '../utils/drag.js';
+import { createBaseBlock } from '../utils/baseBlock.js';
 import { renderSection } from './renderSection.js';
 
 export function renderIncludesGroup(container, includes, namespace, layoutCtx, options={}) {
@@ -28,17 +28,11 @@ export function renderIncludesGroup(container, includes, namespace, layoutCtx, o
 }
 
 function renderInclude(include, namespace, layoutCtx, options) {
-    const block = document.createElement("div");
-    block.className = "include-block";
-    block.style.left = `${layoutCtx.x}px`;
-    block.style.top = `${layoutCtx.y}px`;
-    block.style.position = "absolute";
-
-    // Title
-    const title = document.createElement("div");
-    title.className = "node-title";
-    title.innerText = `${namespace}/Include`;
-    block.appendChild(title);
+    const block = createBaseBlock({
+        type: 'include',
+        layoutCtx,
+        options
+    });
 
     // Path
     const renderOptions = { includeLeftPort: true, portIdPrefix: options.path, portRegistry: options.portRegistry };
@@ -49,18 +43,5 @@ function renderInclude(include, namespace, layoutCtx, options) {
     const args = include.launch_arguments || {};
     block.appendChild(renderSection("launch_arguments", "📥", "Args", args, renderOptions))
 
-    if (options.path) {
-        block.dataset.path = options.path;
-        block.dataset.type = "include";
-    }
-
-    makeDraggable(block, {
-        ...options,
-        onDrag: () => {
-            if (options.renderEdges && options.parsedData) {
-                options.renderEdges(options.parsedData, options.portRegistry);
-            }
-        }
-    });
     return block;
 }

@@ -22,6 +22,7 @@ export function renderSection(fieldName, icon, label, contentValue, {
     wrapper.className = "section";
     wrapper.dataset.field = fieldName;
 
+    // Port ID
     const fullPath = portIdPrefix
         ? (fieldName ? `${portIdPrefix}.${fieldName}` : portIdPrefix)
         : fieldName;
@@ -29,8 +30,10 @@ export function renderSection(fieldName, icon, label, contentValue, {
     const content = document.createElement("div");
     content.className = "content";
 
+    // Try primitive
     if (typeof contentValue !== "object" || contentValue === null) {
         content.innerHTML = `${icon} ${label}: <code>${escapeHtml(String(contentValue))}</code>`;
+        // Left Port
         if (includeLeftPort) {
             const leftPort = document.createElement("div");
             leftPort.className = "port left";
@@ -41,6 +44,7 @@ export function renderSection(fieldName, icon, label, contentValue, {
 
         wrapper.appendChild(content);
 
+        // Right Port
         if (includeRightPort) {
             const rightPort = document.createElement("div");
             rightPort.className = "port right";
@@ -52,6 +56,7 @@ export function renderSection(fieldName, icon, label, contentValue, {
         return wrapper;
     }
 
+    // Complex data type
     content.innerHTML = `${icon} ${label}`;
     wrapper.classList.add("has-nested");
     wrapper.appendChild(content);

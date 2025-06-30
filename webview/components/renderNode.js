@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { makeDraggable } from '../utils/drag.js';
 import { renderSection } from './renderSection.js';
+import { createBaseBlock } from '../utils/baseBlock.js';
 
 export function renderNodeGroup(container, nodes, namespace, layoutCtx, options={}) {
     nodes.forEach((node, idx) => {
@@ -28,19 +28,19 @@ export function renderNodeGroup(container, nodes, namespace, layoutCtx, options=
 }
 
 function renderNode(node, namespace, layoutCtx, options) {
-    const block = document.createElement("div");
-    block.className = "node-block";
-    block.style.left = `${layoutCtx.x}px`;
-    block.style.top = `${layoutCtx.y}px`;
-    block.style.position = "absolute";
+    const block = createBaseBlock({
+        type: 'node',
+        layoutCtx,
+        options
+    })
 
-    // Title bar
+    // Node name
     const title = document.createElement("div");
     title.className = "node-title";
     title.innerText = `${namespace}/${node.name || node.executable}`;
     block.appendChild(title);
 
-    // Fields
+    // Sections
     const renderOptions = { includeLeftPort: true, portIdPrefix: options.path, portRegistry: options.portRegistry };
     block.appendChild(renderSection("package", "📦", "Package", node.package, renderOptions));
     block.appendChild(renderSection("executable", "▶️", "Executable", node.executable, renderOptions));
@@ -54,18 +54,5 @@ function renderNode(node, namespace, layoutCtx, options) {
         block.appendChild(renderSection("arguments", "💬", "Args", node.arguments, renderOptions));
     }
 
-    if (options.path) {
-        block.dataset.path = options.path;
-        block.dataset.type = "node";
-    }
-
-    makeDraggable(block, {
-        ...options,
-        onDrag: () => {
-            if (options.renderEdges && options.parsedData) {
-                options.renderEdges(options.parsedData, options.portRegistry);
-            }
-        }
-    });
     return block;
 }

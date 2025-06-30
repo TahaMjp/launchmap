@@ -1,5 +1,6 @@
 @import './styles/base.css';
 @import './styles/edges.css';
+@import './styles/components/common.css';
 @import './styles/components/arguments.css';
 @import './styles/components/groups.css';
 @import './styles/components/includes.css';

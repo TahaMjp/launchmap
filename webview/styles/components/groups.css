@@ -1,15 +1,17 @@
-.group-box {
+.group-block {
   position: absolute;
+  padding: 10px;
   border: 2px dashed #4caf50;
   border-radius: 10px;
+  background-color: rgba(60, 80, 60, 0.2);
   box-shadow: 0 0 10px #111;
   overflow: visible;
   z-index: 1;
 }
 
 .group-header {
-  background-color: #1f3b1f;
-  padding: 6px 10px;
+  top: 5px;
+  bottom: 30px;
   border-bottom: 1px solid #4caf50;
   border-top-left-radius: 10px;
   border-top-right-radius: 10px;
@@ -17,27 +19,21 @@
   position: relative;
 }
 
-.group-body {
-  background-color: rgba(60, 80, 60, 0.2);
-  padding: 10px;
-  border-bottom-left-radius: 10px;
-  border-bottom-right-radius: 10px;
-  position: relative;
-  z-index: 2;
-}
-
 .namespace-section {
   position: absolute;
-  top: 10px;
-  left: 10px;
+  left: 2px;
   right: 10px;
   z-index: 2;
   pointer-events: none;
 }
 
 .group-body {
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
+  position: relative;
+  z-index: 2;
   position: absolute;
-  top: 70px;
+  top: 100px;
   left: 0;
   right: 0;
   bottom: 0;
@@ -50,7 +46,7 @@
   margin-bottom: 10px;
 }
 
-.group-box .node-block,
-.group-box .include-block {
+.group-block .node-block,
+.group-block .include-block {
   position: absolute;
 }
