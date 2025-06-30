@@ -1,0 +1,192 @@
+tests:
+  - name: declared_argument_basic
+    description: Declare an argument only
+    input: |
+      from launch import LaunchDescription
+      from launch.actions import DeclareLaunchArgument
+
+      def generate_launch_description():
+          return LaunchDescription([
+              DeclareLaunchArgument("robot_name", default_value="turtle", description="The robot's name")
+          ])
+    expected:
+      arguments:
+        - name: robot_name
+          default_value: turtle
+          description: The robot's name
+      launch_argument_usage: []
+      undeclared_launch_configurations: []
+
+  - name: node_parameter_usage
+    description: Use LaunchConfiguration in Node parameter
+    input: |
+      from launch import LaunchDescription
+      from launch.actions import DeclareLaunchArgument
+      from launch.substitutions import LaunchConfiguration
+      from launch_ros.actions import Node
+
+      def generate_launch_description():
+          return LaunchDescription([
+              DeclareLaunchArgument("use_sim_time", default_value="true"),
+              Node(
+                  package="demo",
+                  executable="run",
+                  parameters=[{"use_sim_time": LaunchConfiguration("use_sim_time")}]
+              )
+          ])
+    expected:
+      arguments:
+        - name: use_sim_time
+          default_value: true
+      nodes:
+        - package: demo
+          executable: run
+          parameters:
+            - use_sim_time: "${LaunchConfiguration:use_sim_time}"
+      launch_argument_usages:
+        - argument: use_sim_time
+          path: nodes[0].parameters[0].use_sim_time
+      undeclared_launch_configurations: []
+
+  - name: include_with_launch_arguments
+    description: Use LaunchConfiguration in IncludeLaunchDescription arguments
+    input: |
+      from launch import LaunchDescription
+      from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription
+      from launch.launch_description_sources import PythonLaunchDescriptionSource
+      from launch.substitutions import LaunchConfiguration
+
+      def generate_launch_description():
+          return LaunchDescription([
+              DeclareLaunchArgument("map_file", default_value="maps/map.yaml"),
+              IncludeLaunchDescription(
+                  PythonLaunchDescriptionSource("sub_launch.py"),
+                  launch_arguments = {'map': LaunchConfiguration("map_file")}.items()
+              )
+          ])
+    expected:
+      arguments:
+        - name: map_file
+          default_value: maps/map.yaml
+      includes:
+        - launch_description_source: sub_launch.py
+          launch_arguments:
+            map: "${LaunchConfiguration:map_file}"
+          included: {}
+      launch_argument_usages:
+        - argument: map_file
+          path: includes[0].launch_arguments.map
+      undeclared_launch_configurations: []
+
+  - name: push_ros_namespace_from_config
+    description: LaunchConfiguration used in PushRosNamespace inside GroupAction
+    input: |
+      from launch import LaunchDescription
+      from launch.actions import DeclareLaunchArgument, GroupAction, PushRosNamespace
+      from launch.substitutions import LaunchConfiguration
+      from launch_ros.actions import Node
+
+      def generate_launch_description():
+          return LaunchDescription([
+              DeclareLaunchArgument("robot_namespace", default_value="robot1"),
+              GroupAction([
+                  PushRosNamespace(LaunchConfiguration("robot_namespace")),
+                  Node(package='demo', executable='x')
+              ])
+          ])
+    expected:
+      arguments:
+        - name: robot_namespace
+          default_value: robot1
+      groups:
+        - namespace: "${LaunchConfiguration:robot_namespace}"
+          actions:
+            nodes:
+              - package: demo
+                executable: x
+      launch_argument_usages:
+        - argument: robot_namespace
+          path: groups[0].namespace
+      undeclared_launch_configurations: []
+  
+  - name: set_parameter_with_config
+    description: Use LaunchConfiguration in SetParameter value
+    input: |
+      from launch import LaunchDescription
+      from launch.actions import DeclareLaunchArgument, SetParameter
+      from launch.substitutions import LaunchConfiguration
+
+      def generate_launch_description():
+          return LaunchDescription([
+              DeclareLaunchArgument("mode", default_value="auto"),
+              SetParameter(name="mode", value=LaunchConfiguration("mode"))
+          ])
+    expected:
+      arguments:
+        - name: mode
+          default_value: auto
+      parameters:
+        - name: mode
+          value: "${LaunchConfiguration:mode}"
+      launch_argument_usages:
+        - argument: mode
+          path: parameters[0].value
+      undeclared_launch_configurations: []
+
+  - name: condition_with_config
+    description: Use LaunchConfiguration inside an IfCondition
+    input: |
+      from launch import LaunchDescription
+      from launch.actions import DeclareLaunchArgument, Node
+      from launch.conditions import IfCondition
+      from launch.substitutions import LaunchConfiguration
+
+      def generate_launch_description():
+          return LaunchDescription([
+              DeclareLaunchArgument("enable", default_value="true"),
+              Node(
+                  package="demo",
+                  executable="cond_node",
+                  condition=IfCondition(LaunchConfiguration("enable"))
+              )
+          ])
+    expected:
+      arguments:
+        - name: enable
+          default_value: true
+      nodes:
+        - package: demo
+          executable: cond_node
+          condition: "${IfCondition:${LaunchConfiguration:enable}}"
+      launch_argument_usages:
+        - argument: enable
+          path: nodes[0].condition.expression
+      undeclared_launch_configurations: []
+    
+  - name: undeclared_config_error
+    description: LaunchConfiguration used without declaration
+    input: |
+      from launch import LaunchDescription
+      from launch.substitutions import LaunchConfiguration
+      from launch_ros.actions import Node
+
+      def generate_launch_description():
+          return LaunchDescription([
+              Node(
+                  package="demo",
+                  executable="missing",
+                  parameters=[{"param": LaunchConfiguration("not_declared")}]
+              )
+          ])
+    expected:
+      arguments: []
+      nodes:
+        - package: demo
+          executable: missing
+          parameters:
+            - param: "${LaunchConfiguration:not_declared}"
+      launch_argument_usages:
+        - argument: not_declared
+          path: nodes[0].parameters[0].param
+      undeclared_launch_configurations:
+        - not_declared

@@ -13,35 +13,49 @@
 # limitations under the License.
 
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument
-from launch.substitutions import LaunchConfiguration, TextSubstitution
-
+from launch.actions import DeclareLaunchArgument, GroupAction, IncludeLaunchDescription, PushRosNamespace
+from launch.substitutions import LaunchConfiguration, PathJoinSubstitution
+from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch_ros.actions import Node
-
+from launch.substitutions import FindPackageShare
 
 def generate_launch_description():
-   background_r_launch_arg = DeclareLaunchArgument(
-      'background_r', default_value=TextSubstitution(text='0')
-   )
-   background_g_launch_arg = DeclareLaunchArgument(
-      'background_g', default_value=TextSubstitution(text='84')
-   )
-   background_b_launch_arg = DeclareLaunchArgument(
-      'background_b', default_value=TextSubstitution(text='122')
-   )
+    return LaunchDescription([
+        # Declare a launch argument
+        DeclareLaunchArgument("namespace", default_value="robot1", description="Robot namespace"),
+        DeclareLaunchArgument("use_sim_time", default_value="true"),
 
-   nodes = [background_r_launch_arg, background_g_launch_arg, background_b_launch_arg]
+        # Top-level Node
+        Node(
+            package="demo_nodes",
+            executable="talker",
+            name="talker_node",
+            output="screen",
+            parameters=[{"use_sim_time": LaunchConfiguration("use_sim_time")}, {"use_sim_time": LaunchConfiguration("use_sim_time")}]
+        ),
 
-   return LaunchDescription([
-      *nodes,
-      Node(
-         package='turtlesim',
-         executable='turtlesim_node',
-         name='sim',
-         parameters=[{
-            'background_r': LaunchConfiguration('background_r'),
-            'background_g': LaunchConfiguration('background_g'),
-            'background_b': LaunchConfiguration('background_b'),
-         }]
-      ),
-   ])
+        # Include another launch file
+        IncludeLaunchDescription(
+            PythonLaunchDescriptionSource(
+                PathJoinSubstitution([
+                    FindPackageShare("my_nav_package"),
+                    "launch",
+                    "navigation.launch.py"
+                ])
+            ),
+            launch_arguments={
+                "use_sim_time": LaunchConfiguration("use_sim_time")
+            }.items()
+        ),
+
+        # Group of nodes under a namespace
+        GroupAction([
+            PushRosNamespace(LaunchConfiguration("namespace")),
+            Node(
+                package="demo_nodes",
+                executable="listener",
+                name="listener_node",
+                output="screen"
+            )
+        ])
+    ])

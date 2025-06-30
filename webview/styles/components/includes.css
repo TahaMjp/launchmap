@@ -1,0 +1,13 @@
+.include-block {
+  display: inline-block;
+  border: 2px dashed #999;
+  border-radius: 8px;
+  background-color: #2a2a2a;
+  padding: 10px;
+  box-shadow: 2px 2px 4px #000;
+  color: #ffc;
+  width: fit-content;
+  max-width: none;
+  white-space: nowrap;
+  overflow: visible;
+}

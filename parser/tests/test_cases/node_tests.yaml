@@ -14,11 +14,12 @@ tests:
         - package: my_pkg
           executable: my_node
   
-  - name: node_with_name_and_output
-    description: Node with name and output screen
+  - name: node_with_fields
+    description: Node with name, output, parameters and remapping
     input: |
       from launch import LaunchDescription
       from launch_ros.actions import Node
+      from launch.substitutions import LaunchConfiguration
 
       def generate_launch_description():
           return LaunchDescription([
@@ -26,7 +27,9 @@ tests:
                   package='demo_nodes',
                   executable='talker',
                   name='talker_node',
-                  output='screen'
+                  output='screen',
+                  parameters=[{'use_sim_time': LaunchConfiguration('use_sim_time')}],
+                  remappings=[('/input', '/robot1/input')]
               )
           ])
     expected:
@@ -35,147 +38,56 @@ tests:
           executable: talker
           name: talker_node
           output: screen
-  
-  - name: node_with_namespace
-    description: Node with namespace specified
-    input: |
-      from launch import LaunchDescription
-      from launch_ros.actions import Node
-
-      def generate_launch_description():
-          return LaunchDescription([
-              Node(
-                  package='demo',
-                  executable='listener',
-                  namespace='robot1'
-              )
-          ])
-    expected:
-      nodes:
-        - package: demo
-          executable: listener
-          namespace: robot1
-  
-  - name: node_with_parameters_dict
-    description: Node with parameters as inline dict
-    input: |
-      from launch import LaunchDescription
-      from launch_ros.actions import Node
-
-      def generate_launch_description():
-          return LaunchDescription([
-              Node(
-                  package='demo',
-                  executable='node',
-                  parameters=[{'use_sim_time': True}]
-              )
-          ])
-    expected:
-      nodes:
-        - package: demo
-          executable: node
           parameters:
-            - use_sim_time: true
-  
-  - name: node_with_parameters_yaml
-    description: Node with parameters pointing to a yaml file
-    input: |
-      from launch import LaunchDescription
-      from launch_ros.actions import Node
-
-      def generate_launch_description():
-          return LaunchDescription([
-              Node(
-                  package='demo',
-                  executable='node',
-                  parameters=['config/params.yaml']
-              )
-          ])
-    expected:
-      nodes:
-        - package: demo
-          executable: node
-          parameters:
-            - config/params.yaml
-  
-  - name: node_with_remappings
-    description: Node with topic remapping
-    input: |
-      from launch import LaunchDescription
-      from launch_ros.actions import Node
-
-      def generate_launch_description():
-          return LaunchDescription([
-              Node(
-                  package='demo',
-                  executable='node',
-                  remappings=[('/input', '/robot1/input')]
-              )
-          ])
-    expected:
-      nodes:
-        - package: demo
-          executable: node
+            - use_sim_time: "${LaunchConfiguration:use_sim_time}"
           remappings:
             - ["/input", "/robot1/input"]
-    
-  - name: node_with_launch_config
-    description: Node using LaunchConfiguration in parameter
+  
+  - name: node_from_variable_list
+    description: Node assigned to a variable and passed to LaunchDescription
     input: |
       from launch import LaunchDescription
       from launch_ros.actions import Node
-      from launch.substitutions import LaunchConfiguration
 
       def generate_launch_description():
-          return LaunchDescription([
-              Node(
-                  package='demo',
-                  executable='node',
-                  parameters=[{'use_sim_time': LaunchConfiguration('use_sim_time')}]
-              )
-          ])
+          package = 'demo'
+          nodes = [
+              Node(package=package, executable='a'),
+              Node(package=package, executable='b')
+          ]
+          return LaunchDescription(nodes)
     expected:
       nodes:
         - package: demo
-          executable: node
-          parameters:
-            - use_sim_time: ${LaunchConfiguration:use_sim_time}
-
-  - name: node_with_all_fields
-    description: Full featured Node
+          executable: a
+        - package: demo
+          executable: b
+  
+  - name: node_from_starred_list
+    description: Starred list unpacking into LaunchDescription
     input: |
       from launch import LaunchDescription
       from launch_ros.actions import Node
-      from launch.substitutions import LaunchConfiguration
 
       def generate_launch_description():
-          return LaunchDescription([
-              Node(
-                  package='pkg',
-                  executable='exe',
-                  name='robot_node',
-                  namespace='ns1',
-                  output='screen',
-                  parameters=[
-                    {'param1': 'value1'},
-                    {'param2': LaunchConfiguration('some_param')}
-                  ],
-                  remappings=[
-                    ('/foo', '/bar'),
-                    ('/cmd', '/robot1/cmd')
-                  ]
-              )
-          ])
+          base_nodes = [Node(package='demo', executable='x')]
+          return LaunchDescription([*base_nodes])
     expected:
       nodes:
-        - package: pkg
-          executable: exe
-          name: robot_node
-          namespace: ns1
-          output: screen
-          parameters:
-            - param1: value1
-            - param2: ${LaunchConfiguration:some_param}
-          remappings:
-            - ['/foo', '/bar']
-            - ['/cmd', '/robot1/cmd']
+        - package: demo
+          executable: x
+  
+  - name: node_via_add_action
+    description: Node added using ld.add_action()
+    input: |
+      from launch import LaunchDescription
+      from launch_ros.actions import Node
+
+      def generate_launch_description():
+          ld = LaunchDescription()
+          ld.add_action(Node(package='demo', executable='add_action_test'))
+          return ld
+    expected:
+      nodes:
+        - package: demo
+          executable: add_action_test

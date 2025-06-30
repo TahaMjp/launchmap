@@ -14,17 +14,20 @@
 
 import sys
 import json
-from parser.parser import parse_launch_string
+from parser.entrypoint.user_interface import parse_and_format_launch_file
 
-
-if __name__ == "__main__":
-    if len(sys.argv) < 2:
-        print("Usage: python parse.py <launch_file.py>", file=sys.stderr)
+def main():
+    if len(sys.argv) != 2:
+        print("Usage: python3 parse.py <launch_file.py>")
         sys.exit(1)
     
     filepath = sys.argv[1]
-    with open(filepath, "r") as f:
-        code = f.read()
-    
-    result = parse_launch_string(code)
-    print(json.dumps(result))
+    try:
+        result = parse_and_format_launch_file(filepath)
+        print(json.dumps(result, indent=2))
+    except Exception as e:
+        print(f"Error: {e}")
+        sys.exit(1)
+
+if __name__ == "__main__":
+    main()
