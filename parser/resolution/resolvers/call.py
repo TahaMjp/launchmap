@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import warnings
 from parser.resolution.resolution_registry import register_resolver
 from parser.parser.dispatcher import dispatch_call
 import ast
@@ -26,7 +27,8 @@ def resolve_call(node: ast.Call, engine):
 
         # Check if it is a launch_ros construct (heuristic: capitalized name)
         if func_name and func_name[0].isupper():
-            raise NotImplementedError(f"No handler registered for launch construct: '{func_name}'")
+            warnings.warn(f"No handler registered for launch construct: '{func_name}'")
+            return None
 
         # Otherwise Fallback: Python function or method call (e.g. .items())
         func = engine.resolve(node.func)

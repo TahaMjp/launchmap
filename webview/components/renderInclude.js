@@ -17,7 +17,7 @@ import { renderSection } from './renderSection.js';
 
 export function renderIncludesGroup(container, includes, namespace, layoutCtx, options={}) {
     includes.forEach((include, idx) => {
-        const path = options.pathPrefix ? `${options.pathPrefix}[${idx}]` : `includes[${idx}]`;
+        const path = options.pathPrefix ? `${options.pathPrefix}.includes[${idx}]` : `includes[${idx}]`;
         const block = renderInclude(include, namespace, layoutCtx, { ...options, path });
         container.appendChild(block);
         layoutCtx.y += 100;

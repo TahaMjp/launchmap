@@ -13,6 +13,7 @@
 # limitations under the License.
 
 import ast
+import warnings
 
 def resolve_python_expression(left, op, right):
     if isinstance(op, ast.Add):
@@ -80,8 +81,8 @@ def try_all_resolvers(node: ast.AST, engine) -> object:
             return result
 
     if not resolvers:
-        raise NotImplementedError(
-            f"No resolver registered for {type(node).__name__}"
-        )
+        source = getattr(node, 'lineno', '?')
+        node_type = type(node).__name__
+        warnings.warn(f"Unhandled AST node ({node_type}) at line {source}: {ast.dump(node)}")
     
     return None

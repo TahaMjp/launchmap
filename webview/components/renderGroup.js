@@ -69,7 +69,7 @@ export function renderGroup(group, prefix, container, layoutCtx, options = {}) {
         ...options,
         stopPropagation: true, 
         constrainToParent: true,
-        pathPrefix: prefix
+        pathPrefix: `${prefix}.actions`
     };
 
     const actions = group.actions || {};

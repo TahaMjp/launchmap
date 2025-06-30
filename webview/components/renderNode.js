@@ -17,7 +17,7 @@ import { createBaseBlock } from '../utils/baseBlock.js';
 
 export function renderNodeGroup(container, nodes, namespace, layoutCtx, options={}) {
     nodes.forEach((node, idx) => {
-        const path = options.pathPrefix ? `${options.pathPrefix}[${idx}]` : `nodes[${idx}]`;
+        const path = options.pathPrefix ? `${options.pathPrefix}.nodes[${idx}]` : `nodes[${idx}]`;
         const block = renderNode(node, namespace, layoutCtx, { ...options, path });
         container.appendChild(block);
         layoutCtx.y += 100;
