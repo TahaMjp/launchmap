@@ -13,16 +13,13 @@
 # limitations under the License.
 
 import ast
-from parser.context import ParseContext
-from parser.resolution.loader import register_builtin_resolvers
-from parser.resolution.utils import try_all_resolvers
+from parser.resolution.resolution_registry import register_resolver
 
-class ResolutionEngine:
-    def __init__(self, context: ParseContext):
-        register_builtin_resolvers()
-        self.context = context
-        self.context.engine = self
-
-    def resolve(self, node: ast.AST):
-        return try_all_resolvers(node, self)
+@register_resolver(ast.Call, priority=10)
+def resolve_os_path_join(node: ast.Call, engine):
+    func_name = engine.context.get_func_name(node.func)
+    if func_name != "os.path.join":
+        return None
     
+    args = [engine.resolve(arg) for arg in node.args]
+    return f"${{os.path.join:{args}}}"

@@ -13,16 +13,16 @@
 # limitations under the License.
 
 import ast
-from parser.context import ParseContext
-from parser.resolution.loader import register_builtin_resolvers
-from parser.resolution.utils import try_all_resolvers
+from parser.resolution.resolution_registry import register_resolver
 
-class ResolutionEngine:
-    def __init__(self, context: ParseContext):
-        register_builtin_resolvers()
-        self.context = context
-        self.context.engine = self
-
-    def resolve(self, node: ast.AST):
-        return try_all_resolvers(node, self)
+@register_resolver(ast.Call, priority=10)
+def resolve_get_package_share_directory(node: ast.Call, engine):
+    func_name = engine.context.get_func_name(node.func)
+    if func_name != "get_package_share_directory":
+        return None
     
+    if len(node.args) != 1:
+        raise ValueError("get_package_share_directory expects 1 argument")
+    
+    arg = engine.resolve(node.args[0])
+    return f"${{get_package_share_directory:{arg}}}"

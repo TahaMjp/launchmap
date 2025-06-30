@@ -16,7 +16,7 @@ from parser.resolution.resolution_registry import register_resolver
 from parser.parser.dispatcher import dispatch_call
 import ast
 
-@register_resolver(ast.Call)
+@register_resolver(ast.Call, priority=0)
 def resolve_call(node: ast.Call, engine):
     try:
         # Try launching launch_ros contruct

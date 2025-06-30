@@ -64,3 +64,24 @@ def resolve_call_signature(node: ast.Call, engine):
     args = [engine.resolve(arg) for arg in node.args]
     kwargs = {kw.arg: engine.resolve(kw.value) for kw in node.keywords}
     return args, kwargs
+
+def try_all_resolvers(node: ast.AST, engine) -> object:
+    """
+    Attempts to resolve the given AST node using all registered resolvers
+    for its type. Returns the first non-None result. Raises error if
+    the node is unrecognized and no resolver handles it.
+    """
+    from parser.resolution.resolution_registry import get_resolvers
+
+    resolvers = get_resolvers(type(node))
+    for resolver in resolvers:
+        result = resolver(node, engine)
+        if result is not None:
+            return result
+
+    if not resolvers:
+        raise NotImplementedError(
+            f"No resolver registered for {type(node).__name__}"
+        )
+    
+    return None

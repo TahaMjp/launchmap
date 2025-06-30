@@ -12,17 +12,26 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from typing import Callable, Dict, Optional, Any
+from typing import Callable, Dict, List, Tuple, Type
 from parser.resolution.resolution_engine import ResolutionEngine
 import ast
 
-_RESOLVERS: Dict[type, Callable[[ast.AST, 'ResolutionEngine'], Any]] = {}
+# (priority, resolver_function)
+_RESOLVERS: Dict[Type[ast.AST], List[Tuple[int, Callable]]] = {}
 
-def register_resolver(node_type: type):
-    def decorator(func: Callable[[ast.AST, 'ResolutionEngine'], Any]):
-        _RESOLVERS[node_type] = func
+def register_resolver(node_type: Type[ast.AST], *, priority: int = 0):
+    """
+    Register a resolver for a given AST node type with an optional priority.
+    Higher priority resolvers are tried first.
+    """
+    def decorator(func: Callable[[ast.AST, 'ResolutionEngine'], any]):
+        _RESOLVERS.setdefault(node_type, []).append((priority, func))
+        _RESOLVERS[node_type].sort(key=lambda pair: -pair[0])
         return func
     return decorator
 
-def get_resolver(node_type: type) -> Optional[Callable[[ast.AST, 'ResolutionEngine'], Any]]:
-    return _RESOLVERS.get(node_type)
+def get_resolvers(node_type: Type[ast.AST]) -> List[Callable]:
+    """
+    Return resolvers sorted by priority (high to low)
+    """
+    return [f for _, f in _RESOLVERS.get(node_type, [])]
