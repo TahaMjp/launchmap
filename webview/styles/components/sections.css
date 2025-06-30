@@ -1,0 +1,32 @@
+.section {
+  display: flex;
+  align-items: center;
+  margin: 4px 0;
+  position: relative;
+}
+
+.section {
+  display: flex;
+  align-items: center;
+  margin: 4px 0;
+  position: relative;
+}
+
+.section.has-nested {
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.section-nested {
+  width: 100%;
+}
+
+.section-nested > ul {
+  list-style: none;
+  padding-left: 2px;
+  margin: 4px 0;
+}
+
+.section-nested > li {
+  margin: 2px 0;
+}

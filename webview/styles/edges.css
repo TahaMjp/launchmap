@@ -1,0 +1,39 @@
+.port {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #333;
+  flex-shrink: 0;
+}
+
+.port.left {
+  margin-right: 6px;
+}
+
+.port.right {
+  margin-left: auto;
+  margin-right: 6px;
+}
+
+.used-port {
+  background-color: #ff9800;
+  box-shadow: 0 0 4px #ff9800;
+}
+
+#edge-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  min-width: 5000px;
+  min-height: 5000px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.edge-line {
+  fill: none;
+  stroke-width: 2;
+  stroke-opacity: 0.9;
+  filter: none;
+  stroke-linecap: round;
+}
