@@ -1,0 +1,121 @@
+tests:
+  - name: opaque_function_tracks_variables
+    description: Captures variables from LaunchConfiguration().perform(context)
+    input: |
+      from launch import LaunchDescription
+      from launch.actions import DeclareLaunchArgument, OpaqueFunction
+      from launch.substitutions import LaunchConfiguration
+      from launch_ros.actions import Node
+
+      def launch_setup(context, *args, **kwargs):
+          name = LaunchConfiguration("robot_name").perform(context)
+          return [Node(package='demo', executable='talker', name=name)]
+
+      def generate_launch_description():
+          return LaunchDescription([
+              DeclareLaunchArgument("robot_name", default_value="robot_1"),
+              OpaqueFunction(function=launch_setup)
+          ])
+    expected:
+      arguments:
+        - name: robot_name
+          default_value: robot_1
+      opaque_functions:
+        - name: launch_setup
+          variables:
+            - name: name
+              argument: ${LaunchConfiguration:robot_name}
+          returns:
+            nodes:
+              - package: demo
+                executable: talker
+                name: ${Variable:name}
+      launch_argument_usages:
+        - argument: robot_name
+          path: opaque_functions[0].variables[0]
+      undeclared_launch_configurations: []
+
+  - name: opaque_function_variable_with_transformation
+    description: Tracks transformed variable from LaunchConfiguration
+    input: |
+      from launch import LaunchDescription
+      from launch.actions import DeclareLaunchArgument, OpaqueFunction
+      from launch.substitutions import LaunchConfiguration
+      from launch_ros.actions import Node
+
+      def launch_setup(context, *args, **kwargs):
+          flag_str = LaunchConfiguration("flag").perform(context)
+          flag = flag_str.lower() in ["true", "1"]
+          return [Node(package="demo", executable="flagger", parameters=[{"enabled": flag}])]
+      
+      def generate_launch_description():
+          return LaunchDescription([
+              DeclareLaunchArgument("flag", default_value="false"),
+              OpaqueFunction(function=launch_setup)
+          ])
+    expected:
+      arguments:
+        - name: flag
+          default_value: false
+      opaque_functions:
+        - name: launch_setup
+          variables:
+            - name: flag_str
+              argument: ${LaunchConfiguration:flag}
+            - name: flag
+              argument: ${Variable:flag_str}
+              transformation: ${Variable:flag_str}.lower().in(["true", "1"])
+          returns:
+            nodes:
+              - package: demo
+                executable: flagger
+                parameters:
+                  - enabled: ${Variable:flag}
+      launch_argument_usages:
+        - argument: flag
+          path: opaque_functions[0].variables[0]
+      undeclared_launch_configurations: []
+
+  - name: opaque_function_unused_variable
+    description: Detects when a LaunchConfiguration derived variable is unused
+    input: |
+      from launch import LaunchDescription
+      from launch.actions import DeclareLaunchArgument, OpaqueFunction
+      from launch.substitutions import LaunchConfiguration
+      from launch_ros.actions import Node
+
+      def launch_setup(context, *args, **kwargs):
+          robot_name = LaunchConfiguration("robot_name").perform(context)
+          debug_mode = LaunchConfiguration("debug").perform(context)
+          return [Node(package="demo", executable="talker", name=robot_name)]
+      
+      def generate_launch_description():
+          return LaunchDescription([
+              DeclareLaunchArgument("robot_name", default_value="robot_1"),
+              DeclareLaunchArgument("debug", default_value="false"),
+              OpaqueFunction(function=launch_setup)
+          ])
+    expected:
+      arguments:
+        - name: robot_name
+          default_value: robot_1
+        - name: debug
+          default_value: false
+      opaque_functions:
+        - name: launch_setup
+          variables:
+            - name: robot_name
+              argument: ${LaunchConfiguration:robot_name}
+            - name: debug_mode
+              argument: ${LaunchConfiguration:debug_mode}
+          returns:
+            nodes:
+              - package: demo
+                executable: talker
+                name: ${Variable:robot_name}
+          unused_variables:
+            - debug_mode
+      launch_argument_usages:
+        - argument: robot_name
+          path: opaque_functions[0].variables[0]
+      undeclared_launch_configurations: []
