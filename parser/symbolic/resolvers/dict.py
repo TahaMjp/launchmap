@@ -12,11 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-TYPE_KEY_MAP = {
-    "Node": "nodes",
-    "DeclareLaunchArgument": "arguments",
-    "IncludeLaunchDescription": "includes",
-    "GroupAction": "groups",
-    "SetParameter": "parameters",
-    "OpaqueFunction": "opaque_functions"
-}
+import ast
+from parser.symbolic.symbolic_registry import register_symbolic_resolver
+
+@register_symbolic_resolver(ast.Dict)
+def resolve_dict(node: ast.Dict, engine):
+    return {
+        engine.resolve(k): engine.resolve(v)
+        for k, v in zip(node.keys, node.values)
+    }

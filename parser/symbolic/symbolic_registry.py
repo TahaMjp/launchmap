@@ -12,11 +12,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-TYPE_KEY_MAP = {
-    "Node": "nodes",
-    "DeclareLaunchArgument": "arguments",
-    "IncludeLaunchDescription": "includes",
-    "GroupAction": "groups",
-    "SetParameter": "parameters",
-    "OpaqueFunction": "opaque_functions"
-}
+from typing import Callable, Dict, List, Type
+import ast
+
+_RESOLVERS: Dict[Type[ast.AST], List[Callable]] = {}
+
+def register_symbolic_resolver(node_type: Type[ast.AST]):
+    def decorator(func: Callable):
+        _RESOLVERS.setdefault(node_type, []).append(func)
+        return func
+    return decorator
+
+def get_symbolic_resolvers(node_type: Type[ast.AST]) -> List[Callable]:
+    return _RESOLVERS.get(node_type, [])

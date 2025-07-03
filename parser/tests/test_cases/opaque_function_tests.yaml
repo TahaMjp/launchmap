@@ -22,17 +22,14 @@ tests:
           default_value: robot_1
       opaque_functions:
         - name: launch_setup
-          variables:
-            - name: name
-              argument: ${LaunchConfiguration:robot_name}
           returns:
             nodes:
               - package: demo
                 executable: talker
-                name: ${Variable:name}
+                name: ${LaunchConfiguration:robot_name}
       launch_argument_usages:
         - argument: robot_name
-          path: opaque_functions[0].variables[0]
+          path: opaque_functions[0].returns.nodes[0].name
       undeclared_launch_configurations: []
 
   - name: opaque_function_variable_with_transformation
@@ -59,21 +56,15 @@ tests:
           default_value: false
       opaque_functions:
         - name: launch_setup
-          variables:
-            - name: flag_str
-              argument: ${LaunchConfiguration:flag}
-            - name: flag
-              argument: ${Variable:flag_str}
-              transformation: ${Variable:flag_str}.lower().in(["true", "1"])
           returns:
             nodes:
               - package: demo
                 executable: flagger
                 parameters:
-                  - enabled: ${Variable:flag}
+                  - enabled: ${LaunchConfiguration:flag}.lower().in(['true', '1'])
       launch_argument_usages:
         - argument: flag
-          path: opaque_functions[0].variables[0]
+          path: opaque_functions[0].returns.nodes[0].parameters[0].enabled
       undeclared_launch_configurations: []
 
   - name: opaque_function_unused_variable
@@ -103,19 +94,12 @@ tests:
           default_value: false
       opaque_functions:
         - name: launch_setup
-          variables:
-            - name: robot_name
-              argument: ${LaunchConfiguration:robot_name}
-            - name: debug_mode
-              argument: ${LaunchConfiguration:debug_mode}
           returns:
             nodes:
               - package: demo
                 executable: talker
-                name: ${Variable:robot_name}
-          unused_variables:
-            - debug_mode
+                name: ${LaunchConfiguration:robot_name}
       launch_argument_usages:
         - argument: robot_name
-          path: opaque_functions[0].variables[0]
+          path: opaque_functions[0].returns.nodes[0].name
       undeclared_launch_configurations: []

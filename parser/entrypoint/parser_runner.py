@@ -35,12 +35,13 @@ def parse_launch_file(filepath: str) -> dict:
 
     parsed = []
 
+    collect_function_defs(tree.body, context)
+
     for node in tree.body:
         if isinstance(node, ast.Assign):
             engine.resolve(node)
         
         elif isinstance(node, ast.FunctionDef) and node.name == "generate_launch_description":
-            collect_function_defs(node.body, context)
             parsed.extend(_parse_launch_function_body(node.body, context, engine))
         
     return {

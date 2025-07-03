@@ -12,6 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from parser.parser.type_mapping import TYPE_KEY_MAP
+import re
+
+LAUNCH_CONFIG_REGEX = re.compile(r"\${LaunchConfiguration:([a-zA-Z0-9_]+)}")
+
 def collect_launch_config_usages(grouped: dict) -> list[dict]:
     """
     Recursively walk the grouped data and return all LaunchConfiguration usages
@@ -34,8 +39,15 @@ def collect_launch_config_usages(grouped: dict) -> list[dict]:
         elif isinstance(obj, list):
             for idx, item in enumerate(obj):
                 walk(item, f"{path}[{idx}]")
+        
+        elif isinstance(obj, str):
+            for match in LAUNCH_CONFIG_REGEX.finditer(obj):
+                usages.append({
+                    "argument": match.group(1),
+                    "path": path
+                })
     
-    for top_key in ["nodes", "groups", "includes", "parameters"]:
+    for top_key in TYPE_KEY_MAP.values():
         for idx, entry in enumerate(grouped.get(top_key, [])):
             walk(entry, f"{top_key}[{idx}]")
     

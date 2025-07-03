@@ -12,11 +12,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-TYPE_KEY_MAP = {
-    "Node": "nodes",
-    "DeclareLaunchArgument": "arguments",
-    "IncludeLaunchDescription": "includes",
-    "GroupAction": "groups",
-    "SetParameter": "parameters",
-    "OpaqueFunction": "opaque_functions"
-}
+import importlib
+import pkgutil
+import os
+
+def register_builtin_resolvers():
+    """
+    Auto import all modules in parsers.handlers to trigger @register_symbolic_resolvers decorators.
+    """
+    import parser.symbolic.resolvers
+
+    package_dir = os.path.dirname(parser.symbolic.resolvers.__file__)
+    for _, module_name, _ in pkgutil.iter_modules([package_dir]):
+        importlib.import_module(f"parser.symbolic.resolvers.{module_name}")

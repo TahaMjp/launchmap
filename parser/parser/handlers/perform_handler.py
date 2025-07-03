@@ -12,11 +12,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-TYPE_KEY_MAP = {
-    "Node": "nodes",
-    "DeclareLaunchArgument": "arguments",
-    "IncludeLaunchDescription": "includes",
-    "GroupAction": "groups",
-    "SetParameter": "parameters",
-    "OpaqueFunction": "opaque_functions"
-}
+from parser.parser.registry import register_handler
+from parser.resolution.utils import resolve_call_signature
+import ast
+
+@register_handler("perform")
+def handle_perform(node: ast.Call, context):
+    """
+    Handles LaunchConfiguration(...).perform(context) by forwarding
+    to the base substitution without actually invoking `.perform`.
+    """
+    if not isinstance(node.func, ast.Attribute):
+        raise ValueError("Expected method call for '.perform()'")
+    
+    base_call_node = node.func.value
+    return context.engine.resolve(base_call_node)

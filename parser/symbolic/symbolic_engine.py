@@ -12,11 +12,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-TYPE_KEY_MAP = {
-    "Node": "nodes",
-    "DeclareLaunchArgument": "arguments",
-    "IncludeLaunchDescription": "includes",
-    "GroupAction": "groups",
-    "SetParameter": "parameters",
-    "OpaqueFunction": "opaque_functions"
-}
+import ast
+from parser.symbolic.loader import register_builtin_resolvers
+from parser.symbolic.symbolic_registry import get_symbolic_resolvers
+
+class SymbolicEngine:
+    def __init__(self, context):
+        register_builtin_resolvers()
+        self.context = context
+        self.trace = {}
+
+    def resolve(self, node: ast.AST):
+        for resolver in get_symbolic_resolvers(type(node)):
+            result = resolver(node, self)
+            if result is not None:
+                return result
+        return None
