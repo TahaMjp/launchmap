@@ -53,7 +53,7 @@ tests:
     expected:
       arguments:
         - name: flag
-          default_value: false
+          default_value: 'false'
       opaque_functions:
         - name: launch_setup
           returns:
@@ -91,7 +91,7 @@ tests:
         - name: robot_name
           default_value: robot_1
         - name: debug
-          default_value: false
+          default_value: 'false'
       opaque_functions:
         - name: launch_setup
           returns:

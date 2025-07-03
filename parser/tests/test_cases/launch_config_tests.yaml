@@ -37,7 +37,7 @@ tests:
     expected:
       arguments:
         - name: use_sim_time
-          default_value: true
+          default_value: 'true'
       nodes:
         - package: demo
           executable: run
@@ -153,7 +153,7 @@ tests:
     expected:
       arguments:
         - name: enable
-          default_value: true
+          default_value: 'true'
       nodes:
         - package: demo
           executable: cond_node

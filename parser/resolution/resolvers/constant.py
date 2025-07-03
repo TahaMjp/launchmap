@@ -17,6 +17,4 @@ import ast
 
 @register_resolver(ast.Constant)
 def resolve_constant(node: ast.Constant, engine):
-    if node.value in ('true', 'false'):
-        return node.value == 'true'
     return node.value

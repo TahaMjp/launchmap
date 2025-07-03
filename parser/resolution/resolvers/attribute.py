@@ -15,17 +15,18 @@
 from parser.resolution.resolution_registry import register_resolver
 import ast
 
-def get_attr_chain(attr_node: ast.Attribute) -> str:
-    parts = []
-    while isinstance(attr_node, ast.Attribute):
-        parts.insert(0, attr_node.attr)
-        attr_node = attr_node.value
-    if isinstance(attr_node, ast.Name):
-        parts.insert(0, attr_node.id)
-    return ".".join(parts)
-
 @register_resolver(ast.Attribute)
 def resolve_attribute(node: ast.Attribute, engine):
+    if engine.context.strategy == "symbolic":
+        return _resolve_symbolic_attribute(node, engine)
+    else:
+        return _resolve_normal_attribute(node, engine)
+
+def _resolve_symbolic_attribute(node: ast.Attribute, engine):
+    value = engine.resolve(node.value)
+    return f"{value}.{node.attr}"
+
+def _resolve_normal_attribute(node: ast.Attribute, engine):
     base_object = engine.resolve(node.value)
 
     if base_object is None:
@@ -35,4 +36,14 @@ def resolve_attribute(node: ast.Attribute, engine):
         return getattr(base_object, node.attr)
     except AttributeError:
         raise ValueError(f"Object of type {type(base_object).__name__} has no attribute '{node.attr}'")
+
+
+def get_attr_chain(attr_node: ast.Attribute) -> str:
+    parts = []
+    while isinstance(attr_node, ast.Attribute):
+        parts.insert(0, attr_node.attr)
+        attr_node = attr_node.value
+    if isinstance(attr_node, ast.Name):
+        parts.insert(0, attr_node.id)
+    return ".".join(parts)
     

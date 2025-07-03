@@ -19,43 +19,49 @@ from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch_ros.actions import Node
 from launch.substitutions import FindPackageShare
 
+def launch_setup(context, *args, **kwargs):
+    package_name = LaunchConfiguration('package_name').perform(context)
+    urdf_file = LaunchConfiguration('urdf_file').perform(context)
+    use_sim_time_str = LaunchConfiguration('use_sim_time').perform(context)
+
+    package_directory = get_package_share_directory(package_name)
+    robot_desc_path = os.path.join(package_directory, 'urdf', urdf_file)
+    use_sim_time = use_sim_time_str.lower() in ['true', '1', 'yes']
+
+    params = {
+        'use_sim_time': use_sim_time,
+        'robot_description': (['xacro ', robot_desc_path])
+    }
+
+    node_robot_state_publisher = Node(
+        package='robot_state_publisher',
+        executable='robot_state_publisher',
+        output='screen',
+        parameters=[params]
+    )
+
+    return [node_robot_state_publisher]
+
 def generate_launch_description():
+    declare_pkg_name = DeclareLaunchArgument(
+        'package_name',
+        default_value='upao_robot_description',
+        description='Name of the package containing the robot description'
+    )
+    declare_urdf_file = DeclareLaunchArgument(
+        'urdf_file',
+        default_value='robot_wrapper.urdf.xacro',
+        description='URDF file to load for the robot description'
+    )
+    declare_use_sim_time = DeclareLaunchArgument(
+        'use_sim_time',
+        default_value='true',
+        description='Use simulation time if true'
+    )
+
     return LaunchDescription([
-        # Declare a launch argument
-        DeclareLaunchArgument("namespace", default_value="robot1", description="Robot namespace"),
-        DeclareLaunchArgument("use_sim_time", default_value="true"),
-
-        # Top-level Node
-        Node(
-            package="demo_nodes",
-            executable="talker",
-            name="talker_node",
-            output="screen",
-            parameters=[{"use_sim_time": LaunchConfiguration("use_sim_time")}, {"use_sim_time": LaunchConfiguration("use_sim_time")}]
-        ),
-
-        # Include another launch file
-        IncludeLaunchDescription(
-            PythonLaunchDescriptionSource(
-                PathJoinSubstitution([
-                    FindPackageShare("my_nav_package"),
-                    "launch",
-                    "navigation.launch.py"
-                ])
-            ),
-            launch_arguments={
-                "use_sim_time": LaunchConfiguration("use_sim_time")
-            }.items()
-        ),
-
-        # Group of nodes under a namespace
-        GroupAction([
-            PushRosNamespace(LaunchConfiguration("namespace")),
-            Node(
-                package="demo_nodes",
-                executable="listener",
-                name="listener_node",
-                output="screen"
-            )
-        ])
+        declare_pkg_name,
+        declare_urdf_file,
+        declare_use_sim_time,
+        OpaqueFunction(function=launch_setup),
     ])

@@ -13,12 +13,12 @@
 # limitations under the License.
 
 import ast
-from parser.context import ParseContext, SymbolicContext
+from parser.context import ParseContext
 from parser.parser.registry import register_handler
 from parser.parser.utils.common import group_entities_by_type
+from parser.resolution.resolution_engine import ResolutionEngine
 from parser.resolution.utils import resolve_call_signature
 from parser.parser.utils.ast_utils import extract_opaque_function
-from parser.symbolic.symbolic_engine import SymbolicEngine
 
 @register_handler("OpaqueFunction", "launch.actions.OpaqueFunction")
 def handle_opaque_function(node: ast.Call, context: ParseContext) -> dict:
@@ -38,8 +38,9 @@ def handle_opaque_function(node: ast.Call, context: ParseContext) -> dict:
         raise ValueError("OpaqueFunction 'function' must be a string or FunctionDef.")
     
     # Build symbolic context + engine
-    symbolic_context = SymbolicContext(function_name, context.introspection)
-    symbolic_engine = SymbolicEngine(symbolic_context)
+    symbolic_context = ParseContext(context.introspection)
+    symbolic_context.strategy = "symbolic"
+    symbolic_engine = ResolutionEngine(symbolic_context)
     symbolic_context.engine = symbolic_engine
 
     # Extract returned data and symbolic usage from function body
