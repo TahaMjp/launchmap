@@ -17,6 +17,7 @@ import { renderArguments } from "./renderArguments.js";
 import { renderIncludesGroup } from "./renderInclude.js";
 import { renderNodeGroup } from "./renderNode.js";
 import { renderGroupGroup } from "./renderGroup.js";
+import { renderOpaqueFunctionGroup } from "./renderOpaqueFunction.js";
 
 registerRenderer("arguments", (obj, container, layoutCtx, options) => {
     renderArguments(container, obj.value || [], layoutCtx, options);
@@ -32,4 +33,8 @@ registerRenderer("includes", (obj, container, layoutCtx, options) => {
 
 registerRenderer("groups", (obj, container, layoutCtx, options) => {
     renderGroupGroup(container, obj.value || [], obj.namespace || "", layoutCtx, options);
+});
+
+registerRenderer("opaque_functions", (obj, container, layoutCtx, options) => {
+    renderOpaqueFunctionGroup(container, obj.value || [], obj.namespace || "", layoutCtx, options);
 });
