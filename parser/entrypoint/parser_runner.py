@@ -37,13 +37,21 @@ def parse_launch_file(filepath: str) -> dict:
 
     collect_function_defs(tree.body, context)
 
+    # Simulate top-level execution
     for node in tree.body:
         if isinstance(node, ast.Assign):
             engine.resolve(node)
-        
-        elif isinstance(node, ast.FunctionDef) and node.name == "generate_launch_description":
-            parsed.extend(_parse_launch_function_body(node.body, context, engine))
-        
+
+        elif isinstance(node, ast.Expr):
+            engine.resolve(node)
+
+    # Now extract and run generate_launch_description
+    main_fn = context.lookup_function("generate_launch_description")
+    if not main_fn:
+        raise ValueError("No generate_launch_description() function found.")
+    
+    parsed.extend(_parse_launch_function_body(main_fn.body, context, engine))
+
     return {
         "file": filepath,
         "parsed": parsed,
@@ -58,13 +66,15 @@ def _parse_launch_function_body(body: list[ast.stmt], context: ParseContext, eng
         if isinstance(stmt, ast.Assign):
             engine.resolve(stmt)
         
-        elif isinstance(stmt, ast.Expr) and isinstance(stmt.value, ast.Call):
+        elif isinstance(stmt, ast.Expr):
             func_name = context.get_func_name(stmt.value.func)
             if func_name.endswith("add_action"):
                 arg = stmt.value.args[0]
                 result = engine.resolve(arg)
                 if result:
                     parsed.append(result)
+            else:
+                engine.resolve(stmt.value)
         
         elif isinstance(stmt, ast.Return) and isinstance(stmt.value, ast.Call):
             resolved = engine.resolve(stmt.value)

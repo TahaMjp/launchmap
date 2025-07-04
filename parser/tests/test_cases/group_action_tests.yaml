@@ -84,31 +84,31 @@ tests:
               - package: demo
                 executable: x
   
-  # - name: group_with_function_nodes
-  #   description: GroupAction with function-generated nodes
-  #   input: |
-  #     from launch import LaunchDescription
-  #     from launch.actions import GroupAction
-  #     from launch_ros.actions import Node
+  - name: group_with_function_nodes
+    description: GroupAction with function-generated nodes
+    input: |
+      from launch import LaunchDescription
+      from launch.actions import GroupAction
+      from launch_ros.actions import Node
 
-  #     def make_nodes():
-  #         return [
-  #             Node(package="demo", executable="n1"),
-  #             Node(package="demo", executable="n2")
-  #         ]
+      def make_nodes():
+          return [
+              Node(package="demo", executable="n1"),
+              Node(package="demo", executable="n2")
+          ]
       
-  #     def generate_launch_description():
-  #         return LaunchDescription([
-  #             GroupAction(make_nodes())
-  #         ])
-  #   expected:
-  #     groups:
-  #       - actions:
-  #           nodes:
-  #             - package: demo
-  #               executable: n1
-  #             - package: demo
-  #               executable: n2
+      def generate_launch_description():
+          return LaunchDescription([
+              GroupAction(make_nodes())
+          ])
+    expected:
+      groups:
+        - actions:
+            nodes:
+              - package: demo
+                executable: n1
+              - package: demo
+                executable: n2
   
   - name: group_with_namespace_and_variable
     description: PushRosNamespace from config + children from variable

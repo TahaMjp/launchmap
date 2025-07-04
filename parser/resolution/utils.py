@@ -87,12 +87,15 @@ def try_all_resolvers(node: ast.AST, engine) -> object:
     
     return None
 
-def bind_function_args(fn_def: ast.FunctionDef, args: list, kwargs: dict) -> dict:
+def bind_function_args(fn_def: ast.FunctionDef, args: list, kwargs: dict, exclude_first: bool = False) -> dict:
     """
     Bind args and kwargs to the function definition's parameters.
     Returns a mapping from parameter names to actual passed value.
     """
-    param_names = [arg.arg for arg in fn_def.args.args][1:]
+    param_names = [arg.arg for arg in fn_def.args.args]
+    if exclude_first:
+        param_names = param_names[1:]
+
     vararg_name = fn_def.args.vararg.arg if fn_def.args.vararg else None
     kwarg_name = fn_def.args.kwarg.arg if fn_def.args.kwarg else None
 

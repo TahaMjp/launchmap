@@ -240,3 +240,52 @@ tests:
         - argument: use_sim_time
           path: opaque_functions[0].returns.nodes[0].parameters[0].use_sim_time
       undeclared_launch_configurations: []
+  
+  - name: declare_argument_with_helper_and_opaque_function
+    description: Tests DeclareLaunchArgument added via helper function and returned with OpaqueFunction
+    input: |
+      from launch import LaunchDescription
+      from launch.actions import DeclareLaunchArgument, OpaqueFunction
+      from launch.substitutions import LaunchConfiguration
+      from launch_ros.actions import Node
+      
+      def launch_setup(context, *args, **kwargs):
+          enable_rviz_str = LaunchConfiguration("enable_rviz").perform(context)
+          enable_rviz = enable_rviz_str.lower() in ["true", "1", "yes"]
+          return [
+              Node(
+                  package="demo_pkg",
+                  executable="talker",
+                  parameters=[{"enable_rviz": enable_rviz}]
+              )
+          ]
+      
+      def generate_launch_description():
+          declared_arguments = []
+
+          def add_launch_arg(name: str, default_value: str = None):
+              declared_arguments.append(
+                  DeclareLaunchArgument(name, default_value=default_value)
+              )
+
+          add_launch_arg("enable_rviz", "False")
+
+          return LaunchDescription(
+              [*declared_arguments, OpaqueFunction(function=launch_setup)]
+          )
+    expected:
+      arguments:
+        - name: enable_rviz
+          default_value: 'False'
+      opaque_functions:
+        - name: launch_setup(context, *args, **kwargs)
+          returns:
+            nodes:
+              - package: demo_pkg
+                executable: talker
+                parameters:
+                  - enable_rviz: ${LaunchConfiguration:enable_rviz}.lower().in(['true', '1', 'yes'])
+      launch_argument_usages:
+        - argument: enable_rviz
+          path: opaque_functions[0].returns.nodes[0].parameters[0].enable_rviz
+      undeclared_launch_configurations: []

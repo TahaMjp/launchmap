@@ -13,55 +13,64 @@
 # limitations under the License.
 
 import os
+
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument, OpaqueFunction
-from launch.substitutions import Command, LaunchConfiguration
+from launch.actions import DeclareLaunchArgument, OpaqueFunction, IncludeLaunchDescription
+from launch.conditions import IfCondition
+from launch.launch_description_sources import PythonLaunchDescriptionSource
+from launch.substitutions import LaunchConfiguration, PathJoinSubstitution
 from launch_ros.actions import Node
-from ament_index_python.packages import get_package_share_directory
+from launch_ros.substitutions import FindPackageShare
+
 
 def launch_setup(context, *args, **kwargs):
-    package_name = LaunchConfiguration('package_name').perform(context)
-    urdf_file = LaunchConfiguration('urdf_file').perform(context)
-    use_sim_time_str = LaunchConfiguration('use_sim_time').perform(context)
+    rviz_cfg_path = PathJoinSubstitution(
+        [FindPackageShare("example_package"), "rviz/example_config.rviz"]
+    ).perform(context)
 
-    package_directory = get_package_share_directory(package_name)
-    robot_desc_path = os.path.join(package_directory, 'urdf', urdf_file)
-    use_sim_time = use_sim_time_str.lower() in ['true', '1', 'yes']
-
-    params = {
-        'use_sim_time': use_sim_time,
-        'robot_description': Command(['xacro ', robot_desc_path])
-    }
-
-    node_robot_state_publisher = Node(
-        package='robot_state_publisher',
-        executable='robot_state_publisher',
-        output='screen',
-        parameters=[params]
+    rviz_node = Node(
+        package="rviz2",
+        executable="rviz2",
+        name="visualizer",
+        arguments=["-d", str(rviz_cfg_path)],
+        condition=IfCondition(LaunchConfiguration("enable_rviz").perform(context)),
     )
 
-    return [node_robot_state_publisher]
+    robot_launch = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            [
+                PathJoinSubstitution(
+                    [
+                        FindPackageShare("example_package"),
+                        "launch",
+                        "components",
+                        "robot.launch.py",
+                    ]
+                )
+            ]
+        ),
+        launch_arguments={}.items(),
+    )
+
+    return [
+    	rviz_node,
+        robot_launch,
+    ]
+
 
 def generate_launch_description():
-    declare_pkg_name = DeclareLaunchArgument(
-        'package_name',
-        default_value='upao_robot_description',
-        description='Name of the package containing the robot description'
-    )
-    declare_urdf_file = DeclareLaunchArgument(
-        'urdf_file',
-        default_value='robot_wrapper.urdf.xacro',
-        description='URDF file to load for the robot description'
-    )
-    declare_use_sim_time = DeclareLaunchArgument(
-        'use_sim_time',
-        default_value='true',
-        description='Use simulation time if true'
+    declared_arguments = []
+
+    def add_launch_arg(name: str, default_value: str = None):
+        declared_arguments.append(
+            DeclareLaunchArgument(name, default_value=default_value)
+        )
+
+    add_launch_arg("enable_rviz", "False")
+
+    return LaunchDescription(
+        [*declared_arguments, OpaqueFunction(function=launch_setup)]
     )
 
-    return LaunchDescription([
-        declare_pkg_name,
-        declare_urdf_file,
-        declare_use_sim_time,
-        OpaqueFunction(function=launch_setup),
-    ])
+
+

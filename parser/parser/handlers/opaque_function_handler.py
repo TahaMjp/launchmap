@@ -53,7 +53,7 @@ def handle_opaque_function(node: ast.Call, context: ParseContext) -> dict:
     # Bind arguments and inject into symbolic context
     user_args = simplify_launch_configurations(kwargs.get("args", []) if isinstance(kwargs.get("args"), list) else [])
     user_kwargs = simplify_launch_configurations(kwargs.get("kwargs", []) if isinstance(kwargs.get("kwargs"), dict) else {})
-    param_binding = bind_function_args(fn_def, user_args, user_kwargs)
+    param_binding = bind_function_args(fn_def, user_args, user_kwargs, True)
     for var_name, value in param_binding.items():
         symbolic_context.define_variable(var_name, value)
 

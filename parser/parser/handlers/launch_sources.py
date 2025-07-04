@@ -27,8 +27,12 @@ def handle_python_launch_source(node: ast.Call, context: ParseContext) -> dict:
 
     if not args:
         raise ValueError("PythonLaunchDescriptionSource must recieve a file path.")
+    
+    raw_path = args[0]
+    if isinstance(raw_path, list):
+        raw_path = str(raw_path)
 
     return {
         "type": "PythonLaunchDescriptionSource",
-        "filename": args[0]
+        "filename": raw_path
     }

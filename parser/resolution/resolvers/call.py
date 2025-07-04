@@ -40,14 +40,12 @@ def _resolve_symbolic_call(node: ast.Call, engine):
 
         # Symbolic fallback for unresolved method/function calls
         try:
-            base = engine.resolve(node.func.value)
-            method = node.func.attr
+            func = engine.resolve(node.func)
             args = [engine.resolve(arg) for arg in node.args]
             kwargs = {kw.arg: engine.resolve(kw.value) for kw in node.keywords}
 
-            # Build symbolic string representation
             arg_strs = [repr(a) for a in args] + [f"{k}={repr(v)}" for k, v in kwargs.items()]
-            return f"{base}.{method}({', '.join(arg_strs)})"
+            return f"{func}({', '.join(arg_strs)})"
         
         except Exception as e:
             raise ValueError(f"Unable to symbolically resolve call: {ast.dump(node)} -> {e}")

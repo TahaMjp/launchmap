@@ -12,18 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from parser.parser.registry import register_handler
-from parser.resolution.utils import resolve_call_signature
+from parser.resolution.resolution_registry import register_resolver
 import ast
 
-@register_handler("perform")
-def handle_perform(node: ast.Call, context):
-    """
-    Handles LaunchConfiguration(...).perform(context) by forwarding
-    to the base substitution without actually invoking `.perform`.
-    """
-    if not isinstance(node.func, ast.Attribute):
-        raise ValueError("Expected method call for '.perform()'")
-
-    base_call_node = node.func.value
-    return context.engine.resolve(base_call_node)
+@register_resolver(ast.Expr)
+def resolve_expression(node: ast.Expr, engine):
+    return node.value
