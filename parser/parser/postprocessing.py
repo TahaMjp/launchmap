@@ -31,6 +31,8 @@ def simplify_launch_configurations(obj):
         elif obj.get("type") == "FindPackageShare":
             package = obj.get("package")
             return f"FindPackageShare('{package}')"
+        elif obj.get("type") == "Command":
+            return f"${{Command: {repr(obj['command'])}}}"
 
         return {k: simplify_launch_configurations(v) for k, v in obj.items()}
 
