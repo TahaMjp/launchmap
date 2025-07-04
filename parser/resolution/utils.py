@@ -86,3 +86,36 @@ def try_all_resolvers(node: ast.AST, engine) -> object:
         warnings.warn(f"Unhandled AST node ({node_type}) at line {source}: {ast.dump(node)}")
     
     return None
+
+def bind_function_args(fn_def: ast.FunctionDef, args: list, kwargs: dict) -> dict:
+    """
+    Bind args and kwargs to the function definition's parameters.
+    Returns a mapping from parameter names to actual passed value.
+    """
+    param_names = [arg.arg for arg in fn_def.args.args][1:]
+    vararg_name = fn_def.args.vararg.arg if fn_def.args.vararg else None
+    kwarg_name = fn_def.args.kwarg.arg if fn_def.args.kwarg else None
+
+    binding = {}
+
+    # Position bindings
+    for name, value in zip(param_names, args):
+        binding[name] = value
+
+    # Remaining positional args (*args)
+    remaining_args = args[len(param_names):]
+    if vararg_name:
+        binding[vararg_name] = remaining_args
+    
+    # Named kwargs that match a param name
+    for name in param_names[len(args):]:
+        if name in kwargs:
+            binding[name] = kwargs[name]
+
+    # Remaining **kwargs
+    if kwarg_name:
+        all_named = set(binding.keys())
+        extra_kwargs = {k: v for k, v in kwargs.items() if k not in all_named}
+        binding[kwarg_name] = extra_kwargs
+
+    return binding

@@ -8,6 +8,7 @@
   white-space: nowrap;
   font-size: 13px;
   box-shadow: 2px 2px 5px #000;
+  cursor: grab;
   width: fit-content;
   max-width: none;
   white-space: nowrap;

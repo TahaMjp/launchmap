@@ -6,6 +6,7 @@
   padding: 10px;
   box-shadow: 2px 2px 4px #000;
   color: #ffc;
+  cursor: grab;
   width: fit-content;
   max-width: none;
   white-space: nowrap;

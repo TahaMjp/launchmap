@@ -31,7 +31,7 @@ def simplify_launch_configurations(obj):
         elif obj.get("type") == "FindPackageShare":
             package = obj.get("package")
             return f"FindPackageShare('{package}')"
-        
+
         return {k: simplify_launch_configurations(v) for k, v in obj.items()}
 
     elif isinstance(obj, (list, tuple)):

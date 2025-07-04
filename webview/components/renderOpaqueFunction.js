@@ -19,15 +19,15 @@ import { renderSection } from './renderSection.js';
 
 export function renderOpaqueFunctionGroup(container, opaqueFcns, namespace, layoutCtx, options = {}) {
     opaqueFcns.forEach((opaqueFcn, idx) => {
-        const path = options.pathPrefix ? `${options.pathPrefix}[${idx}]` : `opaque_functions[${idx}]`;
-        renderOpaqueFunction(opaqueFcn, path, container, layoutCtx, { ...options, path });
+        const path = options.pathPrefix ? `${options.pathPrefix}.opaque_functions[${idx}]` : `opaque_functions[${idx}]`;
+        renderOpaqueFunction(opaqueFcn, namespace, path, container, layoutCtx, { ...options, path });
     });
 
     layoutCtx.x += 350;
     layoutCtx.y = 100;
 }
 
-export function renderOpaqueFunction(opaqueFcn, prefix, container, layoutCtx, options = {}) {
+export function renderOpaqueFunction(opaqueFcn, namespace, prefix, container, layoutCtx, options = {}) {
     const fcnBox = createBaseBlock({
         type: "opaque-function",
         layoutCtx,
@@ -65,7 +65,7 @@ export function renderOpaqueFunction(opaqueFcn, prefix, container, layoutCtx, op
 
     const returns = opaqueFcn.returns || {};
     for (const [key, value] of Object.entries(returns)) {
-        renderComponent({ type: key, value: value, namespace: "" }, body, innerLayout, childOptions);
+        renderComponent({ type: key, value: value, namespace: namespace }, body, innerLayout, childOptions);
     }
     container.appendChild(fcnBox);
 
