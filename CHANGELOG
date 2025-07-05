@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [0.0.6] - 2025-07-05
+
+### Added
+- Support for OpaqueFunction in launch files.
+  - Introspect variables and resolved actions returned from the function.
+  - Track LaunchConfiguration usage inside OpaqueFunctions.
+
 ## [0.0.5] - 2025-06-30
 
 ### Changed
