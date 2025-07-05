@@ -41,6 +41,9 @@ def extract_opaque_function(fn_def: ast.FunctionDef, context, symbolic_engine):
         if isinstance(stmt, ast.Assign):
             symbolic_engine.resolve(stmt)
 
+        elif isinstance(stmt, ast.Expr):
+            symbolic_engine.resolve(stmt)
+
         elif isinstance(stmt, ast.Return):
             if stmt.value is None:
                 return None

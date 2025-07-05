@@ -14,6 +14,7 @@
 
 from parser.resolution.resolution_registry import register_resolver
 from warnings import warn
+import builtins
 import ast
 
 @register_resolver(ast.Name)
@@ -28,6 +29,10 @@ def resolve_name(node: ast.Name, engine):
     if engine.context.has_function(name):
         return engine.context.lookup_function(name)
     
-    # Case 3: Unknown: Fallback to string
+    # Case 3: Python built in
+    if hasattr(builtins, name):
+        return getattr(builtins, name)
+    
+    # Case 4: Unknown: Fallback to string
     warn(f"Name '{name}' not found in variables or functions. Assuming literal name.")
     return name

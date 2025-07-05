@@ -1,0 +1,75 @@
+{
+  "arguments": [
+    {
+      "default_value": "true",
+      "name": "use_sim_time"
+    },
+    {
+      "name": "sub_package"
+    }
+  ],
+  "groups": [
+    {
+      "actions": {
+        "nodes": [
+          {
+            "package": "demo_bringup",
+            "executable": "base_node",
+            "name": "base"
+          }
+        ],
+        "includes": [
+          {
+            "launch_description_source": "${os.path.join:['${LaunchConfiguration:sub_package}', 'launch', 'sub_launch.py']}",
+            "launch_arguments": {},
+            "included": {}
+          }
+        ]
+      }
+    }
+  ],
+  "opaque_functions": [
+    {
+      "name": "launch_setup(context, *args, **kwargs)",
+      "returns": {
+        "nodes": [
+          {
+            "package": "demo_camera",
+            "executable": "camera_node",
+            "parameters": [
+              {
+                "use_sim_time": "${LaunchConfiguration:use_sim_time}.lower().in(['true', '1'])"
+              }
+            ],
+            "name": "camera"
+          },
+          {
+            "package": "demo_robot",
+            "executable": "robot_state_publisher",
+            "parameters": [
+              {
+                "use_sim_time": "${LaunchConfiguration:use_sim_time}.lower().in(['true', '1'])"
+              }
+            ],
+            "name": "state_pub"
+          }
+        ]
+      }
+    }
+  ],
+  "launch_argument_usages": [
+    {
+      "argument": "sub_package",
+      "path": "groups[0].actions.includes[0].launch_description_source"
+    },
+    {
+      "argument": "use_sim_time",
+      "path": "opaque_functions[0].returns.nodes[0].parameters[0].use_sim_time"
+    },
+    {
+      "argument": "use_sim_time",
+      "path": "opaque_functions[0].returns.nodes[1].parameters[0].use_sim_time"
+    }
+  ],
+  "undeclared_launch_configurations": []
+}

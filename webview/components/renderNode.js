@@ -35,13 +35,12 @@ function renderNode(node, namespace, layoutCtx, options) {
     })
 
     // Node name
-    const title = document.createElement("div");
-    title.className = "node-title";
-    title.innerText = `${namespace}/${node.name || node.executable}`;
-    block.appendChild(title);
+    const titleLabel = node.name || node.executable || "(anonymous)";
+    const fullName = namespace ? `${namespace}/${titleLabel}` : titleLabel;
 
     // Sections
     const renderOptions = { includeLeftPort: true, portIdPrefix: options.path, portRegistry: options.portRegistry };
+    block.appendChild(renderSection("name", "📛", "Name", fullName, renderOptions));
     block.appendChild(renderSection("package", "📦", "Package", node.package, renderOptions));
     block.appendChild(renderSection("executable", "▶️", "Executable", node.executable, renderOptions));
     block.appendChild(renderSection("output", "🖥️", "Output", node.output || "—", renderOptions));

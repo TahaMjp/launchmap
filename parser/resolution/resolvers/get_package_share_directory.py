@@ -13,6 +13,7 @@
 # limitations under the License.
 
 import ast
+from parser.parser.postprocessing import simplify_launch_configurations
 from parser.resolution.resolution_registry import register_resolver
 
 @register_resolver(ast.Call, priority=10)
@@ -25,4 +26,4 @@ def resolve_get_package_share_directory(node: ast.Call, engine):
         raise ValueError("get_package_share_directory expects 1 argument")
     
     arg = engine.resolve(node.args[0])
-    return f"${{get_package_share_directory:{arg}}}"
+    return f"${{get_package_share_directory:{simplify_launch_configurations(arg)}}}"

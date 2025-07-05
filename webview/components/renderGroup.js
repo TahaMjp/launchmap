@@ -19,16 +19,16 @@ import { renderSection } from './renderSection.js';
 
 export function renderGroupGroup(container, groups, namespace, layoutCtx, options = {}) {
     groups.forEach((group, idx) => {
-        const path = options.pathPrefix ? `${options.pathPrefix}[${idx}]` : `groups[${idx}]`;
-        renderGroup(group, path, container, layoutCtx, { ...options, path });
+        const path = options.pathPrefix ? `${options.pathPrefix}.groups[${idx}]` : `groups[${idx}]`;
+        renderGroup(group, container, layoutCtx, { ...options, path });
     });
 
     layoutCtx.x += 350;
     layoutCtx.y = 100;
 }
 
-export function renderGroup(group, prefix, container, layoutCtx, options = {}) {
-    const ns = group.namespace || prefix;
+export function renderGroup(group, container, layoutCtx, options = {}) {
+    const ns = group.namespace || "";
 
     const groupBox = createBaseBlock({
         type: "group",
@@ -36,7 +36,7 @@ export function renderGroup(group, prefix, container, layoutCtx, options = {}) {
         layoutCtx,
         options: {
             ...options,
-            path: prefix
+            path: options.path
         }
     });
 
@@ -44,19 +44,11 @@ export function renderGroup(group, prefix, container, layoutCtx, options = {}) {
     const header = document.createElement("div");
     header.className = "group-header";
 
-    // Title
-    const title = document.createElement("div");
-    title.className = "group-title";
-    title.innerText = `📦 Group: ${ns}`;
-    header.appendChild(title);
-
     // Namespace
-    if (group.namespace) {
-        const nsSection = renderSection("namespace", "🧭", "Namespace", group.namespace, 
-            { includeLeftPort: true, portIdPrefix: options.path, portRegistry: options.portRegistry });
-        nsSection.classList.add("namespace-section");
-        header.appendChild(nsSection);
-    }
+    const nsSection = renderSection("namespace", "🧭", "Namespace", ns, 
+        { includeLeftPort: true, portIdPrefix: options.path, portRegistry: options.portRegistry });
+    nsSection.classList.add("namespace-section");
+    header.appendChild(nsSection);
     groupBox.appendChild(header);
 
     // Body
@@ -69,7 +61,7 @@ export function renderGroup(group, prefix, container, layoutCtx, options = {}) {
         ...options,
         stopPropagation: true, 
         constrainToParent: true,
-        pathPrefix: `${prefix}.actions`
+        pathPrefix: `${options.path}.actions`
     };
 
     const actions = group.actions || {};

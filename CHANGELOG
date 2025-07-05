@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [0.0.7] - 2025-07-05
+
+### Fixed
+- Minor fixes in OpaqueFunction visualization
+- Handled additional corner cases in dynamic resolution and function output parsing
+
 ## [0.0.6] - 2025-07-05
 
 ### Added
