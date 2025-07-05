@@ -1,0 +1,41 @@
+{
+  "arguments": [
+    {
+      "default_value": "False",
+      "name": "enable_rviz"
+    }
+  ],
+  "opaque_functions": [
+    {
+      "name": "launch_setup(context, *args, **kwargs)",
+      "returns": {
+        "nodes": [
+          {
+            "package": "rviz2",
+            "executable": "rviz2",
+            "name": "visualizer",
+            "arguments": [
+              "-d",
+              "str(\"${PathJoinSubstitution:['FindPackageShare('example_package')', 'rviz/example_config.rviz']}.perform('context')\")"
+            ],
+            "condition": "${IfCondition:${LaunchConfiguration:enable_rviz}}"
+          }
+        ],
+        "includes": [
+          {
+            "launch_description_source": "[\"${PathJoinSubstitution:['FindPackageShare('example_package')', 'launch', 'components', 'robot.launch.py']}\"]",
+            "launch_arguments": "{}.items()",
+            "included": {}
+          }
+        ]
+      }
+    }
+  ],
+  "launch_argument_usages": [
+    {
+      "argument": "enable_rviz",
+      "path": "opaque_functions[0].returns.nodes[0].condition"
+    }
+  ],
+  "undeclared_launch_configurations": []
+}

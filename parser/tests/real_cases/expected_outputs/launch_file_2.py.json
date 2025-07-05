@@ -1,0 +1,40 @@
+{
+  "arguments": [
+    {
+      "default_value": "",
+      "description": "Path to the driver parameter YAML file",
+      "name": "driver_param_file"
+    }
+  ],
+  "opaque_functions": [
+    {
+      "name": "launch_setup(context, *args, **kwargs)",
+      "returns": {
+        "nodes": [
+          {
+            "package": "generic_driver_pkg",
+            "executable": "generic_driver_node_exe",
+            "name": "generic_driver_node",
+            "parameters": [
+              "${LaunchConfiguration:driver_param_file}"
+            ],
+            "output": "screen",
+            "arguments": [
+              "--ros-args",
+              "--log-level",
+              "info",
+              "--enable-stdout-logs"
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "launch_argument_usages": [
+    {
+      "argument": "driver_param_file",
+      "path": "opaque_functions[0].returns.nodes[0].parameters[0]"
+    }
+  ],
+  "undeclared_launch_configurations": []
+}

@@ -1,0 +1,54 @@
+{
+  "arguments": [
+    {
+      "default_value": "upao_robot_description",
+      "description": "Name of the package containing the robot description",
+      "name": "package_name"
+    },
+    {
+      "default_value": "robot_wrapper.urdf.xacro",
+      "description": "URDF file to load for the robot description",
+      "name": "urdf_file"
+    },
+    {
+      "default_value": "true",
+      "description": "Use simulation time if true",
+      "name": "use_sim_time"
+    }
+  ],
+  "opaque_functions": [
+    {
+      "name": "launch_setup(context, *args, **kwargs)",
+      "returns": {
+        "nodes": [
+          {
+            "package": "robot_state_publisher",
+            "executable": "robot_state_publisher",
+            "output": "screen",
+            "parameters": [
+              {
+                "use_sim_time": "${LaunchConfiguration:use_sim_time}.lower().in(['true', '1', 'yes'])",
+                "robot_description": "${Command: ['xacro ', \"${os.path.join:['${get_package_share_directory:${LaunchConfiguration:package_name}}', 'urdf', '${LaunchConfiguration:urdf_file}']}\"]}"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "launch_argument_usages": [
+    {
+      "argument": "use_sim_time",
+      "path": "opaque_functions[0].returns.nodes[0].parameters[0].use_sim_time"
+    },
+    {
+      "argument": "package_name",
+      "path": "opaque_functions[0].returns.nodes[0].parameters[0].robot_description"
+    },
+    {
+      "argument": "urdf_file",
+      "path": "opaque_functions[0].returns.nodes[0].parameters[0].robot_description"
+    }
+  ],
+  "undeclared_launch_configurations": []
+}
