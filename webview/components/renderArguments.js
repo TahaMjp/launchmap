@@ -41,7 +41,8 @@ export function renderArgument(arg, layoutCtx, options) {
         options
     });
 
-    const argSection = renderSection("argument", "🚀", arg.name, arg.default_value, 
+    const value = arg.default_value !== undefined ? arg.default_value : "";
+    const argSection = renderSection("argument", "🚀", arg.name, value, 
         { includeRightPort: true, portIdPrefix: `argument:${arg.name}`, portRegistry: options.portRegistry });
     block.appendChild(argSection);
 

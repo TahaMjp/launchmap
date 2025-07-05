@@ -6,7 +6,9 @@
         "includes": [
           {
             "launch_description_source": "[\"${PathJoinSubstitution:['FindPackageShare('generic_driver_pkg')', 'launch', 'generic_driver_pkg.launch.py']}\"]",
-            "launch_arguments": "{'driver1_param_file': \"${PathJoinSubstitution:['FindPackageShare('anon_package_launch')', 'params', 'robot', 'driver1_config.param.yaml']}\"}.items()",
+            "launch_arguments": {
+              "driver1_param_file": "${PathJoinSubstitution:['FindPackageShare('anon_package_launch')', 'params', 'robot', 'driver1_config.param.yaml']}"
+            },
             "included": {}
           }
         ]

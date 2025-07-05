@@ -74,7 +74,7 @@ def _parse_launch_function_body(body: list[ast.stmt], context: ParseContext, eng
                 if result:
                     parsed.append(result)
             else:
-                engine.resolve(stmt.value)
+                engine.resolve(stmt)
         
         elif isinstance(stmt, ast.Return) and isinstance(stmt.value, ast.Call):
             resolved = engine.resolve(stmt.value)

@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import re
 from parser.resolution.resolution_registry import register_resolver
 import ast
 
@@ -23,8 +24,15 @@ def resolve_attribute(node: ast.Attribute, engine):
         return _resolve_normal_attribute(node, engine)
 
 def _resolve_symbolic_attribute(node: ast.Attribute, engine):
-    value = engine.resolve(node.value)
-    return f"{value}.{node.attr}"
+    base = engine.resolve(node.value)
+
+    if isinstance(base, str) and re.search(r"\$\{[^}]+\}", base):
+        return f"{base}.{node.attr}"
+    
+    try:
+        return getattr(base, node.attr)
+    except AttributeError:
+        raise ValueError(f"Object of type {type(base).__name__} has no attribute '{node.attr}'")
 
 def _resolve_normal_attribute(node: ast.Attribute, engine):
     base_object = engine.resolve(node.value)

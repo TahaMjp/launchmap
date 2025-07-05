@@ -17,4 +17,4 @@ import ast
 
 @register_resolver(ast.Expr)
 def resolve_expression(node: ast.Expr, engine):
-    return node.value
+    return engine.resolve(node.value)

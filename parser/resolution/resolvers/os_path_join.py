@@ -13,6 +13,7 @@
 # limitations under the License.
 
 import ast
+from parser.parser.postprocessing import simplify_launch_configurations
 from parser.resolution.resolution_registry import register_resolver
 
 @register_resolver(ast.Call, priority=10)
@@ -22,4 +23,4 @@ def resolve_os_path_join(node: ast.Call, engine):
         return None
     
     args = [engine.resolve(arg) for arg in node.args]
-    return f"${{os.path.join:{args}}}"
+    return f"${{os.path.join:{simplify_launch_configurations(args)}}}"

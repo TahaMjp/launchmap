@@ -44,6 +44,12 @@ def _resolve_symbolic_call(node: ast.Call, engine):
             args = [engine.resolve(arg) for arg in node.args]
             kwargs = {kw.arg: engine.resolve(kw.value) for kw in node.keywords}
 
+            if callable(func):
+                result = func(*args, **kwargs)
+                if isinstance(result, type({}.items())):
+                    result = dict(result)
+                return result
+
             arg_strs = [repr(a) for a in args] + [f"{k}={repr(v)}" for k, v in kwargs.items()]
             return f"{func}({', '.join(arg_strs)})"
         
