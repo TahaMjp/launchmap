@@ -12,9 +12,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from parser.resolution.resolution_registry import register_resolver
 import ast
+from parser.context import ParseContext
+from parser.parser.registry import register_handler
+from parser.resolution.utils import resolve_call_signature
 
-@register_resolver(ast.Constant)
-def resolve_constant(node: ast.Constant, engine):
-    return node.value
+@register_handler("Command", "launch.substitutions.Command")
+def handle_find_package_share(node: ast.Call, context: ParseContext) -> dict:
+    args, _ = resolve_call_signature(node, context.engine)
+
+    return {
+        "type": "Command",
+        "command": args[0]
+    }

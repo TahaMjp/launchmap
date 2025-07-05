@@ -18,6 +18,7 @@ export function getTypeLabel(type) {
         case 'include': return 'INCLUDE LAUNCH DESCRIPTION';
         case 'group': return 'GROUP ACTION';
         case 'argument': return 'DECLARE LAUNCH ARGUMENT';
+        case 'opaque-function': return 'OPAQUE FUNCTION';
         default: return `${type}`;
     }
 }

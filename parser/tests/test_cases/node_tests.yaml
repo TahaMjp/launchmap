@@ -91,3 +91,26 @@ tests:
       nodes:
         - package: demo
           executable: add_action_test
+
+  - name: node_with_command_substitution
+    input: |
+      from launch import LaunchDescription
+      from launch.substitutions import Command
+      from launch_ros.actions import Node
+
+      def generate_launch_description():
+          return LaunchDescription([
+              Node(
+                  package='my_pkg',
+                  executable='robot_node',
+                  parameters=[{
+                      'robot_description': Command(['xacro', 'robot.urdf.xacro'])
+                  }]
+              )
+          ])
+    expected:
+      nodes:
+        - package: my_pkg
+          executable: robot_node
+          parameters:
+            - robot_description: "${Command: ['xacro', 'robot.urdf.xacro']}"

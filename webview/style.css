@@ -5,4 +5,5 @@
 @import './styles/components/groups.css';
 @import './styles/components/includes.css';
 @import './styles/components/nodes.css';
+@import './styles/components/opaque.css';
 @import './styles/components/sections.css';

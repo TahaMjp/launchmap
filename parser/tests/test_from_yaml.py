@@ -37,9 +37,15 @@ def test_group_action_parsing(code, expected):
 @pytest.mark.parametrize("code,expected", load_yaml_tests("test_cases/include_launch_tests.yaml"))
 def test_include_launch_parsing(code, expected):
     result = parse_launch_string(code)
+    for key in ["arguments", "includes", "launch_argument_usages", "undeclared_launch_configurations"]:
+        assert result.get(key, []) == expected.get(key, [])
+
+@pytest.mark.parametrize("code,expected", load_yaml_tests("test_cases/opaque_function_tests.yaml"))
+def test_opaque_functions_parsing(code, expected):
+    result = parse_launch_string(code)
     print(result)
     print(expected)
-    for key in ["arguments", "includes", "launch_argument_usages", "undeclared_launch_configurations"]:
+    for key in ["arguments", "opaque_functions", "launch_argument_usages", "undeclared_launch_configurations"]:
         assert result.get(key, []) == expected.get(key, [])
 
 # @pytest.mark.parametrize("code,expected,files", load_yaml_tests("test_cases/recursive_include_tests.yaml", with_files=True))

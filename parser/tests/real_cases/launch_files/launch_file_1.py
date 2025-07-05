@@ -26,14 +26,14 @@ from launch_ros.substitutions import FindPackageShare
 def launch_setup(context, *args, **kwargs):
     rviz_cfg_path = PathJoinSubstitution(
         [FindPackageShare("example_package"), "rviz/example_config.rviz"]
-    ).perform(context)
+    )
 
     rviz_node = Node(
         package="rviz2",
         executable="rviz2",
         name="visualizer",
-        arguments=["-d", str(rviz_cfg_path)],
-        condition=IfCondition(LaunchConfiguration("enable_rviz").perform(context)),
+        arguments=["-d", str(rviz_cfg_path.perform(context))],
+        condition=IfCondition(LaunchConfiguration("enable_rviz")),
     )
 
     robot_launch = IncludeLaunchDescription(
@@ -71,6 +71,3 @@ def generate_launch_description():
     return LaunchDescription(
         [*declared_arguments, OpaqueFunction(function=launch_setup)]
     )
-
-
-

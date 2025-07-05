@@ -12,11 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import os
-
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument, OpaqueFunction, IncludeLaunchDescription
-from launch.conditions import IfCondition
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import LaunchConfiguration, PathJoinSubstitution
 from launch_ros.actions import Node
@@ -24,37 +21,34 @@ from launch_ros.substitutions import FindPackageShare
 
 
 def launch_setup(context, *args, **kwargs):
-    rviz_cfg_path = PathJoinSubstitution(
-        [FindPackageShare("example_package"), "rviz/example_config.rviz"]
+    driver1_param_path = PathJoinSubstitution(
+        [
+            FindPackageShare("anon_package_launch"),
+            "params",
+            "robot",
+            "driver1_config.param.yaml",
+        ]
     ).perform(context)
 
-    rviz_node = Node(
-        package="rviz2",
-        executable="rviz2",
-        name="visualizer",
-        arguments=["-d", str(rviz_cfg_path)],
-        condition=IfCondition(LaunchConfiguration("enable_rviz").perform(context)),
-    )
-
-    robot_launch = IncludeLaunchDescription(
+    driver1_launch = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             [
                 PathJoinSubstitution(
                     [
-                        FindPackageShare("example_package"),
+                        FindPackageShare("generic_driver_pkg"),
                         "launch",
-                        "components",
-                        "robot.launch.py",
+                        "generic_driver_pkg.launch.py",
                     ]
                 )
             ]
         ),
-        launch_arguments={}.items(),
+        launch_arguments={
+            "driver1_param_file": driver1_param_path
+        }.items(),
     )
 
     return [
-    	rviz_node,
-        robot_launch,
+        driver1_launch
     ]
 
 
@@ -66,11 +60,7 @@ def generate_launch_description():
             DeclareLaunchArgument(name, default_value=default_value)
         )
 
-    add_launch_arg("enable_rviz", "False")
-
     return LaunchDescription(
         [*declared_arguments, OpaqueFunction(function=launch_setup)]
     )
-
-
 

@@ -1,0 +1,291 @@
+tests:
+  - name: opaque_function_tracks_variables
+    description: Captures variables from LaunchConfiguration().perform(context)
+    input: |
+      from launch import LaunchDescription
+      from launch.actions import DeclareLaunchArgument, OpaqueFunction
+      from launch.substitutions import LaunchConfiguration
+      from launch_ros.actions import Node
+
+      def launch_setup(context, *args, **kwargs):
+          name = LaunchConfiguration("robot_name").perform(context)
+          return [Node(package='demo', executable='talker', name=name)]
+
+      def generate_launch_description():
+          return LaunchDescription([
+              DeclareLaunchArgument("robot_name", default_value="robot_1"),
+              OpaqueFunction(function=launch_setup)
+          ])
+    expected:
+      arguments:
+        - name: robot_name
+          default_value: robot_1
+      opaque_functions:
+        - name: launch_setup(context, *args, **kwargs)
+          returns:
+            nodes:
+              - package: demo
+                executable: talker
+                name: ${LaunchConfiguration:robot_name}
+      launch_argument_usages:
+        - argument: robot_name
+          path: opaque_functions[0].returns.nodes[0].name
+      undeclared_launch_configurations: []
+
+  - name: opaque_function_variable_with_transformation
+    description: Tracks transformed variable from LaunchConfiguration
+    input: |
+      from launch import LaunchDescription
+      from launch.actions import DeclareLaunchArgument, OpaqueFunction
+      from launch.substitutions import LaunchConfiguration
+      from launch_ros.actions import Node
+
+      def launch_setup(context, *args, **kwargs):
+          flag_str = LaunchConfiguration("flag").perform(context)
+          flag = flag_str.lower() in ["true", "1"]
+          return [Node(package="demo", executable="flagger", parameters=[{"enabled": flag}])]
+      
+      def generate_launch_description():
+          return LaunchDescription([
+              DeclareLaunchArgument("flag", default_value="false"),
+              OpaqueFunction(function=launch_setup)
+          ])
+    expected:
+      arguments:
+        - name: flag
+          default_value: 'false'
+      opaque_functions:
+        - name: launch_setup(context, *args, **kwargs)
+          returns:
+            nodes:
+              - package: demo
+                executable: flagger
+                parameters:
+                  - enabled: ${LaunchConfiguration:flag}.lower().in(['true', '1'])
+      launch_argument_usages:
+        - argument: flag
+          path: opaque_functions[0].returns.nodes[0].parameters[0].enabled
+      undeclared_launch_configurations: []
+
+  - name: opaque_function_unused_variable
+    description: Detects when a LaunchConfiguration derived variable is unused
+    input: |
+      from launch import LaunchDescription
+      from launch.actions import DeclareLaunchArgument, OpaqueFunction
+      from launch.substitutions import LaunchConfiguration
+      from launch_ros.actions import Node
+
+      def launch_setup(context, *args, **kwargs):
+          robot_name = LaunchConfiguration("robot_name").perform(context)
+          debug_mode = LaunchConfiguration("debug").perform(context)
+          return [Node(package="demo", executable="talker", name=robot_name)]
+      
+      def generate_launch_description():
+          return LaunchDescription([
+              DeclareLaunchArgument("robot_name", default_value="robot_1"),
+              DeclareLaunchArgument("debug", default_value="false"),
+              OpaqueFunction(function=launch_setup)
+          ])
+    expected:
+      arguments:
+        - name: robot_name
+          default_value: robot_1
+        - name: debug
+          default_value: 'false'
+      opaque_functions:
+        - name: launch_setup(context, *args, **kwargs)
+          returns:
+            nodes:
+              - package: demo
+                executable: talker
+                name: ${LaunchConfiguration:robot_name}
+      launch_argument_usages:
+        - argument: robot_name
+          path: opaque_functions[0].returns.nodes[0].name
+      undeclared_launch_configurations: []
+
+  - name: group_with_opaque_function
+    description: GroupAction containing and OpaqueFunction
+    input: |
+      from launch import LaunchDescription, OpaqueFunction
+      from launch.actions import DeclareLaunchArgument, GroupAction
+      from launch.substitutions import LaunchConfiguration
+      from launch_ros.actions import Node
+
+      def launch_setup(context, *args, **kwargs):
+          enabled = LaunchConfiguration("use_sim_time").perform(context).lower() == "true"
+          return [
+              Node(
+                  package="my_robot",
+                  executable="main_node",
+                  parameters=[{"use_sim_time": enabled}]
+              )
+          ]
+      
+      def generate_launch_description():
+          return LaunchDescription([
+              DeclareLaunchArgument("use_sim_time", default_value="true"),
+              GroupAction([
+                  OpaqueFunction(function=launch_setup)
+              ])
+          ])
+    expected:
+      arguments:
+        - name: use_sim_time
+          default_value: 'true'
+      groups:
+        - actions:
+            opaque_functions: 
+              - name: launch_setup(context, *args, **kwargs)
+                returns:
+                  nodes:
+                    - package: my_robot
+                      executable: main_node
+                      parameters:
+                        - use_sim_time: ${LaunchConfiguration:use_sim_time}.lower() == true
+      launch_argument_usages:
+        - argument: use_sim_time
+          path: groups[0].actions.opaque_functions[0].returns.nodes[0].parameters[0].use_sim_time
+      undeclared_launch_configurations: []
+    
+  - name: opaque_function_with_literal_and_launch_config
+    description: Mixes literal strings and LaunchConfiguration in args
+    input: |
+      from launch import LaunchDescription, OpaqueFunction
+      from launch.actions import DeclareLaunchArgument
+      from launch.substitutions import LaunchConfiguration
+      from launch_ros.actions import Node
+
+      def launch_setup(context, robot_name, sim_flag):
+          enabled = sim_flag.lower() in ["true"]
+          return [
+              Node(
+                  package="demo_pkg",
+                  executable="talker",
+                  name=robot_name,
+                  parameters=[{"use_sim_time": enabled}]
+              )
+          ]
+    
+      def generate_launch_description():
+          return LaunchDescription([
+              DeclareLaunchArgument("use_sim_time", default_value="true"),
+              OpaqueFunction(
+                  function=launch_setup,
+                  args=["robot_alpha", LaunchConfiguration("use_sim_time")]
+              )
+          ])
+    expected:
+      arguments:
+        - name: use_sim_time
+          default_value: 'true'
+      opaque_functions:
+        - name: launch_setup(context, robot_name, sim_flag)
+          returns:
+            nodes:
+              - package: demo_pkg
+                executable: talker
+                name: robot_alpha
+                parameters:
+                  - use_sim_time: ${LaunchConfiguration:use_sim_time}.lower().in(['true'])
+      launch_argument_usages:
+        - argument: use_sim_time
+          path: opaque_functions[0].returns.nodes[0].parameters[0].use_sim_time
+      undeclared_launch_configurations: []
+
+  - name: opaque_function_with_star_args_and_kwargs
+    description: OpaqueFunction using *args and **kwargs for argument passing
+    input: |
+      from launch import LaunchDescription, OpaqueFunction
+      from launch.actions import DeclareLaunchArgument
+      from launch.substitutions import LaunchConfiguration
+      from launch_ros.actions import Node
+
+      def launch_setup(context, *args, **kwargs):
+          name = args[0]
+          sim_flag = kwargs["sim"]
+          enabled = sim_flag.lower() in ["true"]
+          return [
+              Node(
+                  package="pkg",
+                  executable="sim_node",
+                  name=name,
+                  parameters=[{"use_sim_time": enabled}]
+              )
+          ]
+      
+      def generate_launch_description():
+          return LaunchDescription([
+              DeclareLaunchArgument("use_sim_time", default_value="true"),
+              OpaqueFunction(
+                  function=launch_setup,
+                  args=["simulator_bot"],
+                  kwargs={"sim": LaunchConfiguration("use_sim_time")}
+              )
+          ])
+    expected:
+      arguments:
+        - name: use_sim_time
+          default_value: 'true'
+      opaque_functions:
+        - name: launch_setup(context, *args, **kwargs)
+          returns:
+            nodes:
+              - package: pkg
+                executable: sim_node
+                name: simulator_bot
+                parameters:
+                  - use_sim_time: ${LaunchConfiguration:use_sim_time}.lower().in(['true'])
+      launch_argument_usages:
+        - argument: use_sim_time
+          path: opaque_functions[0].returns.nodes[0].parameters[0].use_sim_time
+      undeclared_launch_configurations: []
+  
+  - name: declare_argument_with_helper_and_opaque_function
+    description: Tests DeclareLaunchArgument added via helper function and returned with OpaqueFunction
+    input: |
+      from launch import LaunchDescription
+      from launch.actions import DeclareLaunchArgument, OpaqueFunction
+      from launch.substitutions import LaunchConfiguration
+      from launch_ros.actions import Node
+      
+      def launch_setup(context, *args, **kwargs):
+          enable_rviz_str = LaunchConfiguration("enable_rviz").perform(context)
+          enable_rviz = enable_rviz_str.lower() in ["true", "1", "yes"]
+          return [
+              Node(
+                  package="demo_pkg",
+                  executable="talker",
+                  parameters=[{"enable_rviz": enable_rviz}]
+              )
+          ]
+      
+      def generate_launch_description():
+          declared_arguments = []
+
+          def add_launch_arg(name: str, default_value: str = None):
+              declared_arguments.append(
+                  DeclareLaunchArgument(name, default_value=default_value)
+              )
+
+          add_launch_arg("enable_rviz", "False")
+
+          return LaunchDescription(
+              [*declared_arguments, OpaqueFunction(function=launch_setup)]
+          )
+    expected:
+      arguments:
+        - name: enable_rviz
+          default_value: 'False'
+      opaque_functions:
+        - name: launch_setup(context, *args, **kwargs)
+          returns:
+            nodes:
+              - package: demo_pkg
+                executable: talker
+                parameters:
+                  - enable_rviz: ${LaunchConfiguration:enable_rviz}.lower().in(['true', '1', 'yes'])
+      launch_argument_usages:
+        - argument: enable_rviz
+          path: opaque_functions[0].returns.nodes[0].parameters[0].enable_rviz
+      undeclared_launch_configurations: []

@@ -13,8 +13,21 @@
 # limitations under the License.
 
 from parser.resolution.resolution_registry import register_resolver
+from warnings import warn
 import ast
 
 @register_resolver(ast.Name)
 def resolve_name(node: ast.Name, engine):
-    return engine.context.lookup_variable(node.id)
+    name = node.id
+
+    # Case 1: Defined variable
+    if engine.context.has_variable(name):
+        return engine.context.lookup_variable(name)
+    
+    # Case 2: Defined function
+    if engine.context.has_function(name):
+        return engine.context.lookup_function(name)
+    
+    # Case 3: Unknown: Fallback to string
+    warn(f"Name '{name}' not found in variables or functions. Assuming literal name.")
+    return name

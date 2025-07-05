@@ -15,6 +15,6 @@
 from parser.resolution.resolution_registry import register_resolver
 import ast
 
-@register_resolver(ast.Constant)
-def resolve_constant(node: ast.Constant, engine):
+@register_resolver(ast.Expr)
+def resolve_expression(node: ast.Expr, engine):
     return node.value

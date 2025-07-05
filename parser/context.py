@@ -17,7 +17,7 @@ from typing import Any
 import ast
 
 class ParseContext:
-    def __init__(self):
+    def __init__(self, introspection: IntrospectionTracker = None):
         # Variable assignments within the launch file
         self.variables: dict[str, Any] = {}
 
@@ -31,10 +31,13 @@ class ParseContext:
         self.namespace_stack: list[str] = []
 
         # Shared introspection tracker (for declarations, usages, etc.)
-        self.introspection = IntrospectionTracker()
+        self.introspection = introspection or IntrospectionTracker()
 
         # Resolution engine reference (set externally after creation)
         self.engine = None
+
+        # Resolution Strategy: Normal or Symbolic (set externally after creation)
+        self.strategy = ""
 
     ## Variable Management
 
@@ -42,11 +45,29 @@ class ParseContext:
         """ Define or update a variable in context. """
         self.variables[name] = value
 
+    def has_variable(self, name: str) -> bool:
+        """ Check variable exists in context """
+        return name in self.variables
+
     def lookup_variable(self, name: str) -> Any:
         """ Resolve a variable by name. Raises if undefined. """
         if name not in self.variables:
             raise NameError(f"Variable '{name}' is not defined in context.")
         return self.variables[name]
+    
+    ## Function API
+
+    def define_function(self, name: str, fn_def: ast.FunctionDef):
+        """ Define or update a function in context. """
+        self.functions[name] = fn_def
+
+    def has_function(self, name: str) -> bool:
+        """ Check function exists in context. """
+        return name in self.functions
+
+    def lookup_function(self, name: str) -> ast.FunctionDef | None:
+        """ Return the AST of a function by name, or None if not found. """
+        return self.functions.get(name)
     
     ## Namespace stack
     
@@ -66,3 +87,4 @@ class ParseContext:
         """ Resolve a dotted name from an AST function call. """
         from parser.resolution.utils import get_func_name
         return get_func_name(func_node)
+    

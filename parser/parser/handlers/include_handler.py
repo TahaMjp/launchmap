@@ -44,16 +44,16 @@ def handle_include(node: ast.Call, context: ParseContext) -> dict:
         }
     
     # Load and parse included file
-    from parser.includes.resolver import resolve_included_launch_file
-    included_output = resolve_included_launch_file(
-        filename = launch_source["filename"],
-        parent_context = context,
-        passed_arguments = launch_args
-    )
+    # from parser.includes.resolver import resolve_included_launch_file
+    # included_output = resolve_included_launch_file(
+    #     filename = launch_source["filename"],
+    #     parent_context = context,
+    #     passed_arguments = launch_args
+    # )
 
     return {
         "type": "IncludeLaunchDescription",
         "launch_description_source": launch_source["filename"],
         "launch_arguments": launch_args,
-        "included": included_output
+        "included": {}
     }

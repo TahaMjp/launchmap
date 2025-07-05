@@ -17,5 +17,6 @@ TYPE_KEY_MAP = {
     "DeclareLaunchArgument": "arguments",
     "IncludeLaunchDescription": "includes",
     "GroupAction": "groups",
-    "SetParameter": "parameters"
+    "SetParameter": "parameters",
+    "OpaqueFunction": "opaque_functions"
 }

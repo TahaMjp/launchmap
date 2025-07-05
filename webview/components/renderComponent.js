@@ -36,5 +36,6 @@ function detectType(obj) {
     if (Array.isArray(obj.arguments)) return "arguments";
     if (Array.isArray(obj.includes)) return "includes";
     if (Array.isArray(obj.nodes)) return "nodes";
+    if (Array.isArray(obj.opaque_functions)) return "opaque_functions";
     return null;
 }

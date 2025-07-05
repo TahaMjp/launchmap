@@ -13,12 +13,44 @@
 # limitations under the License.
 
 import warnings
+from parser.parser.postprocessing import simplify_launch_configurations
 from parser.resolution.resolution_registry import register_resolver
 from parser.parser.dispatcher import dispatch_call
 import ast
 
 @register_resolver(ast.Call, priority=0)
 def resolve_call(node: ast.Call, engine):
+    if engine.context.strategy == "symbolic":
+        return _resolve_symbolic_call(node, engine)
+    else:
+        return _resolve_normal_call(node, engine)
+
+def _resolve_symbolic_call(node: ast.Call, engine):
+    try:
+        # Try launching launch_ros contruct
+        output = dispatch_call(node, engine.context)
+        return simplify_launch_configurations(output)
+    except ValueError:
+        func_name = engine.context.get_func_name(node.func)
+
+        # Check if it is a launch_ros construct (heuristic: capitalized name)
+        if func_name and func_name[0].isupper():
+            warnings.warn(f"No handler registered for launch construct: '{func_name}'")
+            return None
+
+        # Symbolic fallback for unresolved method/function calls
+        try:
+            func = engine.resolve(node.func)
+            args = [engine.resolve(arg) for arg in node.args]
+            kwargs = {kw.arg: engine.resolve(kw.value) for kw in node.keywords}
+
+            arg_strs = [repr(a) for a in args] + [f"{k}={repr(v)}" for k, v in kwargs.items()]
+            return f"{func}({', '.join(arg_strs)})"
+        
+        except Exception as e:
+            raise ValueError(f"Unable to symbolically resolve call: {ast.dump(node)} -> {e}")
+
+def _resolve_normal_call(node: ast.Call, engine):
     try:
         # Try launching launch_ros contruct
         return dispatch_call(node, engine.context)
@@ -42,3 +74,4 @@ def resolve_call(node: ast.Call, engine):
             return result
     
         raise ValueError(f"Cannot resolve non-callable: {func}")
+    
