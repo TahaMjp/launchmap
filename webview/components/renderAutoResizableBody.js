@@ -12,9 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-export function renderAutoResizableBody(container, type = "block") {
+export function renderAutoResizableBody(container, type = "block", extraSelectors = []) {
     requestAnimationFrame(() => {
-        const children = container.querySelectorAll(`[class$="-${type}"]`);
+        const blockSelector = `[class$="-${type}"]`
+        const allSelectors = [blockSelector, ...extraSelectors].join(", ");
+        const children = container.querySelectorAll(allSelectors);
+        
         let maxRight = 0;
         let maxBottom = 0;
 

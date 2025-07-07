@@ -20,14 +20,6 @@
   position: relative;
 }
 
-.namespace-section {
-  position: absolute;
-  left: 2px;
-  right: 10px;
-  z-index: 2;
-  pointer-events: none;
-}
-
 .group-body {
   border-bottom-left-radius: 10px;
   border-bottom-right-radius: 10px;

@@ -13,30 +13,25 @@
 # limitations under the License.
 
 from launch import LaunchDescription
-from launch.actions import OpaqueFunction, GroupAction, DeclareLaunchArgument
+from launch.actions import GroupAction, DeclareLaunchArgument
+from launch.conditions import IfCondition
 from launch.substitutions import LaunchConfiguration
 from launch_ros.actions import Node
 
-def launch_setup(context, *args, **kwargs):
-    robot_name = LaunchConfiguration('robot_name').perform(context)
+def generate_launch_description():
+    return LaunchDescription([
+        DeclareLaunchArgument('use_group', default_value='true'),
 
-    return [
         GroupAction(
             actions=[
                 Node(
                     package='demo_nodes_cpp',
                     executable='talker',
-                    name=robot_name,
-                    output='screen',
-                    parameters=[{'robot_name': robot_name}]
+                    name='talker_node',
+                    output='screen'
                 )
             ],
-            namespace='robot'
+            namespace='robot_ns',
+            condition=IfCondition(LaunchConfiguration('use_group'))
         )
-    ]
-
-def generate_launch_description():
-    return LaunchDescription([
-        DeclareLaunchArgument('robot_name', default_value='rover1'),
-        OpaqueFunction(function=launch_setup)
     ])

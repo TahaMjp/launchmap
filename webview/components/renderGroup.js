@@ -44,12 +44,24 @@ export function renderGroup(group, container, layoutCtx, options = {}) {
     const header = document.createElement("div");
     header.className = "group-header";
 
-    // Namespace
-    const nsSection = renderSection("namespace", "🧭", "Namespace", ns, 
-        { includeLeftPort: true, portIdPrefix: options.path, portRegistry: options.portRegistry });
-    nsSection.classList.add("namespace-section");
-    header.appendChild(nsSection);
-    groupBox.appendChild(header);
+    // Render additional sections
+    const metaSections = [
+        { key: "namespace", icon: "🧭", label: "Namespace", value: ns },
+        { key: "condition", icon: "❓", label: "Condition", value: group.condition }
+    ];
+
+    metaSections.forEach(( {key, icon, label, value }) => {
+        if (value) {
+            const section = renderSection(key, icon, label, value, {
+                includeLeftPort: true,
+                portIdPrefix: options.path,
+                portRegistry: options.portRegistry
+            });
+            header.appendChild(section);
+        }
+    });
+
+    groupBox.append(header);
 
     // Body
     const body = document.createElement("div");
@@ -70,7 +82,7 @@ export function renderGroup(group, container, layoutCtx, options = {}) {
     }
     container.appendChild(groupBox);
 
-    renderAutoResizableBody(groupBox, "block");
+    renderAutoResizableBody(groupBox, "block", [".group-header"]);
 
     layoutCtx.x += 350;
 }

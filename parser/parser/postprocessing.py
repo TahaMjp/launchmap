@@ -18,25 +18,41 @@ def simplify_launch_configurations(obj):
     LaunchConfiguration dicts to string form: "${LaunchConfiguration:name}"
     """
     if isinstance(obj, dict):
-        if obj.get("type") == "LaunchConfiguration":
-            name = obj.get("name")
-            return f"${{LaunchConfiguration:{name}}}"
-        elif obj.get("type") == "IfCondition":
-            expression = simplify_launch_configurations(obj.get("expression"))
-            return f"${{IfCondition:{expression}}}"
-        elif obj.get("type") == "PathJoinSubstitution":
-            format_symbolic_part = lambda p: simplify_launch_configurations(p) if isinstance(p, dict) else f"'{p}'" if isinstance(p, str) else str(p)
-            parts = ", ".join(format_symbolic_part(p) for p in obj.get("parts"))
-            return f"${{PathJoinSubstitution:[{parts}]}}"
-        elif obj.get("type") == "FindPackageShare":
-            package = obj.get("package")
-            return f"FindPackageShare('{package}')"
-        elif obj.get("type") == "Command":
-            return f"${{Command: {repr(obj['command'])}}}"
+        type_key = obj.get("type")
 
+        if type_key in simplifier_registry:
+            return simplifier_registry[type_key](obj)
+        
+        # Otherwise recursively simplify dictionary
         return {k: simplify_launch_configurations(v) for k, v in obj.items()}
-
+    
     elif isinstance(obj, (list, tuple)):
         return [simplify_launch_configurations(i) for i in obj]
-    
+
     return obj
+
+
+def _simplify_launch_config(obj):
+    name = obj.get("name")
+    return f"${{LaunchConfiguration:{name}}}"
+
+def _simplify_path_join(obj):
+    format_symbolic_part = lambda p: simplify_launch_configurations(p) if isinstance(p, dict) else f"'{p}'" if isinstance(p, str) else str(p)
+    parts = ", ".join(format_symbolic_part(p) for p in obj.get("parts"))
+    return f"${{PathJoinSubstitution:[{parts}]}}"
+
+def _simplify_find_package(obj):
+    package = obj.get("package")
+    return f"FindPackageShare('{package}')"
+
+def _simplify_command(obj):
+    return f"${{Command: {repr(obj['command'])}}}"
+
+
+# Dispatcher registry
+simplifier_registry = {
+    "LaunchConfiguration": _simplify_launch_config,
+    "PathJoinSubstitution": _simplify_path_join,
+    "FindPackageShare": _simplify_find_package,
+    "Command": _simplify_command,
+}

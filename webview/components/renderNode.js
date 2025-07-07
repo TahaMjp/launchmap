@@ -45,6 +45,10 @@ function renderNode(node, namespace, layoutCtx, options) {
     block.appendChild(renderSection("executable", "▶️", "Executable", node.executable, renderOptions));
     block.appendChild(renderSection("output", "🖥️", "Output", node.output || "—", renderOptions));
 
+    if (node.condition) {
+        block.appendChild(renderSection("condition", "❓", "Condition", node.condition, renderOptions));
+    }
+
     if (node.parameters?.length > 0) {
         block.appendChild(renderSection("parameters", "⚙️", "Params", node.parameters, renderOptions));
     }

@@ -1,0 +1,113 @@
+tests:
+  - name: node_with_if_condition
+    input: |
+      from launch import LaunchDescription
+      from launch.conditions import IfCondition
+      from launch.substitutions import LaunchConfiguration
+      from launch_ros.actions import DeclareLaunchArgument, Node
+
+      def generate_launch_description():
+          return LaunchDescription([
+              DeclareLaunchArgument("enable_talker"),
+              Node(
+                  package='demo_pkg',
+                  executable='talker',
+                  condition=IfCondition(LaunchConfiguration("enable_talker"))
+              )
+          ])
+    expected:
+      arguments:
+        - name: enable_talker
+      nodes:
+        - package: demo_pkg
+          executable: talker
+          condition: ${IfCondition:${LaunchConfiguration:enable_talker}}
+      launch_argument_usages:
+        - argument: enable_talker
+          path: nodes[0].condition
+      undeclared_launch_configurations: []
+  
+  - name: node_with_unless_condition_constant
+    input: |
+      from launch import LaunchDescription
+      from launch.conditions import UnlessCondition
+      from launch.substitutions import PythonExpression
+      from launch_ros.actions import Node
+
+      def generate_launch_description():
+          return LaunchDescription([
+              Node(
+                  package='demo_pkg',
+                  executable='listener',
+                  condition=UnlessCondition(PythonExpression(['False']))
+              )
+          ])
+    expected:
+      nodes:
+        - package: demo_pkg
+          executable: listener
+          condition: ${UnlessCondition:False}
+        
+  - name: node_with_python_expression_condition
+    input: |
+      from launch import LaunchDescription
+      from launch.conditions import IfCondition
+      from launch.substitutions import LaunchConfiguration, PythonExpression
+      from launch_ros.actions import DeclareLaunchArgument, Node
+
+      def generate_launch_description():
+          return LaunchDescription([
+              DeclareLaunchArgument('enable_sensor'),
+              Node(
+                  package='demo_pkg',
+                  executable='sensor_node',
+                  condition=IfCondition(PythonExpression([
+                      '"true" == ',
+                      LaunchConfiguration('enable_sensor')
+                  ]))
+              )
+          ])
+    expected:
+      arguments:
+        - name: enable_sensor
+      nodes:
+        - package: demo_pkg
+          executable: sensor_node
+          condition: ${IfCondition:"true" == ${LaunchConfiguration:enable_sensor}}
+      launch_argument_usages:
+        - argument: enable_sensor
+          path: nodes[0].condition
+      undeclared_launch_configurations: []
+    
+  - name: group_with_condition_and_node
+    input: |
+      from launch import LaunchDescription
+      from launch.actions import GroupAction
+      from launch.conditions import IfCondition
+      from launch.substitutions import LaunchConfiguration
+      from launch_ros.actions import DeclareLaunchArgument, Node
+
+      def generate_launch_description():
+          return LaunchDescription([
+              DeclareLaunchArgument('launch_group'),
+              GroupAction(
+                  actions=[
+                      Node(package='demo_pkg', executable='child_node')
+                  ],
+                  condition=IfCondition(LaunchConfiguration('launch_group'))
+              )
+          ])
+    expected:
+      arguments:
+        - name: launch_group
+      groups:
+        - condition: ${IfCondition:${LaunchConfiguration:launch_group}}
+          actions:
+            nodes:
+              - package: demo_pkg
+                executable: child_node
+      launch_argument_usages:
+        - argument: launch_group
+          path: groups[0].condition
+      undeclared_launch_configurations: []
+    
