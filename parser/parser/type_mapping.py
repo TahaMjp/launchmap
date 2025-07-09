@@ -19,7 +19,5 @@ TYPE_KEY_MAP = {
     "GroupAction": "groups",
     "SetParameter": "parameters",
     "OpaqueFunction": "opaque_functions",
-    "ComposableNode": "unattached_composable_nodes",
-    "ComposableNodeContainer": "composable_nodes",
-    "LoadComposableNodes": "composable_nodes"
+    "ComposableNode": "unattached_composable_nodes"
 }

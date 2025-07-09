@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from collections import defaultdict
 from parser.introspection.tracker import IntrospectionTracker
 from typing import Any
 import ast
@@ -29,6 +30,9 @@ class ParseContext:
 
         # Namespace tracking for PushRosNamespace
         self.namespace_stack: list[str] = []
+
+        # Target Container for Composable Nodes
+        self.composable_node_groups = defaultdict(lambda: {"composable_nodes": []})
 
         # Shared introspection tracker (for declarations, usages, etc.)
         self.introspection = introspection or IntrospectionTracker()
@@ -80,6 +84,35 @@ class ParseContext:
 
     def current_namespace(self) -> str | None:
         return "/".join(self.namespace_stack) if self.namespace_stack else None
+    
+    ## Composable node groups
+
+    def register_composable_node_group(self, container_name: str, container_metadata: dict):
+        self.composable_node_groups[container_name].update(container_metadata)
+
+    def extend_composable_node_group(self, container_name: str, nodes):
+        self.composable_node_groups[container_name]["composable_nodes"].extend(nodes)
+
+    def get_composable_node_groups(self) -> list[dict]:
+        results = []
+        for name, data in self.composable_node_groups.items():
+            if not data["composable_nodes"]:
+                continue
+
+            entry = {
+                "target_container": name,
+                "composable_nodes": data["composable_nodes"]
+            }
+
+            for key, value in data.items():
+                if key in ("composable_nodes",):
+                    continue
+                if value not in (None, "", [], {}):
+                    entry[key] = value
+            
+            results.append(entry)
+
+        return results
     
     ## Utility
 

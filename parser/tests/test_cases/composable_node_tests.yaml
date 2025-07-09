@@ -71,11 +71,12 @@ tests:
         - target_container: my_container
           package: rclcpp_components
           executable: component_container_mt
-          namespace: ''
           composable_nodes:
             - package: bar_pkg
               plugin: bar_pkg/BarNode
               name: bar
+      launch_argument_usages: []
+      undeclared_launch_configurations: []
 
   - name: composable_node_with_launchconfig
     description: Composable node that uses LaunchConfiguration in its parameters
@@ -132,3 +133,51 @@ tests:
           composable_nodes:
             - package: demo_pkg
               plugin: demo_pkg/FooNode
+      launch_argument_usages: []
+      undeclared_launch_configurations: []
+
+  - name: composable_container_with_loaded_nodes
+    description: ComposableNodeContainer is defined and nodes are dynamically loaded using LoadComposableNodes into the same container.
+    input: |
+      from launch import LaunchDescription
+      from launch_ros.actions import ComposableNodeContainer, LoadComposableNodes
+      from launch_ros.descriptions import ComposableNode
+
+      def generate_launch_description():
+          container = ComposableNodeContainer(
+              name='my_container',
+              namespace='',
+              package='rclcpp_components',
+              executable='component_container',
+              output='screen',
+              composable_node_descriptions=[]
+          )
+
+          load_nodes = LoadComposableNodes(
+              target_container='my_container',
+              composable_node_descriptions=[
+                  ComposableNode(
+                      package='demo_nodes_cpp',
+                      plugin='demo_nodes_cpp::Talker'
+                  ),
+                  ComposableNode(
+                      package='demo_nodes_cpp',
+                      plugin='demo_nodes_cpp::Listener'
+                  )
+              ]
+          )
+
+          return LaunchDescription([container, load_nodes])
+    expected:
+      composable_nodes:
+        - target_container: my_container
+          package: rclcpp_components
+          executable: component_container
+          output: screen
+          composable_nodes:
+            - package: demo_nodes_cpp
+              plugin: demo_nodes_cpp::Talker
+            - package: demo_nodes_cpp
+              plugin: demo_nodes_cpp::Listener
+      launch_argument_usages: []
+      undeclared_launch_configurations: []

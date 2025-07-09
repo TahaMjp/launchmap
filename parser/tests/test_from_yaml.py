@@ -53,7 +53,7 @@ def test_conditions_parsing(code, expected):
         assert result.get(key, []) == expected.get(key, [])
 
 @pytest.mark.parametrize("code,expected", load_yaml_tests("test_cases/composable_node_tests.yaml"))
-def test_composable_nodees_parsing(code, expected):
+def test_composable_nodes_parsing(code, expected):
     result = parse_launch_string(code)
     print(result)
     print(expected)

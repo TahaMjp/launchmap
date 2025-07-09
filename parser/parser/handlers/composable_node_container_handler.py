@@ -22,7 +22,7 @@ from parser.resolution.utils import resolve_call_signature
 def handle_composable_container(node: ast.Call, context: ParseContext) -> dict:
     args, kwargs = resolve_call_signature(node, context.engine)
 
-    # Resolve composable_node_descriptions
+    # Resolve composable nodes
     raw_expr = kwargs.get("composable_node_descriptions") or (args[0] if args else [])
     resolved_flat = flatten_once(raw_expr)
     grouped = group_entities_by_type(resolved_flat)
@@ -31,9 +31,19 @@ def handle_composable_container(node: ast.Call, context: ParseContext) -> dict:
     # Extract container name to associate with target_container
     container_name = kwargs.get("name") or "anonymous_container"
 
+    # Collect container metadata
+    container_metadata = {
+        "target_container": container_name,
+    }
+    for key, value in kwargs.items():
+        if key not in {"composable_node_descriptions", "name"}:
+            container_metadata[key] = value   
+
+    # Register container and attach nodes
+    context.register_composable_node_group(container_name, container_metadata)
+    context.extend_composable_node_group(container_name, composable_nodes)
+
     return {
         "type": "ComposableNodeContainer",
-        "target_container": container_name,
-        "composable_nodes": composable_nodes,
-        **{k: v for k, v in kwargs.items() if k not in {"composable_node_descriptions", "name"}}
+        "target_container": container_name
     }

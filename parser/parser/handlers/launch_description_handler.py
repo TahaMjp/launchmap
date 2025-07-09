@@ -21,12 +21,10 @@ from parser.resolution.utils import resolve_call_signature
 
 @register_handler("LaunchDescription", "launch.LaunchDescription")
 def handle_launch_description(node: ast.Call, context: ParseContext) -> dict:
-    _, kwargs = resolve_call_signature(node, context.engine)
+    args, _ = resolve_call_signature(node, context.engine)
 
-    if node.args:
-        arg = context.engine.resolve(node.args[0])
-        if isinstance(arg, list):
-            return flatten_once(arg)
-        return arg
+    if args:
+        arg = args[0]
+        return flatten_once(arg) if isinstance(arg, list) else [arg]
 
     return []

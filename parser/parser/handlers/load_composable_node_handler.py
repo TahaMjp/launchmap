@@ -22,18 +22,22 @@ from parser.resolution.utils import resolve_call_signature
 def handle_load_composable_nodes(node: ast.Call, context: ParseContext) -> dict:
     args, kwargs = resolve_call_signature(node, context.engine)
 
+    # Resolve composable nodes
     raw_nodes = kwargs.get("composable_node_descriptions" or (args[0] if args else []))
     resolved_flat = flatten_once(raw_nodes)
     grouped = group_entities_by_type(resolved_flat)
     composable_nodes = grouped.get("unattached_composable_nodes", [])
 
+    # Determine target container
     target_container = kwargs.get("target_container")
     if not target_container:
         raise ValueError("LoadComposableNodes requires a target_container to be specified.")
 
+    # Ensure group is registered
+    context.register_composable_node_group(target_container, {"target_container": target_container})
+    context.extend_composable_node_group(target_container, composable_nodes)
+
     return {
         "type": "LoadComposableNodes",
-        "target_container": target_container,
-        "composable_nodes": composable_nodes,
-        **{k: v for k, v in kwargs.items() if k not in {"composable_node_descriptions", "target_container"}}    
+        "target_container": target_container   
     }
