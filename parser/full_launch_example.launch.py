@@ -13,25 +13,28 @@
 # limitations under the License.
 
 from launch import LaunchDescription
-from launch.actions import GroupAction, DeclareLaunchArgument
-from launch.conditions import IfCondition
-from launch.substitutions import LaunchConfiguration
-from launch_ros.actions import Node
+from launch_ros.actions import ComposableNodeContainer
+from launch_ros.descriptions import ComposableNode
 
 def generate_launch_description():
-    return LaunchDescription([
-        DeclareLaunchArgument('use_group', default_value='true'),
+    container = ComposableNodeContainer(
+        name='my_container',
+        namespace='',
+        package='rclcpp_components',
+        executable='component_container_mt',
+        composable_node_descriptions=[
+            ComposableNode(
+                package='demo_nodes_cpp',
+                plugin='demo_nodes_cpp::Talker',
+                name='talker'
+            ),
+            ComposableNode(
+                package='demo_nodes_cpp',
+                plugin='demo_nodes_cpp::Listener',
+                name='listener'
+            ),
+        ],
+        output='screen',
+    )
 
-        GroupAction(
-            actions=[
-                Node(
-                    package='demo_nodes_cpp',
-                    executable='talker',
-                    name='talker_node',
-                    output='screen'
-                )
-            ],
-            namespace='robot_ns',
-            condition=IfCondition(LaunchConfiguration('use_group'))
-        )
-    ])
+    return LaunchDescription([container])

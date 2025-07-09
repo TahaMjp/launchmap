@@ -19,6 +19,8 @@ export function getTypeLabel(type) {
         case 'group': return 'GROUP ACTION';
         case 'argument': return 'DECLARE LAUNCH ARGUMENT';
         case 'opaque-function': return 'OPAQUE FUNCTION';
+        case 'composable-node': return 'COMPOSABLE NODE';
+        case 'composable-container': return 'COMPOSABLE NODE CONTAINER';
         default: return `${type}`;
     }
 }

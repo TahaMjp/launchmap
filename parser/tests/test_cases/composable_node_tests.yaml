@@ -67,7 +67,7 @@ tests:
 
           return LaunchDescription([container])
     expected:
-      composable_nodes:
+      composable_nodes_container:
         - target_container: my_container
           package: rclcpp_components
           executable: component_container_mt
@@ -128,7 +128,7 @@ tests:
               )
           ])
     expected:
-      composable_nodes:
+      composable_nodes_container:
         - target_container: my_container
           composable_nodes:
             - package: demo_pkg
@@ -169,7 +169,7 @@ tests:
 
           return LaunchDescription([container, load_nodes])
     expected:
-      composable_nodes:
+      composable_nodes_container:
         - target_container: my_container
           package: rclcpp_components
           executable: component_container
