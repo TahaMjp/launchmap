@@ -1,16 +1,5 @@
 .argument-block {
-  display: inline-block;
   border: 2px solid gold;
   background-color: #2e2e00;
-  border-radius: 8px;
-  padding: 10px;
   color: #ffd700;
-  white-space: nowrap;
-  font-size: 13px;
-  box-shadow: 2px 2px 5px #000;
-  cursor: grab;
-  width: fit-content;
-  max-width: none;
-  white-space: nowrap;
-  overflow: visible;
 }

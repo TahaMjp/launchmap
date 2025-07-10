@@ -17,7 +17,7 @@ import { getTypeLabel } from "./labels.js";
 
 export function createBaseBlock({ type, label, layoutCtx, options }) {
     const block = document.createElement("div");
-    block.className = `${type}-block`;
+    block.className = `block ${type}-block`;
     block.style.position = "absolute";
     block.style.left = `${layoutCtx.x}px`;
     block.style.top = `${layoutCtx.y}px`;

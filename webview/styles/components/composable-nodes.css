@@ -1,15 +1,7 @@
 .composable-node-block {
-  display: inline-block;
-  border: 2px solid #555;
-  border-radius: 8px;
-  background-color: #292929;
-  padding: 10px;
-  box-shadow: 2px 2px 4px #000;
-  cursor: grab;
-  width: fit-content;
-  max-width: none;
-  white-space: nowrap;
-  overflow: visible;
+  border: 2px solid #2196f3;
+  background-color: #152535;
+  color: #b3e5fc;
 }
 
 .composable-node-title {

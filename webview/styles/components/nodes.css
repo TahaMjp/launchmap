@@ -1,20 +1,5 @@
 .node-block {
-  display: inline-block;
-  border: 2px solid #555;
-  border-radius: 8px;
-  background-color: #292929;
-  padding: 10px;
-  box-shadow: 2px 2px 4px #000;
-  cursor: grab;
-  width: fit-content;
-  max-width: none;
-  white-space: nowrap;
-  overflow: visible;
-}
-
-.node-title {
-  font-weight: bold;
-  font-size: 14px;
-  margin-bottom: 5px;
-  color: #66d9ef;
+  border: 2px solid #4fc3f7;
+  background-color: #1e2f3d;
+  color: #aeefff;
 }
