@@ -12,13 +12,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-TYPE_KEY_MAP = {
-    "Node": "nodes",
-    "DeclareLaunchArgument": "arguments",
-    "IncludeLaunchDescription": "includes",
-    "GroupAction": "groups",
-    "SetParameter": "parameters",
-    "OpaqueFunction": "opaque_functions",
-    "ComposableNode": "unattached_composable_nodes",
-    "ComposableNodeContainer": "composable_nodes_container"
-}
+import ast
+from parser.resolution.resolution_registry import register_resolver
+
+@register_resolver(ast.JoinedStr)
+def resolve_function_def(node: ast.FunctionDef, engine):
+    parts = []
+    for value in node.values:
+        if isinstance(value, ast.FormattedValue):
+            inner = engine.resolve(value.value)
+            parts.append(str(inner))
+        elif isinstance(value, ast.Constant):
+            parts.append(str(value.value))
+        else:
+            parts.append(f"<unresolved:{type(value).__name__}")
+    
+    return "".join(parts)

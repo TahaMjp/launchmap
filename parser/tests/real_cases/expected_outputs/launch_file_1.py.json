@@ -23,7 +23,7 @@
         ],
         "includes": [
           {
-            "launch_description_source": "[\"${PathJoinSubstitution:['FindPackageShare('example_package')', 'launch', 'components', 'robot.launch.py']}\"]",
+            "launch_description_source": "${PathJoinSubstitution:['FindPackageShare('example_package')', 'launch', 'components', 'robot.launch.py']}",
             "launch_arguments": {},
             "included": {}
           }

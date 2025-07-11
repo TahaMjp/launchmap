@@ -19,7 +19,7 @@ import { renderSection } from './renderSection.js';
 
 export function renderComposableContainerGroup(container, groups, namespace, layoutCtx, options = {}) {
     groups.forEach((group, idx) => {
-        const path = options.pathPrefix ? `${options.pathPrefix}.composable_nodes[${idx}]` : `composable_nodes[${idx}]`;
+        const path = options.pathPrefix ? `${options.pathPrefix}.composable_nodes_container[${idx}]` : `composable_nodes_container[${idx}]`;
         renderComposableContainer(group, container, layoutCtx, { ...options, path });
     });
 
@@ -72,7 +72,7 @@ export function renderComposableContainer(group, container, layoutCtx, options =
         ...options,
         stopPropagation: true, 
         constrainToParent: true,
-        pathPrefix: `${options.path}.composable_nodes`
+        pathPrefix: `${options.path}`
     };
 
     // Render composable nodes
