@@ -12,9 +12,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-export function renderAutoResizableBody(container, type = "block") {
+export function renderAutoResizableBody(container, type = "block", fixedSelectors = []) {
     requestAnimationFrame(() => {
-        const children = container.querySelectorAll(`[class$="-${type}"]`);
+        let offsetY = 0;
+
+        if (fixedSelectors.length > 0) {
+            fixedSelectors.forEach(sel => {
+                const header = container.querySelector(sel);
+                if (header) {
+                    const height = header.getBoundingClientRect().height;
+                    offsetY = Math.max(offsetY, height + 45);
+                }
+            });
+        }
+
+        const blockSelector = `[class$="-${type}"]`
+        const allSelectors = [blockSelector, ...fixedSelectors].join(", ");
+        const children = container.querySelectorAll(allSelectors);
+        
         let maxRight = 0;
         let maxBottom = 0;
 
@@ -30,5 +45,10 @@ export function renderAutoResizableBody(container, type = "block") {
 
         container.style.width = `${maxRight + 20}px`;
         container.style.height = `${maxBottom + 20}px`;
+
+        const body = container.querySelector(`[class$="-body"]`);
+        if (body) {
+            body.style.top = `${offsetY}px`;
+        }
     });
 }

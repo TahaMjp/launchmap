@@ -33,7 +33,6 @@ def handle_group_action(node: ast.Call, context: ParseContext) -> dict:
 
     namespace = None
     actions = []
-
     for item in resolved_flat:
         if isinstance(item, dict) and item.get("type") == "PushRosNamespace":
             namespace = item.get("namespace")
@@ -46,12 +45,14 @@ def handle_group_action(node: ast.Call, context: ParseContext) -> dict:
     if namespace:
         context.pop_namespace()
 
-    return {
+    result = {
         "type": "GroupAction",
-        "namespace": namespace,
-        "actions": grouped
-    } if namespace else {
-        "type": "GroupAction",
-        "actions": grouped
+        **kwargs,
+        "actions": grouped,
     }
+
+    if namespace:
+        result["namespace"] = namespace
+
+    return result
         

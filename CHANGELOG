@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [0.1.0] - 2025-07-11
+
+### Added
+- Support for `ComposableNode` and `ComposableNodeContainer`
+- Support for `IfCondition` and conditional grouping
+- Full coverage of all basic ROS 2 launch constructs
+
+### Changed
+- Bumped to version 0.1.0 to mark the completion of core parsing and visualization features
+
+### Notes
+- With this release, LaunchMap now supports all primary ROS 2 launch actions and conditions.
+- This sets the foundation for more advanced features like live inspection, editing, and dynamic tracing.
+
 ## [0.0.7] - 2025-07-05
 
 ### Fixed

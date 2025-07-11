@@ -12,18 +12,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from parser.context import ParseContext
-from parser.parser.registry import register_handler
-from parser.resolution.utils import resolve_call_signature
 import ast
+from parser.resolution.resolution_registry import register_resolver
 
-@register_handler("IfCondition", "launch.conditions.IfCondition")
-def handle_if_condition(node: ast.Call, context: ParseContext) -> dict:
-    args, kwargs = resolve_call_signature(node, context.engine)
-
-    if args:
-        kwargs["expression"] = args[0]
+@register_resolver(ast.JoinedStr)
+def resolve_function_def(node: ast.FunctionDef, engine):
+    parts = []
+    for value in node.values:
+        if isinstance(value, ast.FormattedValue):
+            inner = engine.resolve(value.value)
+            parts.append(str(inner))
+        elif isinstance(value, ast.Constant):
+            parts.append(str(value.value))
+        else:
+            parts.append(f"<unresolved:{type(value).__name__}")
     
-    return {"type": "IfCondition", **kwargs}
-
-    
+    return "".join(parts)

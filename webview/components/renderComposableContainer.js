@@ -17,22 +17,19 @@ import { renderAutoResizableBody } from './renderAutoResizableBody.js';
 import { renderComponent } from './renderComponent.js';
 import { renderSection } from './renderSection.js';
 
-export function renderGroupGroup(container, groups, namespace, layoutCtx, options = {}) {
+export function renderComposableContainerGroup(container, groups, namespace, layoutCtx, options = {}) {
     groups.forEach((group, idx) => {
-        const path = options.pathPrefix ? `${options.pathPrefix}.groups[${idx}]` : `groups[${idx}]`;
-        renderGroup(group, container, layoutCtx, { ...options, path });
+        const path = options.pathPrefix ? `${options.pathPrefix}.composable_nodes_container[${idx}]` : `composable_nodes_container[${idx}]`;
+        renderComposableContainer(group, container, layoutCtx, { ...options, path });
     });
 
     layoutCtx.x += 350;
     layoutCtx.y = 100;
 }
 
-export function renderGroup(group, container, layoutCtx, options = {}) {
-    const ns = group.namespace || "";
-
-    const groupBox = createBaseBlock({
-        type: "group",
-        label: ns,
+export function renderComposableContainer(group, container, layoutCtx, options = {}) {
+    const composableContainer = createBaseBlock({
+        type: "composable-container",
         layoutCtx,
         options: {
             ...options,
@@ -42,12 +39,14 @@ export function renderGroup(group, container, layoutCtx, options = {}) {
 
     // Header
     const header = document.createElement("div");
-    header.className = "group-header";
+    header.className = "composable-container-header";
 
     // Render additional sections
     const metaSections = [
-        { key: "namespace", icon: "🧭", label: "Namespace", value: ns },
-        { key: "condition", icon: "❓", label: "Condition", value: group.condition }
+        { key: "container", icon: "📛", label: "Container", value: group.target_container },
+        { key: "package", icon: "📦", label: "Package", value: group.package },
+        { key: "executable", icon: "▶️", label: "Executable", value: group.executable },
+        { key: "output", icon: "🖥️", label: "Output", value: group.output}
     ];
 
     metaSections.forEach(( {key, icon, label, value }) => {
@@ -61,28 +60,29 @@ export function renderGroup(group, container, layoutCtx, options = {}) {
         }
     });
 
-    groupBox.append(header);
+    composableContainer.append(header);
 
     // Body
     const body = document.createElement("div");
-    body.className = "group-body";
-    groupBox.appendChild(body);
+    body.className = "composable-container-body";
+    composableContainer.appendChild(body);
 
     const innerLayout = { x: 20, y: 40 };
     const childOptions = { 
         ...options,
         stopPropagation: true, 
         constrainToParent: true,
-        pathPrefix: `${options.path}.actions`
+        pathPrefix: `${options.path}`
     };
 
-    const actions = group.actions || {};
-    for (const [key, value] of Object.entries(actions)) {
-        renderComponent({ type: key, value: value, namespace: ns }, body, innerLayout, childOptions);
-    }
-    container.appendChild(groupBox);
+    // Render composable nodes
+    renderComponent(
+        { type: "composable_nodes", value: group.composable_nodes, namespace: group.namespace }, 
+        body, innerLayout, childOptions
+    );
+    container.appendChild(composableContainer);
 
-    renderAutoResizableBody(groupBox, "block", [".group-header"]);
+    renderAutoResizableBody(composableContainer, "block", [".composable-container-header"]);
 
     layoutCtx.x += 350;
 }

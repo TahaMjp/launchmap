@@ -1,0 +1,86 @@
+{
+  "arguments": [
+    {
+      "default_value": "my_robot_pkg",
+      "description": "Package containing the launch files",
+      "name": "pkg_name"
+    },
+    {
+      "default_value": "true",
+      "description": "Use simulation clock",
+      "name": "use_sim_time"
+    }
+  ],
+  "includes": [
+    {
+      "launch_description_source": "${LaunchConfiguration:pkg_name}/launch/other_launch_file.py",
+      "launch_arguments": {},
+      "included": {}
+    }
+  ],
+  "groups": [
+    {
+      "actions": {
+        "nodes": [
+          {
+            "package": "demo_nodes_cpp",
+            "executable": "talker",
+            "name": "conditional_talker",
+            "output": "screen",
+            "parameters": [
+              {
+                "use_sim_time": "${LaunchConfiguration:use_sim_time}"
+              }
+            ]
+          }
+        ]
+      },
+      "condition": "${IfCondition:'${LaunchConfiguration:use_sim_time}' == 'true'}",
+      "namespace": "sim_ns"
+    }
+  ],
+  "opaque_functions": [
+    {
+      "name": "launch_setup(context, *args, **kwargs)",
+      "returns": {
+        "nodes": [
+          {
+            "package": "robot_state_publisher",
+            "executable": "robot_state_publisher",
+            "output": "screen",
+            "parameters": [
+              {
+                "use_sim_time": "${LaunchConfiguration:use_sim_time}",
+                "robot_description": "<robot name='demo'>...</robot>"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "composable_nodes_container": [
+    {
+      "target_container": "my_container"
+    }
+  ],
+  "launch_argument_usages": [
+    {
+      "argument": "pkg_name",
+      "path": "includes[0].launch_description_source"
+    },
+    {
+      "argument": "use_sim_time",
+      "path": "groups[0].actions.nodes[0].parameters[0].use_sim_time"
+    },
+    {
+      "argument": "use_sim_time",
+      "path": "groups[0].condition"
+    },
+    {
+      "argument": "use_sim_time",
+      "path": "opaque_functions[0].returns.nodes[0].parameters[0].use_sim_time"
+    }
+  ],
+  "undeclared_launch_configurations": []
+}

@@ -160,7 +160,7 @@ tests:
           condition: "${IfCondition:${LaunchConfiguration:enable}}"
       launch_argument_usages:
         - argument: enable
-          path: nodes[0].condition.expression
+          path: nodes[0].condition
       undeclared_launch_configurations: []
     
   - name: undeclared_config_error

@@ -1,52 +1,23 @@
 .group-block {
-  position: absolute;
-  padding: 10px;
   border: 2px dashed #4caf50;
-  border-radius: 10px;
   background-color: rgba(60, 80, 60, 0.2);
-  box-shadow: 0 0 10px #111;
-  cursor: grab;
-  overflow: visible;
-  z-index: 1;
+  color: #9efc9e;
+  position: absolute;
 }
 
 .group-header {
-  top: 5px;
-  bottom: 30px;
   border-bottom: 1px solid #4caf50;
   border-top-left-radius: 10px;
   border-top-right-radius: 10px;
-  z-index: 2;
   position: relative;
-}
-
-.namespace-section {
-  position: absolute;
-  left: 2px;
-  right: 10px;
   z-index: 2;
-  pointer-events: none;
 }
 
 .group-body {
-  border-bottom-left-radius: 10px;
-  border-bottom-right-radius: 10px;
-  z-index: 2;
   position: absolute;
-  top: 100px;
   left: 0;
   right: 0;
   bottom: 0;
   overflow: visible;
-}
-
-.group-title {
-  font-weight: bold;
-  color: #9efc9e;
-  margin-bottom: 10px;
-}
-
-.group-block .node-block,
-.group-block .include-block {
-  position: absolute;
+  z-index: 2;
 }

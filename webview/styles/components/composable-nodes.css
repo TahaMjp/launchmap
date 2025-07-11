@@ -1,0 +1,12 @@
+.composable-node-block {
+  border: 2px solid #2196f3;
+  background-color: #152535;
+  color: #b3e5fc;
+}
+
+.composable-node-title {
+  font-weight: bold;
+  font-size: 14px;
+  margin-bottom: 5px;
+  color: #66d9ef;
+}

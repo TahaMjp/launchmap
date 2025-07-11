@@ -66,6 +66,7 @@ tests:
       includes:
         - launch_description_source: ${PathJoinSubstitution:[FindPackageShare('my_pkg'), 'launch', 'other.py']}
           launch_arguments: {}
+          included: {}
 
   - name: include_with_variable_assignment
     description: IncludeLaunchDescription assigned to variable before use_sim_time

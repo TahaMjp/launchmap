@@ -15,10 +15,10 @@
 import { renderSection } from './renderSection.js';
 import { createBaseBlock } from '../utils/baseBlock.js';
 
-export function renderNodeGroup(container, nodes, namespace, layoutCtx, options={}) {
+export function renderComposableNodeGroup(container, nodes, namespace, layoutCtx, options={}) {
     nodes.forEach((node, idx) => {
-        const path = options.pathPrefix ? `${options.pathPrefix}.nodes[${idx}]` : `nodes[${idx}]`;
-        const block = renderNode(node, namespace, layoutCtx, { ...options, path });
+        const path = options.pathPrefix ? `${options.pathPrefix}.composable_nodes[${idx}]` : `composable_nodes[${idx}]`;
+        const block = renderComposableNode(node, namespace, layoutCtx, { ...options, path });
         container.appendChild(block);
         layoutCtx.y += 100;
     });
@@ -27,27 +27,22 @@ export function renderNodeGroup(container, nodes, namespace, layoutCtx, options=
     layoutCtx.y = 100;
 }
 
-function renderNode(node, namespace, layoutCtx, options) {
+function renderComposableNode(node, namespace, layoutCtx, options) {
     const block = createBaseBlock({
-        type: 'node',
+        type: 'composable-node',
         layoutCtx,
         options
     })
 
     // Node name
-    const titleLabel = node.name || node.executable || "(anonymous)";
+    const titleLabel = node.name || node.plugin || "(anonymous)";
     const fullName = namespace ? `${namespace}/${titleLabel}` : titleLabel;
 
     // Sections
     const renderOptions = { includeLeftPort: true, portIdPrefix: options.path, portRegistry: options.portRegistry };
     block.appendChild(renderSection("name", "📛", "Name", fullName, renderOptions));
     block.appendChild(renderSection("package", "📦", "Package", node.package, renderOptions));
-    block.appendChild(renderSection("executable", "▶️", "Executable", node.executable, renderOptions));
-    block.appendChild(renderSection("output", "🖥️", "Output", node.output || "—", renderOptions));
-
-    if (node.condition) {
-        block.appendChild(renderSection("condition", "❓", "Condition", node.condition, renderOptions));
-    }
+    block.appendChild(renderSection("plugin", "🔌", "Plugin", node.plugin, renderOptions));
 
     if (node.parameters?.length > 0) {
         block.appendChild(renderSection("parameters", "⚙️", "Params", node.parameters, renderOptions));

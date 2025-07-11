@@ -14,6 +14,7 @@
 
 import ast
 from parser.context import ParseContext
+from parser.parser.postprocessing import simplify_launch_configurations
 from parser.parser.registry import register_handler
 from parser.parser.utils.symbolic import is_symbolic
 from parser.resolution.utils import resolve_call_signature
@@ -35,13 +36,12 @@ def handle_include(node: ast.Call, context: ParseContext) -> dict:
     
     file_value = launch_source["filename"]
 
-    # If symbolic, just return metadata (for now)
-    if is_symbolic(file_value):
-        return {
-            "type": "IncludeLaunchDescription",
-            "launch_description_source": file_value,
-            "launch_arguments": launch_args
-        }
+    # Flatten and stringify all parts
+    file_value = simplify_launch_configurations(file_value)
+    if isinstance(file_value, list):
+        path = "".join(str(part) for part in file_value)
+    else:
+        path = str(file_value)
     
     # Load and parse included file
     # from parser.includes.resolver import resolve_included_launch_file
@@ -53,7 +53,7 @@ def handle_include(node: ast.Call, context: ParseContext) -> dict:
 
     return {
         "type": "IncludeLaunchDescription",
-        "launch_description_source": launch_source["filename"],
+        "launch_description_source": path,
         "launch_arguments": launch_args,
         "included": {}
     }

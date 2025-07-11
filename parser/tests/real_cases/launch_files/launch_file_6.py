@@ -16,8 +16,7 @@ from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument, GroupAction, IncludeLaunchDescription, OpaqueFunction
 from launch.conditions import IfCondition
 from launch.substitutions import LaunchConfiguration, PythonExpression
-from launch_ros.actions import Node, ComposableNodeContainer
-from launch_ros.descriptions import ComposableNode
+from launch_ros.actions import Node, ComposableNodeContainer, LoadComposableNodes
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 import os
 
@@ -82,13 +81,13 @@ def generate_launch_description():
         package='rclcpp_components',
         executable='component_container_mt',
         composable_node_descriptions=[
-            ComposableNode(
+            Node(
                 package='demo_nodes_cpp',
                 plugin='demo_nodes_cpp::Talker',
                 name='talker_component',
                 parameters=[{'use_sim_time': LaunchConfiguration('use_sim_time')}]
             ),
-            ComposableNode(
+            Node(
                 package='demo_nodes_cpp',
                 plugin='demo_nodes_cpp::Listener',
                 name='listener_component',

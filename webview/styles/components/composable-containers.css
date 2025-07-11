@@ -1,0 +1,23 @@
+.composable-container-block {
+  border: 2px dashed #3498db;
+  background-color: rgba(13, 27, 42, 0.2);
+  color: #cceeff;
+  position: absolute;
+}
+
+.composable-container-header {
+  border-bottom: 1px solid #3498db;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  position: relative;
+  z-index: 2;
+}
+
+.composable-container-body {
+  position: absolute;
+  overflow: visible;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 2;
+}

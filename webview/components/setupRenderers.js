@@ -18,6 +18,8 @@ import { renderIncludesGroup } from "./renderInclude.js";
 import { renderNodeGroup } from "./renderNode.js";
 import { renderGroupGroup } from "./renderGroup.js";
 import { renderOpaqueFunctionGroup } from "./renderOpaqueFunction.js";
+import { renderComposableContainerGroup } from "./renderComposableContainer.js";
+import { renderComposableNodeGroup } from "./renderComposableNode.js";
 
 registerRenderer("arguments", (obj, container, layoutCtx, options) => {
     renderArguments(container, obj.value || [], layoutCtx, options);
@@ -37,4 +39,12 @@ registerRenderer("groups", (obj, container, layoutCtx, options) => {
 
 registerRenderer("opaque_functions", (obj, container, layoutCtx, options) => {
     renderOpaqueFunctionGroup(container, obj.value || [], obj.namespace || "", layoutCtx, options);
+});
+
+registerRenderer("composable_nodes_container", (obj, container, layoutCtx, options) => {
+    renderComposableContainerGroup(container, obj.value || [], obj.namespace || "", layoutCtx, options);
+});
+
+registerRenderer("composable_nodes", (obj, container, layoutCtx, options) => {
+    renderComposableNodeGroup(container, obj.value || [], obj.namespace || "", layoutCtx, options);
 });

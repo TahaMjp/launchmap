@@ -47,9 +47,8 @@ export function renderOpaqueFunction(opaqueFcn, namespace, prefix, container, la
     title.innerText = `${opaqueFcn.name}`;
     header.appendChild(title);
 
-    // Arguments
-
     fcnBox.append(header);
+
     // Body
     const body = document.createElement("div");
     body.className = "opaque-function-body";
@@ -69,7 +68,7 @@ export function renderOpaqueFunction(opaqueFcn, namespace, prefix, container, la
     }
     container.appendChild(fcnBox);
 
-    renderAutoResizableBody(fcnBox, "block");
+    renderAutoResizableBody(fcnBox, "block", [".opaque-function-header"]);
 
     layoutCtx.x += 350;
 }

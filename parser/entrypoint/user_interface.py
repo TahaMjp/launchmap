@@ -24,6 +24,9 @@ def parse_and_format_launch_file(filepath: str) -> dict:
     raw = parse_launch_file(filepath)
     grouped = group_entities_by_type(raw["parsed"])
 
+    if raw.get("composable_node_containers"):
+        grouped["composable_nodes_container"] = raw["composable_node_containers"]
+        
     grouped["launch_argument_usages"] = collect_launch_config_usages(grouped)
     grouped["undeclared_launch_configurations"] = raw.get("undeclared_launch_configurations", [])
 
