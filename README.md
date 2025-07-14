@@ -33,7 +33,7 @@ Whether you are debugging a complex `launch.py`, exploring a new package, or onb
 Install from the [Visual Studio Code Marketplace](https://marketplace.visualstudio.com/items?itemName=KodoRobotics.launchmap), or use the CLI:
 
 ```bash
-    code --install-extension KodoRobotics.launchmap
+code --install-extension KodoRobotics.launchmap
 ```
 ---
 
@@ -119,5 +119,5 @@ New to the ROS 2 ecosystem? Here are some great resources to get you started:
 
 ## 🤝 Contributing
 
-Contributions are welcome!  
+Contributions are welcome!
 Please open an issue, suggest a feature, or submit a pull request.
