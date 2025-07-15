@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { renderSection } from './renderSection.js';
-import { createBaseBlock } from '../utils/baseBlock.js';
+import { renderBaseBlock } from './renderBaseBlock.js';
 
 export function renderComposableNodeGroup(container, nodes, namespace, layoutCtx, options={}) {
     nodes.forEach((node, idx) => {
@@ -28,10 +28,13 @@ export function renderComposableNodeGroup(container, nodes, namespace, layoutCtx
 }
 
 function renderComposableNode(node, namespace, layoutCtx, options) {
-    const block = createBaseBlock({
+    const block = renderBaseBlock({
         type: 'composable-node',
         layoutCtx,
-        options
+        options: {
+            ...options,
+            events: node.events
+        }
     })
 
     // Node name

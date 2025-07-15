@@ -1,0 +1,29 @@
+.event-port-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 4px 0;
+  padding: 0 4px;
+}
+
+.event-port-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  color: #aaa;
+}
+
+.event-port-wrapper.left {
+  justify-content: flex-start;
+}
+
+.event-port-wrapper.right {
+  justify-content: flex-end;
+  margin-left: auto;
+}
+
+.event-label {
+  font-style: italic;
+  font-size: 11px;
+}

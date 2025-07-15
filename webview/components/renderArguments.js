@@ -12,8 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { createBaseBlock } from '../utils/baseBlock.js';
-import { makeDraggable } from '../utils/drag.js';
+import { renderBaseBlock } from './renderBaseBlock.js';
 import { renderSection } from './renderSection.js';
 
 export function renderArguments(container, argumentsList, layoutCtx, options) {
@@ -34,7 +33,7 @@ export function renderArguments(container, argumentsList, layoutCtx, options) {
 }
 
 export function renderArgument(arg, layoutCtx, options) {
-    const block = createBaseBlock({
+    const block = renderBaseBlock({
         type: "argument",
         label: arg.name,
         layoutCtx,

@@ -33,9 +33,9 @@ tests:
       event_handlers:
         - type: OnProcessExit
           triggers:
-            - nodes[0].events.triggered_by[0]
+            - nodes[0].events.triggered_by
           triggered_by:
-            - nodes[1].events.triggers[0]
+            - nodes[1].events.triggers
   
   - name: on_process_exit_multiple_triggers
     input: |
@@ -75,10 +75,10 @@ tests:
       event_handlers:
         - type: OnProcessExit
           triggers:
-            - nodes[0].events.triggered_by[0]
+            - nodes[0].events.triggered_by
           triggered_by:
-            - nodes[1].events.triggers[0]
-            - nodes[2].events.triggers[0]
+            - nodes[1].events.triggers
+            - nodes[2].events.triggers
     
   - name: on_process_exit_multiple_triggered_by
     input: |
@@ -127,14 +127,14 @@ tests:
       event_handlers:
         - type: OnProcessExit
           triggers:
-            - nodes[0].events.triggered_by[0]
+            - nodes[0].events.triggered_by
           triggered_by:
-            - nodes[1].events.triggers[0]
+            - nodes[1].events.triggers
         - type: OnProcessExit
           triggers:
-            - nodes[2].events.triggered_by[0]
+            - nodes[2].events.triggered_by
           triggered_by:
-            - nodes[1].events.triggers[1]
+            - nodes[1].events.triggers
   
   - name: on_process_start_basic
     input: |
@@ -170,6 +170,6 @@ tests:
       event_handlers:
         - type: OnProcessStart
           triggers:
-            - nodes[0].events.triggered_by[0]
+            - nodes[0].events.triggered_by
           triggered_by:
-            - nodes[1].events.triggers[0]
+            - nodes[1].events.triggers

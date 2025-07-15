@@ -12,21 +12,39 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { makeDraggable } from "./drag.js";
-import { getTypeLabel } from "./labels.js";
+import { makeDraggable } from "../utils/drag.js";
+import { getTypeLabel } from "../utils/labels.js";
+import { renderEventPortRow } from "./renderEventPortRow.js";
 
-export function createBaseBlock({ type, label, layoutCtx, options }) {
+export function renderBaseBlock({ type, label, layoutCtx, options }) {
     const block = document.createElement("div");
     block.className = `block ${type}-block`;
     block.style.position = "absolute";
     block.style.left = `${layoutCtx.x}px`;
     block.style.top = `${layoutCtx.y}px`;
 
+    // Header container
+    const header = document.createElement("div");
+    header.className = "block-header";
+
     // Top label
     const heading = document.createElement("div");
     heading.className = "block-title";
     heading.innerText = getTypeLabel(type);
-    block.appendChild(heading);
+    header.appendChild(heading);
+
+    // Event ports
+    const path = options?.path;
+    const portRegistry = options?.portRegistry;
+    if (options?.events?.triggered_by?.length || options?.events?.triggers?.length) {
+        const leftLabel = options.eventLabels?.left || "← triggered by";
+        const rightLabel = options.eventLabels?.right || "triggers →";
+
+        const eventPortRow = renderEventPortRow(path, portRegistry, leftLabel, rightLabel);
+        header.appendChild(eventPortRow);
+    }
+
+    block.appendChild(header);
 
     // Metadata
     if (options?.path) {

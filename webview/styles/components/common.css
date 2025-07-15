@@ -7,18 +7,31 @@
   cursor: grab;
   width: fit-content;
   max-width: none;
+  min-width: 250px;
   white-space: nowrap;
   overflow: visible;
   position: absolute;
 }
 
+.block-header {
+  padding-bottom: 6px;
+  margin-bottom: 8px;
+  border-bottom: 1px dashed #444
+}
+
 .block-title {
   font-weight: bold;
   font-size: 15px;
-  margin-bottom: 6px;
   color: #ffffff;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  padding-bottom: 4px;
-  border-bottom: 1px dashed #444;
+  margin-bottom: 4px;
+}
+
+.event-port-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 4px;
+  padding: 0 4px;
 }

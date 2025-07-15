@@ -81,19 +81,19 @@
     {
       "type": "OnProcessExit",
       "triggered_by": [
-        "nodes[3].events.triggers[0]"
+        "nodes[3].events.triggers"
       ],
       "triggers": [
-        "nodes[2].events.triggered_by[0]"
+        "nodes[2].events.triggered_by"
       ]
     },
     {
       "type": "OnProcessExit",
       "triggered_by": [
-        "nodes[4].events.triggers[0]"
+        "nodes[4].events.triggers"
       ],
       "triggers": [
-        "nodes[3].events.triggered_by[0]"
+        "nodes[3].events.triggered_by"
       ]
     }
   ]

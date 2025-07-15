@@ -76,10 +76,13 @@ def collect_event_handler_usages(grouped: dict) -> list[dict]:
 
                 usage_map[idx]["type"] = handler_type
 
-                if ".triggers" in path:
-                    usage_map[idx]["triggered_by"].append(path)
-                elif ".triggered_by" in path:
-                    usage_map[idx]["triggers"].append(path)
+                # Remove trailing index of triggers and triggered_by
+                clean_path = path.rsplit('[', 1)[0] if path.endswith(']') else path
+
+                if ".triggers" in clean_path:
+                    usage_map[idx]["triggered_by"].append(clean_path)
+                elif ".triggered_by" in clean_path:
+                    usage_map[idx]["triggers"].append(clean_path)
     
     for key in TYPE_KEY_MAP.values():
         for idx, item in enumerate(grouped.get(key, [])):

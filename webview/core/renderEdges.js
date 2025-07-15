@@ -20,9 +20,6 @@ export function renderEdges(data, portRegistry) {
         const fromPortId = `argument:${usage.argument}.argument`;
         const toPortId = `${usage.path}`;
 
-        console.log(portRegistry);
-        console.log(fromPortId, toPortId);
-
         const fromPort = portRegistry[fromPortId];
         const toPort = portRegistry[toPortId];
 
