@@ -1,0 +1,100 @@
+{
+  "arguments": [
+    {
+      "default_value": "true",
+      "description": "Start RViz2 automatically with this launch file.",
+      "name": "gui"
+    }
+  ],
+  "nodes": [
+    {
+      "package": "controller_manager",
+      "executable": "ros2_control_node",
+      "parameters": [
+        "${PathJoinSubstitution:[${FindPackageShare:ros2_control_demo_example_1}, 'config', 'rrbot_controllers.yaml']}"
+      ],
+      "output": "both"
+    },
+    {
+      "package": "robot_state_publisher",
+      "executable": "robot_state_publisher",
+      "output": "both",
+      "parameters": [
+        {
+          "robot_description": "${Command:[${PathJoinSubstitution:[${FindExecutable:xacro}]}, ' ', ${PathJoinSubstitution:[${FindPackageShare:ros2_control_demo_example_1}, 'urdf', 'rrbot.urdf.xacro']}]}"
+        }
+      ]
+    },
+    {
+      "package": "controller_manager",
+      "executable": "spawner",
+      "arguments": [
+        "forward_position_controller",
+        "--param-file",
+        "${PathJoinSubstitution:[${FindPackageShare:ros2_control_demo_example_1}, 'config', 'rrbot_controllers.yaml']}"
+      ],
+      "events": {
+        "triggered_by": [
+          "${EventHandler[1]:OnProcessExit}"
+        ]
+      }
+    },
+    {
+      "package": "controller_manager",
+      "executable": "spawner",
+      "arguments": [
+        "joint_state_broadcaster"
+      ],
+      "events": {
+        "triggered_by": [
+          "${EventHandler[0]:OnProcessExit}"
+        ],
+        "triggers": [
+          "${EventHandler[1]:OnProcessExit}"
+        ]
+      }
+    },
+    {
+      "package": "rviz2",
+      "executable": "rviz2",
+      "name": "rviz2",
+      "output": "log",
+      "arguments": [
+        "-d",
+        "${PathJoinSubstitution:[${FindPackageShare:ros2_control_demo_description}, 'rrbot/rviz', 'rrbot.rviz']}"
+      ],
+      "condition": "${IfCondition:${LaunchConfiguration:gui}}",
+      "events": {
+        "triggers": [
+          "${EventHandler[0]:OnProcessExit}"
+        ]
+      }
+    }
+  ],
+  "launch_argument_usages": [
+    {
+      "argument": "gui",
+      "path": "nodes[4].condition"
+    }
+  ],
+  "event_handlers": [
+    {
+      "type": "OnProcessExit",
+      "triggered_by": [
+        "nodes[3].events.triggers[0]"
+      ],
+      "triggers": [
+        "nodes[2].events.triggered_by[0]"
+      ]
+    },
+    {
+      "type": "OnProcessExit",
+      "triggered_by": [
+        "nodes[4].events.triggers[0]"
+      ],
+      "triggers": [
+        "nodes[3].events.triggered_by[0]"
+      ]
+    }
+  ]
+}

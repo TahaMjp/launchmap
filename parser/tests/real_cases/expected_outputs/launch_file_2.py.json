@@ -35,6 +35,5 @@
       "argument": "driver_param_file",
       "path": "opaque_functions[0].returns.nodes[0].parameters[0]"
     }
-  ],
-  "undeclared_launch_configurations": []
+  ]
 }

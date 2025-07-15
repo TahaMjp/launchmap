@@ -55,9 +55,15 @@ def test_conditions_parsing(code, expected):
 @pytest.mark.parametrize("code,expected", load_yaml_tests("test_cases/composable_node_tests.yaml"))
 def test_composable_nodes_parsing(code, expected):
     result = parse_launch_string(code)
+    for key in ["arguments", "composable_nodes", "unattached_composable_nodes", "launch_argument_usages", "undeclared_launch_configurations"]:
+        assert result.get(key, []) == expected.get(key, [])
+
+@pytest.mark.parametrize("code,expected", load_yaml_tests("test_cases/event_handler_tests.yaml"))
+def test_event_handlers_parsing(code, expected):
+    result = parse_launch_string(code)
     print(result)
     print(expected)
-    for key in ["arguments", "composable_nodes", "unattached_composable_nodes", "launch_argument_usages", "undeclared_launch_configurations"]:
+    for key in ["nodes", "event_handlers"]:
         assert result.get(key, []) == expected.get(key, [])
 
 # @pytest.mark.parametrize("code,expected,files", load_yaml_tests("test_cases/recursive_include_tests.yaml", with_files=True))

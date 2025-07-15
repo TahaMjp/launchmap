@@ -64,7 +64,7 @@ tests:
           ])
     expected:
       includes:
-        - launch_description_source: ${PathJoinSubstitution:[FindPackageShare('my_pkg'), 'launch', 'other.py']}
+        - launch_description_source: ${PathJoinSubstitution:[${FindPackageShare:my_pkg}, 'launch', 'other.py']}
           launch_arguments: {}
           included: {}
 

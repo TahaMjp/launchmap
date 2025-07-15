@@ -43,10 +43,16 @@ def _simplify_path_join(obj):
 
 def _simplify_find_package(obj):
     package = obj.get("package")
-    return f"FindPackageShare('{package}')"
+    return f"${{FindPackageShare:{package}}}"
+
+def _simplify_find_executable(obj):
+    name = obj.get("name")
+    return f"${{FindExecutable:{name}}}"
 
 def _simplify_command(obj):
-    return f"${{Command: {repr(obj['command'])}}}"
+    format_symbolic_part = lambda p: simplify_launch_configurations(p) if isinstance(p, dict) else f"'{p}'" if isinstance(p, str) else str(p)
+    commands = ", ".join(format_symbolic_part(p) for p in obj.get("command"))
+    return f"${{Command:[{commands}]}}"
 
 
 # Dispatcher registry
@@ -55,4 +61,5 @@ simplifier_registry = {
     "PathJoinSubstitution": _simplify_path_join,
     "FindPackageShare": _simplify_find_package,
     "Command": _simplify_command,
+    "FindExecutable": _simplify_find_executable,
 }
