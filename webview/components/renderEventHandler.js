@@ -14,11 +14,10 @@
 
 import { renderSection } from './renderSection.js';
 import { renderBaseBlock } from './renderBaseBlock.js';
-import { renderEventPortRow } from './renderEventPortRow.js';
 
 export function renderEventHandlerGroup(container, handlers, namespace, layoutCtx, options={}) {
     handlers.forEach((handler, idx) => {
-        const path = options.pathPrefix ? `${options.pathPrefix}.event_handlers[${idx}]` : `event_handlers[${idx}]`;
+        const path = `events[${idx}]`;
         const block = renderEventHandler(handler, namespace, layoutCtx, { ...options, path });
         container.appendChild(block);
         layoutCtx.y += 100;
