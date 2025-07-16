@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/launchmap-logo.png" width="150" alt="LaunchMap Logo">
+  <img src="assets/launchmap-logo.png" width="150" alt="LaunchMap Logo">
 </p>
 
 [![VSCode Marketplace](https://img.shields.io/visual-studio-marketplace/v/KodoRobotics.launchmap?label=VSCode%20Marketplace)](https://marketplace.visualstudio.com/items?itemName=KodoRobotics.launchmap)
@@ -17,11 +17,11 @@ Whether you are debugging a complex `launch.py`, exploring a new package, or onb
 
 - Visualizes ROS 2 launch files as interactive graphs
 - Supports core launch constructs like:
-  - `Node(...)`
-  - `IncludeLaunchDescription(...)`
-  - `GroupAction(...)`
-  - `DeclareLaunchArgument(...)`
-  - `LaunchConfiguration(...)`
+  - `Node(...)`
+  - `IncludeLaunchDescription(...)`
+  - `GroupAction(...)`
+  - `DeclareLaunchArgument(...)`
+  - `LaunchConfiguration(...)`
 - Traces argument usage and include relationships
 - Opens the graph in a **new tab** within VSCode
 - Displays a warning banner for unsupported or skipped components
@@ -42,51 +42,48 @@ code --install-extension KodoRobotics.launchmap
 1. Open a `.launch.py` file in VSCode.
 2. Open the Command Palette (`Ctrl+Shift+P` or `Cmd+Shift+P`).
 3. Run: **Open Launch Visualizer**
-
-The graph will open in a new editor tab.
+4. The graph will open in a new editor tab.
 
 ---
 
-### 🚀 Quick Start Example
+## 🚀 Quick Start Example
 
-Don't have a `.launch.py` file handy? No problem!  
-You can quickly test the visualizer by creating a new file (e.g., `hello.launch.py`) and pasting the following code:
+Don't have a `.launch.py` file handy? No problem! You can quickly test the visualizer by creating a new file (e.g., `hello.launch.py`) and pasting the following code:
 
 ```python
+from launch import LaunchDescription
+from launch_ros.actions import Node
 
-    from launch import LaunchDescription
-    from launch_ros.actions import Node
-
-    def generate_launch_description():
-        return LaunchDescription([
-            Node(
-                package='demo_nodes_cpp',
-                executable='talker',
-                name='my_talker'
-            ),
-            Node(
-                package='demo_nodes_cpp',
-                executable='listener',
-                name='my_listener'
-            )
-        ])
+def generate_launch_description():
+    return LaunchDescription([
+        Node(
+            package='demo_nodes_cpp',
+            executable='talker',
+            name='my_talker'
+        ),
+        Node(
+            package='demo_nodes_cpp',
+            executable='listener',
+            name='my_listener'
+        )
+    ])
 ```
-Now, open this file and run the **Open Launch Visualizer** command!
+Now, open this file and run the 'Open Launch Visualizer' command.
 
----
+**Expected Outcome**: A new tab will open in VSCode showing an interactive graph. The graph should display two nodes, 'my_talker' and 'my_listener', representing the two processes defined in the launch file.
 
 ## ✅ Construct Support Status
 
-| Construct                        | Status            |
-|----------------------------------|-------------------|
-| `Node(...)`                      | ✅ Supported      |
-| `IncludeLaunchDescription(...)`  | ✅ Supported      |
-| `GroupAction(...)`               | ✅ Supported      |
-| `DeclareLaunchArgument(...)`     | ✅ Supported      |
-| `LaunchConfiguration(...)`       | ✅ Supported      |
-| `SetParameter(...)`              | ⚠️ Not yet parsed |
-| `ComposableNode(...)`            | ⚠️ Not yet parsed |
-| `IfCondition(...)`               | ⚠️ Not yet parsed |
+| Construct | Status |
+|---|---|
+| `Node(...)` | ✅ Supported |
+| `IncludeLaunchDescription(...)` | ✅ Supported |
+| `GroupAction(...)` | ✅ Supported |
+| `DeclareLaunchArgument(...)` | ✅ Supported |
+| `LaunchConfiguration(...)` | ✅ Supported |
+| `SetParameter(...)` | ⚠️ Not yet parsed |
+| `ComposableNode(...)` | ⚠️ Not yet parsed |
+| `IfCondition(...)` | ⚠️ Not yet parsed |
 
 > A banner at the top of the graph view shows which components were skipped.
 
@@ -100,20 +97,37 @@ Now, open this file and run the **Open Launch Visualizer** command!
 
 ---
 
+## 🐛 Troubleshooting / Having Issues?
+
+If you encounter any problems while using LaunchMap, check these common issues:
+
+- **The visualizer doesn't open?** Ensure your `.launch.py` file is saved and doesn't contain any syntax errors (VSCode should highlight these). Also, verify that the LaunchMap extension is installed and enabled in VSCode.
+
+- **The graph is empty or incomplete?** Please note that LaunchMap is under active development, and some advanced ROS 2 launch constructs are not yet fully supported. A warning banner will appear at the top of the graph if any components were skipped.
+
+- **Encountering an error message?** Please open a new issue on the [GitHub repository](https://github.com/Kodo-Robotics/launchmap/issues) with details about the error and steps to reproduce it. Including a screenshot of the error can also be helpful!
+
+For any other issues or unexpected behavior, we encourage you to open a new issue on GitHub. The more information you provide, the easier it is to diagnose and fix the problem.
+
+---
+
 ## 📜 License
 
-Licensed under the Apache 2.0 License.  
+Licensed under the Apache 2.0 License.
 Copyright © 2025 Kodo Robotics.
 
 ---
 
 ## 📚 Getting Started with ROS 2
 
-New to the ROS 2 ecosystem? Here are some great resources to get you started:
+<details>
+<summary>New to the ROS 2 ecosystem? Click here for some great resources to get you started!</summary>
 
 - [Official ROS 2 Documentation](https://docs.ros.org/en/rolling/)
 - [ROS 2 Humble Tutorials](https://docs.ros.org/en/humble/Tutorials.html)
 - [Articulated Robotics' ROS 2 YouTube Tutorials](https://www.youtube.com/@ArticulatedRobotics)
+
+</details>
 
 ---
 
