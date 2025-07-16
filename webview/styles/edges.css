@@ -33,7 +33,14 @@
 .edge-line {
   fill: none;
   stroke-width: 2;
+  stroke: #ccc;
   stroke-opacity: 0.9;
   filter: none;
   stroke-linecap: round;
+}
+
+.edge-line.event-handler {
+  stroke: #ff9800;
+  stroke-dasharray: 6 4;
+  opacity: 0.9;
 }

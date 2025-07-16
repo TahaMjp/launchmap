@@ -20,6 +20,7 @@ import { renderGroupGroup } from "./renderGroup.js";
 import { renderOpaqueFunctionGroup } from "./renderOpaqueFunction.js";
 import { renderComposableContainerGroup } from "./renderComposableContainer.js";
 import { renderComposableNodeGroup } from "./renderComposableNode.js";
+import { renderEventHandlerGroup } from "./renderEventHandler.js";
 
 registerRenderer("arguments", (obj, container, layoutCtx, options) => {
     renderArguments(container, obj.value || [], layoutCtx, options);
@@ -47,4 +48,8 @@ registerRenderer("composable_nodes_container", (obj, container, layoutCtx, optio
 
 registerRenderer("composable_nodes", (obj, container, layoutCtx, options) => {
     renderComposableNodeGroup(container, obj.value || [], obj.namespace || "", layoutCtx, options);
+});
+
+registerRenderer("event_handlers", (obj, container, layoutCtx, options) => {
+    renderEventHandlerGroup(container, obj.value || [], obj.namespace || "", layoutCtx, options);
 });

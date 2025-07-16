@@ -81,6 +81,5 @@
       "argument": "use_sim_time",
       "path": "opaque_functions[0].returns.nodes[0].parameters[0].use_sim_time"
     }
-  ],
-  "undeclared_launch_configurations": []
+  ]
 }

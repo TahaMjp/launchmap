@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { createBaseBlock } from '../utils/baseBlock.js';
+import { renderBaseBlock } from './renderBaseBlock.js';
 import { renderAutoResizableBody } from './renderAutoResizableBody.js';
 import { renderComponent } from './renderComponent.js';
 import { renderSection } from './renderSection.js';
@@ -28,12 +28,12 @@ export function renderComposableContainerGroup(container, groups, namespace, lay
 }
 
 export function renderComposableContainer(group, container, layoutCtx, options = {}) {
-    const composableContainer = createBaseBlock({
+    const composableContainer = renderBaseBlock({
         type: "composable-container",
         layoutCtx,
         options: {
             ...options,
-            path: options.path
+            events: group.events
         }
     });
 

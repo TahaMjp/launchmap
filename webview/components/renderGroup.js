@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { createBaseBlock } from '../utils/baseBlock.js';
+import { renderBaseBlock } from './renderBaseBlock.js';
 import { renderAutoResizableBody } from './renderAutoResizableBody.js';
 import { renderComponent } from './renderComponent.js';
 import { renderSection } from './renderSection.js';
@@ -30,13 +30,13 @@ export function renderGroupGroup(container, groups, namespace, layoutCtx, option
 export function renderGroup(group, container, layoutCtx, options = {}) {
     const ns = group.namespace || "";
 
-    const groupBox = createBaseBlock({
+    const groupBox = renderBaseBlock({
         type: "group",
         label: ns,
         layoutCtx,
         options: {
             ...options,
-            path: options.path
+            events: group.events
         }
     });
 

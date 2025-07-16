@@ -113,4 +113,4 @@ tests:
         - package: my_pkg
           executable: robot_node
           parameters:
-            - robot_description: "${Command: ['xacro', 'robot.urdf.xacro']}"
+            - robot_description: "${Command:['xacro', 'robot.urdf.xacro']}"

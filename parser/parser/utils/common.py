@@ -27,6 +27,17 @@ def flatten_once(items):
             flattened.append(item)
     return flattened
 
+def compute_entity_key(entity: dict) -> str:
+    """
+    Generate a unique key for deduplication and tracking event links.
+    Uses type + package + executable + name if present.
+    """
+    t = entity.get("type", "")
+    pkg = entity.get("package", "")
+    exe = entity.get("executable", "")
+    name = entity.get("name", "")
+    return f"{t}::{pkg}::{exe}::{name}"
+
 def group_entities_by_type(entities: list) -> dict:
     grouped = {}
 

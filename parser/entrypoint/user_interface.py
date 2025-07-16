@@ -13,7 +13,7 @@
 # limitations under the License.
 
 from parser.entrypoint.parser_runner import parse_launch_file
-from parser.parser.introspection_utils import collect_launch_config_usages
+from parser.parser.introspection_utils import collect_launch_config_usages, collect_event_handler_usages
 from parser.parser.postprocessing import simplify_launch_configurations
 from parser.parser.utils.common import group_entities_by_type
 
@@ -22,12 +22,22 @@ def parse_and_format_launch_file(filepath: str) -> dict:
     Parses a ROS2 launch file and return output in the standardized grouped format.
     """
     raw = parse_launch_file(filepath)
-    grouped = group_entities_by_type(raw["parsed"])
+    grouped = group_entities_by_type(raw["parsed"] + raw["additional_components"])
 
-    if raw.get("composable_node_containers"):
-        grouped["composable_nodes_container"] = raw["composable_node_containers"]
-        
-    grouped["launch_argument_usages"] = collect_launch_config_usages(grouped)
-    grouped["undeclared_launch_configurations"] = raw.get("undeclared_launch_configurations", [])
+    composable_node_containers = raw.get("composable_node_containers")
+    if composable_node_containers:
+        grouped["composable_nodes_container"] = composable_node_containers
+
+    launch_argument_usages = collect_launch_config_usages(grouped)
+    if launch_argument_usages:
+        grouped["launch_argument_usages"] = launch_argument_usages
+
+    undeclared_launch_configurations = raw.get("undeclared_launch_configurations")
+    if undeclared_launch_configurations:
+        grouped["undeclared_launch_configurations"] = undeclared_launch_configurations
+
+    event_handlers = collect_event_handler_usages(grouped)
+    if event_handlers:
+        grouped["event_handlers"] = event_handlers
 
     return simplify_launch_configurations(grouped)

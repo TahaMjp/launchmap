@@ -1,0 +1,56 @@
+// Copyright (c) 2025 Kodo Robotics
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+import { renderSection } from './renderSection.js';
+import { renderBaseBlock } from './renderBaseBlock.js';
+
+export function renderEventHandlerGroup(container, handlers, namespace, layoutCtx, options={}) {
+    handlers.forEach((handler, idx) => {
+        const path = `events[${idx}]`;
+        const block = renderEventHandler(handler, namespace, layoutCtx, { ...options, path });
+        container.appendChild(block);
+        layoutCtx.y += 100;
+    });
+
+    layoutCtx.x += 250;
+    layoutCtx.y = 100;
+}
+
+function renderEventHandler(handler, namespace, layoutCtx, options) {
+    const block = renderBaseBlock({
+        type: "event-handler",
+        layoutCtx,
+        options: {
+            ...options,
+            events: {
+                triggered_by: handler.triggered_by,
+                triggers: handler.triggers
+            },
+            eventLabels: handler.type === "OnProcessExit"
+                ? { left: "← on_exit", right: "target_action →" }
+                : handler.type === "OnProcessStart"
+                    ? { left: "← on_start", right: "target_action →" }
+                    : undefined
+        }
+    });
+
+    // Main Section
+    const type = handler.type || 'EventHandler';
+    block.appendChild(renderSection("type", "📣", "Type", type, {
+        includeLeftPort: false,
+        includeRightPort: false
+    }));
+
+    return block;
+}

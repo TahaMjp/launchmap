@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { createBaseBlock } from '../utils/baseBlock.js';
+import { renderBaseBlock } from './renderBaseBlock.js';
 import { renderSection } from './renderSection.js';
 
 export function renderIncludesGroup(container, includes, namespace, layoutCtx, options={}) {
@@ -28,10 +28,13 @@ export function renderIncludesGroup(container, includes, namespace, layoutCtx, o
 }
 
 function renderInclude(include, namespace, layoutCtx, options) {
-    const block = createBaseBlock({
+    const block = renderBaseBlock({
         type: 'include',
         layoutCtx,
-        options
+        options: {
+            ...options,
+            events: include.events
+        }
     });
 
     // Path

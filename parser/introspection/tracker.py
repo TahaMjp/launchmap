@@ -12,6 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from collections import defaultdict
+from parser.parser.utils.common import compute_entity_key
+
 class IntrospectionTracker:
     def __init__(self):
         # All declared arguments from DeclareLaunchArgument
@@ -20,6 +23,13 @@ class IntrospectionTracker:
         # All names used in LaunchConfiguration(...)
         self.used_launch_configs: set[str] = set()
 
+        # Event Handler List
+        self.event_handlers: list[str] = []
+
+        # Entity deduplication key -> entity
+        self.entities_by_key: dict[str, dict] = {}
+
+    # Launch Configuration
     def track_launch_arg_declaration(self, name: str, metadata: dict):
         """
         Called by DeclareLaunchArgument handler.
@@ -40,3 +50,30 @@ class IntrospectionTracker:
         Useful for validation and diagnostics.
         """
         return self.used_launch_configs - set(self.declared_launch_args.keys())
+    
+    # Event Handler
+    def add_event_handler(self, handler: str):
+        """
+        Registers an event handler
+        """
+        self.event_handlers.append(handler)
+
+    def next_event_handler_index(self) -> int:
+        """
+        Return the index of the next event handler
+        """
+        return len(self.event_handlers)
+    
+    def register_entity(self, entity):
+        """
+        Add entity to output only once (used for nodes, timers, loginfo, etc.)
+        """
+        key = compute_entity_key(entity)
+        if key not in self.entities_by_key:
+            self.entities_by_key[key] = entity
+    
+    def get_registered_entities(self):
+        """
+        Get all the registered entities
+        """
+        return list(self.entities_by_key.values())

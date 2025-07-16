@@ -1,0 +1,175 @@
+tests:
+  - name: on_process_exit_basic
+    input: |
+      from launch import LaunchDescription
+      from launch_ros.actions import Node
+      from launch.actions import RegisterEventHandler, LogInfo
+      from launch.event_handlers import OnProcessExit
+
+      def generate_launch_description():
+          foo_node = Node(package='demo', executable='foo')
+          bar_node = Node(package='demo', executable='bar')
+
+          return LaunchDescription(
+              RegisterEventHandler(
+                  OnProcessExit(
+                      target_action=foo_node,
+                      on_exit=[bar_node]
+                  )
+              )
+          )
+    expected:
+      nodes:
+        - package: demo
+          executable: foo
+          events:
+            triggered_by: 
+              - ${EventHandler[0]:OnProcessExit}
+        - package: demo
+          executable: bar
+          events: 
+            triggers: 
+              - ${EventHandler[0]:OnProcessExit}
+      event_handlers:
+        - type: OnProcessExit
+          triggers:
+            - nodes[0].events.triggered_by
+          triggered_by:
+            - nodes[1].events.triggers
+  
+  - name: on_process_exit_multiple_triggers
+    input: |
+      from launch import LaunchDescription
+      from launch_ros.actions import Node
+      from launch.actions import RegisterEventHandler, LogInfo
+      from launch.event_handlers import OnProcessExit
+
+      def generate_launch_description():
+          controller = Node(package='sys', executable='controller')
+          logger = Node(package='sys', executable='logger')
+          monitor = Node(package='sys', executable='monitor')
+
+          return LaunchDescription([
+              RegisterEventHandler(OnProcessExit(
+                  target_action=controller,
+                  on_exit=[logger, monitor]
+              ))
+          ])
+    expected:
+      nodes:
+        - package: sys
+          executable: controller
+          events:
+            triggered_by: 
+              - ${EventHandler[0]:OnProcessExit}
+        - package: sys
+          executable: logger
+          events:
+            triggers: 
+              - ${EventHandler[0]:OnProcessExit}
+        - package: sys
+          executable: monitor
+          events:
+            triggers: 
+              - ${EventHandler[0]:OnProcessExit}
+      event_handlers:
+        - type: OnProcessExit
+          triggers:
+            - nodes[0].events.triggered_by
+          triggered_by:
+            - nodes[1].events.triggers
+            - nodes[2].events.triggers
+    
+  - name: on_process_exit_multiple_triggered_by
+    input: |
+      from launch import LaunchDescription
+      from launch_ros.actions import Node
+      from launch.actions import RegisterEventHandler
+      from launch.event_handlers import OnProcessExit
+
+      def generate_launch_description():
+          prep1 = Node(package='demo', executable='prep1')
+          prep2 = Node(package='demo', executable='prep2')
+          starter = Node(package='demo', executable='start')
+
+          return LaunchDescription([
+              RegisterEventHandler(
+                  OnProcessExit(
+                      target_action=prep1,
+                      on_exit=[starter]
+                  )
+              ),
+              RegisterEventHandler(
+                  OnProcessExit(
+                      target_action=prep2,
+                      on_exit=[starter]
+                  )
+              )
+          ])
+    expected:
+      nodes:
+        - package: demo
+          executable: prep1
+          events:
+            triggered_by:
+              - ${EventHandler[0]:OnProcessExit}
+        - package: demo
+          executable: start
+          events:
+            triggers:
+              - ${EventHandler[0]:OnProcessExit}
+              - ${EventHandler[1]:OnProcessExit}
+        - package: demo
+          executable: prep2
+          events:
+            triggered_by:
+              - ${EventHandler[1]:OnProcessExit}
+      event_handlers:
+        - type: OnProcessExit
+          triggers:
+            - nodes[0].events.triggered_by
+          triggered_by:
+            - nodes[1].events.triggers
+        - type: OnProcessExit
+          triggers:
+            - nodes[2].events.triggered_by
+          triggered_by:
+            - nodes[1].events.triggers
+  
+  - name: on_process_start_basic
+    input: |
+      from launch import LaunchDescription
+      from launch_ros.actions import Node
+      from launch.actions import RegisterEventHandler
+      from launch.event_handlers import OnProcessStart
+
+      def generate_launch_description():
+          core_node = Node(package='core', executable='main')
+          logger = Node(package='core', executable='logger')
+
+          return LaunchDescription([
+              RegisterEventHandler(
+                  OnProcessStart(
+                      target_action=core_node,
+                      on_start=[logger]
+                  )
+              )
+          ])
+    expected:
+      nodes:
+        - package: core
+          executable: main
+          events:
+            triggered_by:
+              - ${EventHandler[0]:OnProcessStart}
+        - package: core
+          executable: logger
+          events:
+            triggers:
+              - ${EventHandler[0]:OnProcessStart}
+      event_handlers:
+        - type: OnProcessStart
+          triggers:
+            - nodes[0].events.triggered_by
+          triggered_by:
+            - nodes[1].events.triggers

@@ -16,14 +16,14 @@
             "name": "visualizer",
             "arguments": [
               "-d",
-              "${PathJoinSubstitution:['FindPackageShare('example_package')', 'rviz/example_config.rviz']}"
+              "${PathJoinSubstitution:['${FindPackageShare:example_package}', 'rviz/example_config.rviz']}"
             ],
             "condition": "${IfCondition:${LaunchConfiguration:enable_rviz}}"
           }
         ],
         "includes": [
           {
-            "launch_description_source": "${PathJoinSubstitution:['FindPackageShare('example_package')', 'launch', 'components', 'robot.launch.py']}",
+            "launch_description_source": "${PathJoinSubstitution:['${FindPackageShare:example_package}', 'launch', 'components', 'robot.launch.py']}",
             "launch_arguments": {},
             "included": {}
           }
@@ -36,6 +36,5 @@
       "argument": "enable_rviz",
       "path": "opaque_functions[0].returns.nodes[0].condition"
     }
-  ],
-  "undeclared_launch_configurations": []
+  ]
 }

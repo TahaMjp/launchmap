@@ -21,6 +21,7 @@ export function getTypeLabel(type) {
         case 'opaque-function': return 'OPAQUE FUNCTION';
         case 'composable-node': return 'COMPOSABLE NODE';
         case 'composable-container': return 'COMPOSABLE NODE CONTAINER';
+        case 'event-handler': return 'EVENT HANDLER';
         default: return `${type}`;
     }
 }

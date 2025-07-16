@@ -12,10 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { createBaseBlock } from '../utils/baseBlock.js';
+import { renderBaseBlock } from './renderBaseBlock.js';
 import { renderAutoResizableBody } from './renderAutoResizableBody.js';
 import { renderComponent } from './renderComponent.js';
-import { renderSection } from './renderSection.js';
 
 export function renderOpaqueFunctionGroup(container, opaqueFcns, namespace, layoutCtx, options = {}) {
     opaqueFcns.forEach((opaqueFcn, idx) => {
@@ -28,12 +27,12 @@ export function renderOpaqueFunctionGroup(container, opaqueFcns, namespace, layo
 }
 
 export function renderOpaqueFunction(opaqueFcn, namespace, prefix, container, layoutCtx, options = {}) {
-    const fcnBox = createBaseBlock({
+    const fcnBox = renderBaseBlock({
         type: "opaque-function",
         layoutCtx,
         options: {
             ...options,
-            path: prefix
+            events: opaqueFcn.events
         }
     });
 
