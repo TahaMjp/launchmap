@@ -23,19 +23,19 @@ tests:
         - package: demo
           executable: foo
           events:
-            triggered_by: 
+            triggers: 
               - ${EventHandler[0]:OnProcessExit}
         - package: demo
           executable: bar
           events: 
-            triggers: 
+            triggered_by: 
               - ${EventHandler[0]:OnProcessExit}
       event_handlers:
         - type: OnProcessExit
-          triggers:
-            - nodes[0].events.triggered_by
           triggered_by:
-            - nodes[1].events.triggers
+            - nodes[0].events.triggers
+          triggers:
+            - nodes[1].events.triggered_by
   
   - name: on_process_exit_multiple_triggers
     input: |
@@ -60,25 +60,25 @@ tests:
         - package: sys
           executable: controller
           events:
-            triggered_by: 
+            triggers: 
               - ${EventHandler[0]:OnProcessExit}
         - package: sys
           executable: logger
           events:
-            triggers: 
+            triggered_by: 
               - ${EventHandler[0]:OnProcessExit}
         - package: sys
           executable: monitor
           events:
-            triggers: 
+            triggered_by: 
               - ${EventHandler[0]:OnProcessExit}
       event_handlers:
         - type: OnProcessExit
-          triggers:
-            - nodes[0].events.triggered_by
           triggered_by:
-            - nodes[1].events.triggers
-            - nodes[2].events.triggers
+            - nodes[0].events.triggers
+          triggers:
+            - nodes[1].events.triggered_by
+            - nodes[2].events.triggered_by
     
   - name: on_process_exit_multiple_triggered_by
     input: |
@@ -111,30 +111,30 @@ tests:
         - package: demo
           executable: prep1
           events:
-            triggered_by:
+            triggers:
               - ${EventHandler[0]:OnProcessExit}
         - package: demo
           executable: start
           events:
-            triggers:
+            triggered_by:
               - ${EventHandler[0]:OnProcessExit}
               - ${EventHandler[1]:OnProcessExit}
         - package: demo
           executable: prep2
           events:
-            triggered_by:
+            triggers:
               - ${EventHandler[1]:OnProcessExit}
       event_handlers:
         - type: OnProcessExit
-          triggers:
-            - nodes[0].events.triggered_by
           triggered_by:
-            - nodes[1].events.triggers
+            - nodes[0].events.triggers
+          triggers:
+            - nodes[1].events.triggered_by
         - type: OnProcessExit
-          triggers:
-            - nodes[2].events.triggered_by
           triggered_by:
-            - nodes[1].events.triggers
+            - nodes[2].events.triggers
+          triggers:
+            - nodes[1].events.triggered_by
   
   - name: on_process_start_basic
     input: |
@@ -160,16 +160,16 @@ tests:
         - package: core
           executable: main
           events:
-            triggered_by:
+            triggers:
               - ${EventHandler[0]:OnProcessStart}
         - package: core
           executable: logger
           events:
-            triggers:
+            triggered_by:
               - ${EventHandler[0]:OnProcessStart}
       event_handlers:
         - type: OnProcessStart
-          triggers:
-            - nodes[0].events.triggered_by
           triggered_by:
-            - nodes[1].events.triggers
+            - nodes[0].events.triggers
+          triggers:
+            - nodes[1].events.triggered_by

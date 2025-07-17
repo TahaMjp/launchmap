@@ -36,11 +36,11 @@ def handle_on_process_exit(node: ast.Call, context: ParseContext):
 
     # Update target action
     for target in target_actions:
-        target.setdefault("events", {}).setdefault("triggered_by", []).append(handler_ref)
+        target.setdefault("events", {}).setdefault("triggers", []).append(handler_ref)
         context.introspection.register_entity(target)
     
     for triggered in triggered_actions:
-        triggered.setdefault("events", {}).setdefault("triggers", []).append(handler_ref)
+        triggered.setdefault("events", {}).setdefault("triggered_by", []).append(handler_ref)
         context.introspection.register_entity(triggered)
 
     # Register event handler metadata

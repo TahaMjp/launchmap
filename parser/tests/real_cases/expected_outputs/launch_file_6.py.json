@@ -61,7 +61,32 @@
   ],
   "composable_nodes_container": [
     {
-      "target_container": "my_container"
+      "target_container": "my_container",
+      "composable_nodes": [
+        {
+          "package": "demo_nodes_cpp",
+          "plugin": "demo_nodes_cpp::Talker",
+          "name": "talker_component",
+          "parameters": [
+            {
+              "use_sim_time": "${LaunchConfiguration:use_sim_time}"
+            }
+          ]
+        },
+        {
+          "package": "demo_nodes_cpp",
+          "plugin": "demo_nodes_cpp::Listener",
+          "name": "listener_component",
+          "parameters": [
+            {
+              "use_sim_time": "${LaunchConfiguration:use_sim_time}"
+            }
+          ]
+        }
+      ],
+      "package": "rclcpp_components",
+      "executable": "component_container_mt",
+      "output": "screen"
     }
   ],
   "launch_argument_usages": [
@@ -80,6 +105,14 @@
     {
       "argument": "use_sim_time",
       "path": "opaque_functions[0].returns.nodes[0].parameters[0].use_sim_time"
+    },
+    {
+      "argument": "use_sim_time",
+      "path": "composable_nodes_container[0].composable_nodes[0].parameters[0].use_sim_time"
+    },
+    {
+      "argument": "use_sim_time",
+      "path": "composable_nodes_container[0].composable_nodes[1].parameters[0].use_sim_time"
     }
   ]
 }

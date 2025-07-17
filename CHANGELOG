@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [0.1.2] - 2025-07-17
+
+### Fixed
+- Fix direction of `target_action` and `on_exit`, `on_start` in Event Handlers.
+- Fix composable node visualization for test `launch_file_6.py`.
+
 ## [0.1.1] - 2025-07-16
 
 ### Added
