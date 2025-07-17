@@ -68,9 +68,11 @@ def generate_launch_description():
         )
     ])
 ```
-Now, open this file and run the 'Open Launch Visualizer' command.
+Now, open this file and run the Open Launch Visualizer command!
 
-**Expected Outcome**: A new tab will open in VSCode showing an interactive graph. The graph should display two nodes, 'my_talker' and 'my_listener', representing the two processes defined in the launch file.
+**Expected Outcome**: A new tab will open in VSCode showing an interactive graph. The graph should display two nodes, my_talker and my_listener, representing the two processes defined in the launch file.
+
+---
 
 ## ✅ Construct Support Status
 
@@ -97,7 +99,7 @@ Now, open this file and run the 'Open Launch Visualizer' command.
 
 ---
 
-## 🐛 Troubleshooting / Having Issues?
+## 🪲 Troubleshooting / Having Issues?
 
 If you encounter any problems while using LaunchMap, check these common issues:
 
