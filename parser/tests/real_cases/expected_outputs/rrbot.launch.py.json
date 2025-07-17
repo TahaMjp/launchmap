@@ -34,7 +34,7 @@
         "${PathJoinSubstitution:[${FindPackageShare:ros2_control_demo_example_1}, 'config', 'rrbot_controllers.yaml']}"
       ],
       "events": {
-        "triggered_by": [
+        "triggers": [
           "${EventHandler[1]:OnProcessExit}"
         ]
       }
@@ -46,10 +46,10 @@
         "joint_state_broadcaster"
       ],
       "events": {
-        "triggered_by": [
+        "triggers": [
           "${EventHandler[0]:OnProcessExit}"
         ],
-        "triggers": [
+        "triggered_by": [
           "${EventHandler[1]:OnProcessExit}"
         ]
       }
@@ -65,7 +65,7 @@
       ],
       "condition": "${IfCondition:${LaunchConfiguration:gui}}",
       "events": {
-        "triggers": [
+        "triggered_by": [
           "${EventHandler[0]:OnProcessExit}"
         ]
       }
@@ -81,19 +81,19 @@
     {
       "type": "OnProcessExit",
       "triggered_by": [
-        "nodes[3].events.triggers"
+        "nodes[2].events.triggers"
       ],
       "triggers": [
-        "nodes[2].events.triggered_by"
+        "nodes[3].events.triggered_by"
       ]
     },
     {
       "type": "OnProcessExit",
       "triggered_by": [
-        "nodes[4].events.triggers"
+        "nodes[3].events.triggers"
       ],
       "triggers": [
-        "nodes[3].events.triggered_by"
+        "nodes[4].events.triggered_by"
       ]
     }
   ]

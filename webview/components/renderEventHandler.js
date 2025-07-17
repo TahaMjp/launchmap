@@ -38,9 +38,9 @@ function renderEventHandler(handler, namespace, layoutCtx, options) {
                 triggers: handler.triggers
             },
             eventLabels: handler.type === "OnProcessExit"
-                ? { left: "← on_exit", right: "target_action →" }
+                ? { left: "← target_action", right: "on_exit →" }
                 : handler.type === "OnProcessStart"
-                    ? { left: "← on_start", right: "target_action →" }
+                    ? { left: "← target_action", right: "on_start →" }
                     : undefined
         }
     });
