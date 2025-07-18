@@ -40,7 +40,7 @@ code --install-extension KodoRobotics.launchmap
 
 ## ▶️ How to Use
 
-1. Open a `.launch.py` file in VSCode.
+1. Open an existing `.launch.py` file in VSCode.
 2. Open the Command Palette (`Ctrl+Shift+P` or `Cmd+Shift+P`).
 3. Run: **Open Launch Visualizer**
 4. The graph will open in a new editor tab.
@@ -49,7 +49,11 @@ code --install-extension KodoRobotics.launchmap
 
 ## 🚀 Quick Start Example
 
-Don't have a `.launch.py` file handy? No problem! You can quickly test the visualizer by creating a new file (e.g., `hello.launch.py`) and pasting the following code:
+To test the visualizer without an existing project, you can follow these steps:
+
+1. Create a new file named `example.launch.py`.
+2. Open the file in VSCode.
+3. Paste the following content and save the file:
 
 ```python
 from launch import LaunchDescription
@@ -69,68 +73,43 @@ def generate_launch_description():
         )
     ])
 ```
-Now, open this file and run the Open Launch Visualizer command!
+4. With the file open, open the Command Palette.
+5. Run the Open Launch Visualizer Command.
 
-**Expected Outcome**: A new tab will open in VSCode showing an interactive graph. The graph should display two nodes, my_talker and my_listener, representing the two processes defined in the launch file.
+A new tab will open in VSCode, displaying an interactive graph with two nodes: `my_talker` and `my_listener`.
+
+<img width="422" height="435" alt="launchpy" src="https://github.com/user-attachments/assets/220c8aaa-a51f-497f-aa15-97cb7398bad8" />
 
 ---
 
 ## ✅ Construct Support Status
 
-| Construct | Status |
-|---|---|
-| `Node(...)` | ✅ Supported |
-| `IncludeLaunchDescription(...)` | ✅ Supported |
-| `GroupAction(...)` | ✅ Supported |
-| `DeclareLaunchArgument(...)` | ✅ Supported |
-| `LaunchConfiguration(...)` | ✅ Supported |
-| `SetParameter(...)` | ⚠️ Not yet parsed |
-| `ComposableNode(...)` | ⚠️ Not yet parsed |
-| `IfCondition(...)` | ⚠️ Not yet parsed |
-
-> A banner at the top of the graph view shows which components were skipped.
+A complete list of all supported launch constructs is available on the [v0.1.0 release page](https://github.com/Kodo-Robotics/launchmap/releases/tag/v0.1.0).
 
 ---
 
-## 🐛 Known Limitations
-
-- Some advanced constructs like `ComposableNode` are skipped.
-- Launch files are parsed statically (not executed).
-- Layout may be suboptimal for large or deeply nested graphs.
-
----
-
-## 🪲 Troubleshooting / Having Issues?
+## 🪲 Troubleshooting & Having Issues
 
 If you encounter any problems while using LaunchMap, check these common issues:
 
-- **The visualizer doesn't open?** Ensure your `.launch.py` file is saved and doesn't contain any syntax errors (VSCode should highlight these). Also, verify that the LaunchMap extension is installed and enabled in VSCode.
+- **The visualizer does not open:** Ensure your `.launch.py` file is saved and doesn't contain any syntax errors (VSCode should highlight these). Also, verify that the LaunchMap extension is installed and enabled in VSCode.
 
-- **The graph is empty or incomplete?** Please note that LaunchMap is under active development, and some advanced ROS 2 launch constructs are not yet fully supported. A warning banner will appear at the top of the graph if any components were skipped.
+- **The graph is empty or incomplete:** Please note that LaunchMap is under active development, and some advanced ROS 2 launch constructs are not yet fully supported. A warning banner will appear at the top of the graph if any components were skipped.
 
-- **Encountering an error message?** Please open a new issue on the [GitHub repository](https://github.com/Kodo-Robotics/launchmap/issues) with details about the error and steps to reproduce it. Including a screenshot of the error can also be helpful!
+- **Encountering an error message:** Please open a new issue on the [GitHub repository](https://github.com/Kodo-Robotics/launchmap/issues) with details about the error and steps to reproduce it. Including a screenshot of the error can also be helpful!
 
 For any other issues or unexpected behavior, we encourage you to open a new issue on GitHub. The more information you provide, the easier it is to diagnose and fix the problem.
 
 ---
 
-## 📜 License
-
-Licensed under the Apache 2.0 License.
-Copyright © 2025 Kodo Robotics.
-
----
-
 ## 📚 Getting Started with ROS 2
 
-<details>
-<summary>New to the ROS 2 ecosystem? Click here for some great resources to get you started!</summary>
+New to the ROS 2 ecosystem? Here are some great resources to get you started:
 
 - [Official ROS 2 Documentation](https://docs.ros.org/en/rolling/)
 - [ROS 2 Humble Tutorials](https://docs.ros.org/en/humble/Tutorials.html)
+- [A Comprehensive Guide to ROS 2 Launch Files](https://roboticsbackend.com/ros2-launch-file-example/)
 - [Articulated Robotics' ROS 2 YouTube Tutorials](https://www.youtube.com/@ArticulatedRobotics)
-
-</details>
 
 ---
 
