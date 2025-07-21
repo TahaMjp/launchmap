@@ -35,4 +35,4 @@ def resolve_name(node: ast.Name, engine):
     
     # Case 4: Unknown: Fallback to string
     warn(f"Name '{name}' not found in variables or functions. Assuming literal name.")
-    return name
+    return f"${{var:{name}}}"
