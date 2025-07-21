@@ -13,7 +13,7 @@
 # limitations under the License.
 
 from parser.entrypoint.parser_runner import parse_launch_file
-from parser.parser.introspection_utils import collect_launch_config_usages, collect_event_handler_usages
+from parser.parser.introspection_utils import collect_launch_config_usages, collect_event_handler_usages, collect_python_variable_usages
 from parser.parser.postprocessing import simplify_launch_configurations
 from parser.parser.utils.common import group_entities_by_type
 
@@ -39,5 +39,10 @@ def parse_and_format_launch_file(filepath: str) -> dict:
     event_handlers = collect_event_handler_usages(grouped)
     if event_handlers:
         grouped["event_handlers"] = event_handlers
+
+    python_expression_usages = collect_python_variable_usages(grouped)
+    if python_expression_usages:
+        grouped["python_expressions"] = raw.get("python_expressions")
+        grouped["python_expression_usages"] = python_expression_usages
 
     return simplify_launch_configurations(grouped)

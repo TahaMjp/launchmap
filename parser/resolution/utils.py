@@ -122,3 +122,24 @@ def bind_function_args(fn_def: ast.FunctionDef, args: list, kwargs: dict, exclud
         binding[kwarg_name] = extra_kwargs
 
     return binding
+
+def collect_assigned_variable_names(stmt: ast.stmt) -> set[str]:
+    """
+    Collect all variable names that are assigned in a statement.
+    """
+    assigned = set()
+
+    class AssignVisitor(ast.NodeVisitor):
+        def visit_Assign(self, node: ast.Assign):
+            for target in node.targets:
+                if isinstance(target, ast.Name):
+                    assigned.add(target.id)
+            self.generic_visit(node)
+
+        def visit_AnnAssign(self, node: ast.AnnAssign):
+            if isinstance(node.target, ast.Name):
+                assigned.add(node.target.id)
+            self.generic_visit(node)
+
+    AssignVisitor().visit(stmt)
+    return assigned

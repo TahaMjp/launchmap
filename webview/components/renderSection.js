@@ -32,7 +32,11 @@ export function renderSection(fieldName, icon, label, contentValue, {
 
     // Try primitive
     if (typeof contentValue !== "object" || contentValue === null) {
-        content.innerHTML = `${icon} ${label}: <code>${escapeHtml(String(contentValue))}</code>`;
+        if (contentValue === "") {
+            content.innerHTML = `${icon} ${label}`;
+        } else {
+            content.innerHTML = `${icon} ${label}: <code>${escapeHtml(String(contentValue))}</code>`;
+        }
         // Left Port
         if (includeLeftPort) {
             const leftPort = document.createElement("div");

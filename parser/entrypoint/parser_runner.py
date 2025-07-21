@@ -58,6 +58,7 @@ def parse_launch_file(filepath: str) -> dict:
         "used_launch_config": sorted(context.introspection.used_launch_configs),
         "declared_arguments": sorted(context.introspection.declared_launch_args.keys()),
         "undeclared_launch_configurations": sorted(context.introspection.get_undeclared_launch_configs()),
+        "python_expressions": context.introspection.get_python_expressions(),
         "composable_node_containers": sorted(context.get_composable_node_groups()),
         "additional_components": context.introspection.get_registered_entities()
     }
@@ -66,6 +67,9 @@ def _parse_launch_function_body(body: list[ast.stmt], context: ParseContext, eng
     parsed = []
     for stmt in body:
         if isinstance(stmt, ast.Assign):
+            engine.resolve(stmt)
+
+        elif isinstance(stmt, ast.If):
             engine.resolve(stmt)
         
         elif isinstance(stmt, ast.Expr):

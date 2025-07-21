@@ -34,3 +34,13 @@ def handle_python_launch_source(node: ast.Call, context: ParseContext) -> dict:
         "type": "PythonLaunchDescriptionSource",
         "filename": raw_path
     }
+
+@register_handler("ThisLaunchFileDir", "launch.substitutions.ThisLaunchFileDir")
+def handle_this_launch_file_dir(node: ast.Call, context: ParseContext) -> dict:
+    """
+    Handles ThisLaunchFileDir() substitution.
+    Returns: {"type": "ThisLaunchFileDir"} 
+    """
+    return {
+        "type": "ThisLaunchFileDir"
+    }

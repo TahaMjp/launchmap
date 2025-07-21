@@ -21,9 +21,14 @@ import { renderOpaqueFunctionGroup } from "./renderOpaqueFunction.js";
 import { renderComposableContainerGroup } from "./renderComposableContainer.js";
 import { renderComposableNodeGroup } from "./renderComposableNode.js";
 import { renderEventHandlerGroup } from "./renderEventHandler.js";
+import { renderPythonExpressions } from "./renderPythonExpressions.js";
 
 registerRenderer("arguments", (obj, container, layoutCtx, options) => {
     renderArguments(container, obj.value || [], layoutCtx, options);
+});
+
+registerRenderer("python_expressions", (obj, container, layoutCtx, options) => {
+    renderPythonExpressions(container, obj.value || [], layoutCtx, options);
 });
 
 registerRenderer("nodes", (obj, container, layoutCtx, options) => {

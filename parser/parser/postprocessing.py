@@ -54,6 +54,8 @@ def _simplify_command(obj):
     commands = ", ".join(format_symbolic_part(p) for p in obj.get("command"))
     return f"${{Command:[{commands}]}}"
 
+def _simplify_this_launch_file_dir(obj):
+    return f"${{ThisLaunchFileDir}}"
 
 # Dispatcher registry
 simplifier_registry = {
@@ -62,4 +64,5 @@ simplifier_registry = {
     "FindPackageShare": _simplify_find_package,
     "Command": _simplify_command,
     "FindExecutable": _simplify_find_executable,
+    "ThisLaunchFileDir": _simplify_this_launch_file_dir
 }

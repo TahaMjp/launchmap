@@ -1,0 +1,14 @@
+.python-expression-block {
+  border: 2px solid #999;
+  background-color: #1e1e1e;
+  color: #f8f8f8;
+}
+
+.python-code {
+  background-color: #2d2d2d;
+  padding: 8px;
+  border-radius: 5px;
+  font-size: 12px;
+  color: #ddd;
+  margin-bottom: 6px;
+}
