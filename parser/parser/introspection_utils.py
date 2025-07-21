@@ -18,6 +18,7 @@ import re
 
 LAUNCH_CONFIG_REGEX = re.compile(r"\${LaunchConfiguration:([a-zA-Z0-9_]+)}")
 EVENT_HANDLER_REGEX = re.compile(r"\${EventHandler\[(\d+)\]:(\w+)}")
+PYTHON_VAR_REGEX = re.compile(r"\${var:([a-zA-Z_][a-zA-Z0-9_]*)}")
 
 def collect_launch_config_usages(grouped: dict) -> list[dict]:
     """
@@ -89,3 +90,32 @@ def collect_event_handler_usages(grouped: dict) -> list[dict]:
             walk(item, f"{key}[{idx}]")
     
     return [v for v in usage_map.values() if v["triggered_by"] or v["triggers"]]
+
+def collect_python_variable_usages(grouped: dict) -> list[dict]:
+    """
+    Recursively walk the grouped data and return all ${var:...} usages
+    with variable name + JSON-style path for traceability
+    """
+    usages = []
+
+    def walk(obj, path):
+        if isinstance(obj, dict):
+            for key, value in obj.items():
+                walk(value, f"{path}.{key}" if path else key)
+        
+        elif isinstance(obj, list):
+            for idx, item in enumerate(obj):
+                walk(item, f"{path}[{idx}]")
+
+        elif isinstance(obj, str):
+            for match in PYTHON_VAR_REGEX.finditer(obj):
+                usages.append({
+                    "variable": match.group(1),
+                    "path": path
+                })
+    
+    for top_key in TYPE_KEY_MAP.values():
+        for idx, entry in enumerate(grouped.get(top_key, [])):
+            walk(entry, f"{top_key}[{idx}]")
+    
+    return usages

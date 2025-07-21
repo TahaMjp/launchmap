@@ -1,0 +1,123 @@
+{
+  "arguments": [
+    {
+      "default_value": "${LaunchConfiguration:use_sim_time}",
+      "description": "Use simulation (Gazebo) clock if true",
+      "name": "use_sim_time"
+    },
+    {
+      "default_value": "${LaunchConfiguration:usb_port}",
+      "description": "Connected USB port with OpenCR",
+      "name": "usb_port"
+    },
+    {
+      "default_value": "${var:tb3_param_dir}",
+      "description": "Full path to turtlebot3 parameter file to load",
+      "name": "tb3_param_dir"
+    },
+    {
+      "default_value": "${LaunchConfiguration:namespace}",
+      "description": "Namespace for nodes",
+      "name": "namespace"
+    }
+  ],
+  "includes": [
+    {
+      "launch_description_source": "${ThisLaunchFileDir}/turtlebot3_state_publisher.launch.py",
+      "launch_arguments": {
+        "use_sim_time": "${LaunchConfiguration:use_sim_time}",
+        "namespace": "${LaunchConfiguration:namespace}"
+      },
+      "included": {}
+    },
+    {
+      "launch_description_source": "${var:lidar_pkg_dir}/hlds_laser.launch.py",
+      "launch_arguments": {
+        "port": "/dev/ttyUSB0",
+        "frame_id": "base_scan",
+        "namespace": "${LaunchConfiguration:namespace}"
+      },
+      "included": {}
+    }
+  ],
+  "nodes": [
+    {
+      "package": "turtlebot3_node",
+      "executable": "turtlebot3_ros",
+      "parameters": [
+        "${var:tb3_param_dir}",
+        {
+          "namespace": "${LaunchConfiguration:namespace}"
+        }
+      ],
+      "arguments": [
+        "-i",
+        "${LaunchConfiguration:usb_port}"
+      ],
+      "output": "screen"
+    }
+  ],
+  "launch_argument_usages": [
+    {
+      "argument": "namespace",
+      "path": "nodes[0].parameters[1].namespace"
+    },
+    {
+      "argument": "usb_port",
+      "path": "nodes[0].arguments[1]"
+    },
+    {
+      "argument": "use_sim_time",
+      "path": "arguments[0].default_value"
+    },
+    {
+      "argument": "usb_port",
+      "path": "arguments[1].default_value"
+    },
+    {
+      "argument": "namespace",
+      "path": "arguments[3].default_value"
+    },
+    {
+      "argument": "use_sim_time",
+      "path": "includes[0].launch_arguments.use_sim_time"
+    },
+    {
+      "argument": "namespace",
+      "path": "includes[0].launch_arguments.namespace"
+    },
+    {
+      "argument": "namespace",
+      "path": "includes[1].launch_arguments.namespace"
+    }
+  ],
+  "python_expressions": [
+    {
+      "body": "if ROS_DISTRO == 'humble':\n    tb3_param_dir = LaunchConfiguration('tb3_param_dir', default=os.path.join(get_package_share_directory('turtlebot3_bringup'), 'param', ROS_DISTRO, TURTLEBOT3_MODEL + '.yaml'))\nelse:\n    tb3_param_dir = LaunchConfiguration('tb3_param_dir', default=os.path.join(get_package_share_directory('turtlebot3_bringup'), 'param', TURTLEBOT3_MODEL + '.yaml'))",
+      "variables": [
+        "${var:tb3_param_dir}"
+      ]
+    },
+    {
+      "body": "if LDS_MODEL == 'LDS-01':\n    lidar_pkg_dir = LaunchConfiguration('lidar_pkg_dir', default=os.path.join(get_package_share_directory('hls_lfcd_lds_driver'), 'launch'))\nelif LDS_MODEL == 'LDS-02':\n    lidar_pkg_dir = LaunchConfiguration('lidar_pkg_dir', default=os.path.join(get_package_share_directory('ld08_driver'), 'launch'))\n    LDS_LAUNCH_FILE = '/ld08.launch.py'\nelif LDS_MODEL == 'LDS-03':\n    lidar_pkg_dir = LaunchConfiguration('lidar_pkg_dir', default=os.path.join(get_package_share_directory('coin_d4_driver'), 'launch'))\n    LDS_LAUNCH_FILE = '/single_lidar_node.launch.py'\nelse:\n    lidar_pkg_dir = LaunchConfiguration('lidar_pkg_dir', default=os.path.join(get_package_share_directory('hls_lfcd_lds_driver'), 'launch'))",
+      "variables": [
+        "${var:LDS_LAUNCH_FILE}",
+        "${var:lidar_pkg_dir}"
+      ]
+    }
+  ],
+  "python_expression_usages": [
+    {
+      "variable": "tb3_param_dir",
+      "path": "nodes[0].parameters[0]"
+    },
+    {
+      "variable": "tb3_param_dir",
+      "path": "arguments[2].default_value"
+    },
+    {
+      "variable": "lidar_pkg_dir",
+      "path": "includes[1].launch_description_source"
+    }
+  ]
+}

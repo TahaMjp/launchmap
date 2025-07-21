@@ -29,6 +29,9 @@ class IntrospectionTracker:
         # Entity deduplication key -> entity
         self.entities_by_key: dict[str, dict] = {}
 
+        # Python Expressions
+        self.symbolic_python_expressions = []
+
     # Launch Configuration
     def track_launch_arg_declaration(self, name: str, metadata: dict):
         """
@@ -77,3 +80,13 @@ class IntrospectionTracker:
         Get all the registered entities
         """
         return list(self.entities_by_key.values())
+    
+    # Python Expressions
+    def track_python_expression(self, body: str, variables: list[str]):
+        self.symbolic_python_expressions.append({
+            "body": body,
+            "variables": variables
+        })
+
+    def get_python_expressions(self) -> list[dict]:
+        return self.symbolic_python_expressions
