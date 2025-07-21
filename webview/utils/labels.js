@@ -22,6 +22,7 @@ export function getTypeLabel(type) {
         case 'composable-node': return 'COMPOSABLE NODE';
         case 'composable-container': return 'COMPOSABLE NODE CONTAINER';
         case 'event-handler': return 'EVENT HANDLER';
+        case 'python-expression': return 'PYTHON EXPRESSION';
         default: return `${type}`;
     }
 }

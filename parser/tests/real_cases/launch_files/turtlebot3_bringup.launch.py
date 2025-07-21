@@ -33,7 +33,6 @@ def generate_launch_description():
     TURTLEBOT3_MODEL = os.environ.get('TURTLEBOT3_MODEL')
     ROS_DISTRO = os.environ.get('ROS_DISTRO')
     LDS_MODEL = os.environ.get('LDS_MODEL')
-    LDS_LAUNCH_FILE = '/hlds_laser.launch.py'
 
     namespace = LaunchConfiguration('namespace', default='')
 
@@ -73,6 +72,7 @@ def generate_launch_description():
         lidar_pkg_dir = LaunchConfiguration(
             'lidar_pkg_dir',
             default=os.path.join(get_package_share_directory('hls_lfcd_lds_driver'), 'launch'))
+        LDS_LAUNCH_FILE = '/hlds_laser.launch.py'
 
     use_sim_time = LaunchConfiguration('use_sim_time', default='false')
 
@@ -86,11 +86,6 @@ def generate_launch_description():
             'usb_port',
             default_value=usb_port,
             description='Connected USB port with OpenCR'),
-
-        DeclareLaunchArgument(
-            'tb3_param_dir',
-            default_value=tb3_param_dir,
-            description='Full path to turtlebot3 parameter file to load'),
 
         DeclareLaunchArgument(
             'namespace',
