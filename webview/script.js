@@ -21,3 +21,8 @@ window.addEventListener('message', (event) => {
         renderAll(message.data);
     }
 });
+
+const vscode = acquireVsCodeApi();
+document.getElementById('export-btn')?.addEventListener('click', () => {
+    vscode.postMessage({ type: 'export-json' });
+});
