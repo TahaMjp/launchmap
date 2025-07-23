@@ -2,7 +2,7 @@
     "name": "launchmap",
     "displayName": "LaunchMap",
     "description": "Visualize ROS2 Launch Files",
-    "version": "0.1.3",
+    "version": "0.1.4",
     "publisher": "kodorobotics",
     "icon": "assets/launchmap-logo.png",
     "bugs": {
@@ -38,13 +38,23 @@
     },
     "main": "./dist/extension.js",
     "activationEvents": [
-        "onCommand:launchmap.openVisualizer"
+        "onCommand:launchmap.openVisualizer",
+        "onCommand:launchmap.exportAsJson",
+        "onCommand:launchmap.importJson"
     ],
     "contributes": {
         "commands": [
             {
                 "command": "launchmap.openVisualizer",
-                "title": "Open Launch Visualizer"
+                "title": "LaunchMap: Open Launch Visualizer"
+            },
+            {
+                "command": "launchmap.exportAsJson",
+                "title": "LaunchMap: Export Launch File to Json"
+            },
+            {
+                "command": "launchmap.importJson",
+                "title": "LaunchMap: Import Graph from Json"
             }
         ]
     },

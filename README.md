@@ -26,6 +26,7 @@ Whether you are debugging a complex `launch.py`, exploring a new package, or onb
 - Traces argument usage and include relationships
 - Opens the graph in a **new tab** within VSCode
 - Displays a warning banner for unsupported or skipped components
+- Export and import parsed launch graphs as JSON
 
 ---
 
@@ -79,6 +80,35 @@ def generate_launch_description():
 A new tab will open in VSCode, displaying an interactive graph with two nodes: `my_talker` and `my_listener`.
 
 <img width="422" height="435" alt="launchpy" src="https://github.com/user-attachments/assets/220c8aaa-a51f-497f-aa15-97cb7398bad8" />
+
+---
+
+## 📤 Export & 📥 Import Launch Graph as JSON
+
+LaunchMap supports exporting and importing launch graphs as standalone `.json` files useful for collaboration, debugging, or offline inspection.
+
+### 💾 Export Graph to JSON
+
+You can export the current parsed launch graph in two ways:
+
+#### ▶️ From Command Palette
+1. Open a launch file.
+2. Press `Ctrl+Shift+P` / `Cmd+Shift+P`.
+3. Run: LaunchMap: Export Graph as JSON.
+4. Save the `launch_graph.json` file anywhere.
+
+#### 🖼️ From the Visualizer (Webview)
+
+Click the `💾 Export JSON` button in the top right corner of the visualizer to export the current graph.
+
+
+### 📂 Import JSON to View Graph
+
+You can also reload a previously saved `.json` graph:
+1. Press `Ctrl+Shift+P` / `Cmd+Shift+P`.
+2. Run: LaunchMap: Import Graph from JSON.
+3. Choose any valid `launch_graph.json` file.
+4. The graph will open in the visualizer, no ROS or launch file needed.
 
 ---
 

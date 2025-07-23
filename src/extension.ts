@@ -48,6 +48,13 @@ export function activate(context: vscode.ExtensionContext) {
             // Initial send
             panel.webview.postMessage({ type: 'launchmap-data', data: lastParsedData });
 
+            // Export as Json button
+            panel.webview.onDidReceiveMessage(message => {
+                if (message.type === 'export-json') {
+                    vscode.commands.executeCommand('launchmap.exportAsJson');
+                }
+            });
+
             // Resend on tab refocus
             panel.onDidChangeViewState((e) => {
                 if (e.webviewPanel.visible && lastParsedData) {
@@ -56,6 +63,99 @@ export function activate(context: vscode.ExtensionContext) {
             });
         })
     );
+
+    context.subscriptions.push(
+        vscode.commands.registerCommand('launchmap.exportAsJson', async () => {
+            let graphDataToExport = null;
+
+            const editor = vscode.window.activeTextEditor;
+
+            if (editor) {
+                const filePath = editor.document.fileName;
+                try {
+                    const result = await runPythonParser(filePath);
+                    graphDataToExport = JSON.parse(result);
+                } catch (error) {
+                    vscode.window.showErrorMessage("Failed to parse the launch file.");
+                    return;
+                }
+            } else if (lastParsedData) {
+                graphDataToExport = lastParsedData;
+            } else {
+                vscode.window.showErrorMessage("No active editor and no graph data available to export.");
+                return;
+            }
+
+            const uri = await vscode.window.showSaveDialog({
+                filters: { 'JSON': ['json'] },
+                defaultUri: vscode.Uri.file('launch_graph.json'),
+                saveLabel: 'Export Launch Graph'
+            });
+
+            if (!uri) return;
+
+            const jsonString = JSON.stringify(graphDataToExport, null, 2);
+            try {
+                await vscode.workspace.fs.writeFile(uri, Buffer.from(jsonString, 'utf8'));
+                vscode.window.showInformationMessage(`Launch graph exported to ${uri.fsPath}`);
+            } catch (error) {
+                vscode.window.showErrorMessage("Failed to save JSON: " + (error as Error).message);
+            }
+        })
+    );
+
+    context.subscriptions.push(
+        vscode.commands.registerCommand('launchmap.importJson', async () => {
+            const fileUris = await vscode.window.showOpenDialog({
+                canSelectMany: false,
+                filters: { 'JSON': ['json'] },
+                openLabel: 'Import Launch Graph JSON'
+            });
+
+            if (!fileUris || fileUris.length === 0) return;
+
+            const fileUri = fileUris[0];
+
+            try {
+                const contentBytes = await vscode.workspace.fs.readFile(fileUri);
+                const content = Buffer.from(contentBytes).toString('utf8');
+                const parsed = JSON.parse(content);
+                lastParsedData = parsed;
+
+                const panel = vscode.window.createWebviewPanel(
+                    'launchmap',
+                    'ROS2 LaunchMap Visualizer',
+                    vscode.ViewColumn.One,
+                    {
+                        enableScripts: true,
+                        retainContextWhenHidden: true
+                    }
+                );
+
+                panel.webview.html = getWebviewHtml(panel.webview, context.extensionUri);
+
+                // Initial send
+                panel.webview.postMessage({ type: 'launchmap-data', data: lastParsedData });
+
+                // Export as Json button
+                panel.webview.onDidReceiveMessage(message => {
+                    if (message.type === 'export-json') {
+                        vscode.commands.executeCommand('launchmap.exportAsJson');
+                    }
+                });
+
+                // Resend on tab refocus
+                panel.onDidChangeViewState((e) => {
+                    if (e.webviewPanel.visible && lastParsedData) {
+                        panel.webview.postMessage({ type: 'launchmap-data', data: lastParsedData });
+                    }
+                });
+
+            } catch (error) {
+                vscode.window.showErrorMessage("Failed to load or parse the JSON file.");
+            }
+        })
+    )
 }
 
 async function runPythonParser(filePath: string): Promise<string> {
@@ -108,9 +208,7 @@ function getWebviewHtml(webview: vscode.Webview, extensionUri: vscode.Uri): stri
             <link href="${styleUri}" rel="stylesheet">
         </head>
         <body>
-            <div id="mvp-banner">
-                🛠️ Some components like <code>ComposableNode</code>, <code>IfCondition</code> aren’t visualized yet. This is an early version — more coming soon!
-            </div>
+            <button id="export-btn">💾 Export JSON</button>
             <div id="editor">
             </div>
             <script src="${scriptUri}" type="module"></script>
