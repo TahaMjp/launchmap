@@ -1,0 +1,70 @@
+tests:
+  - name: basic_custom_handler_usage
+    input: |
+      from launch import LaunchDescription
+      from custom_api import MyCustomLaunchThing
+
+      def generate_launch_description():
+          return LaunchDescription([
+              MyCustomLaunchThing()
+          ])
+    expected:
+      custom_components:
+        - type_name: MyCustomLaunchThing
+          metadata:
+            info: example
+
+  - name: custom_handler_in_node
+    input: |
+      from launch import LaunchDescription
+      from launch_ros.actions import Node
+      from custom_api import MyCustomLaunchThing
+
+      def generate_launch_description():
+          return LaunchDescription([
+              Node(name=MyCustomLaunchThing())
+          ])
+    expected:
+      nodes:
+        - name: "${CustomHandler:MyCustomLaunchThing(metadata={'info': 'example'})}"
+
+  - name: custom_handler_inside_group
+    input: |
+      from launch import LaunchDescription
+      from launch.actions import GroupAction
+      from my_custom_api import MyLaunch
+
+      def generate_launch_description():
+          return LaunchDescription([
+              GroupAction([
+                  MyLaunch('nested')
+              ])
+          ])
+    expected:
+      groups:
+        - actions:
+            custom_components:
+              - type_name: MyLaunch
+                name: nested
+
+  - name: custom_handler_inside_node_with_launch_configuration
+    input: |
+      from launch import LaunchDescription
+      from launch_ros.actions import Node
+      from launch.actions import DeclareLaunchArgument
+      from launch.substitutions import LaunchConfiguration
+      from my_custom_api import MyLaunch
+
+      def generate_launch_description():
+          return LaunchDescription([
+              DeclareLaunchArgument("my_name"),
+              Node(name=MyLaunch(LaunchConfiguration('my_name')))
+          ])
+    expected:
+      arguments:
+        - name: my_name
+      nodes:
+        - name: "${CustomHandler:MyLaunch(name=${LaunchConfiguration:my_name})}"
+      launch_argument_usages:
+        - argument: my_name
+          path: nodes[0].name

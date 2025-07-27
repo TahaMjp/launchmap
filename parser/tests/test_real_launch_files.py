@@ -15,11 +15,13 @@
 import os
 import json
 import pytest
+from parser.plugin_loader import load_user_handlers_from_directory
 from parser.entrypoint.user_interface import parse_and_format_launch_file
 
 BASE_DIR = os.path.dirname(__file__)
 INPUT_DIR = os.path.join(BASE_DIR, "real_cases/launch_files")
 OUTPUT_DIR = os.path.join(BASE_DIR, "real_cases/expected_outputs")
+PLUGIN_DIR = os.path.join(BASE_DIR, "real_cases/launch_files/custom_handlers")
 
 @pytest.mark.parametrize("filename", [
     f for f in os.listdir(INPUT_DIR) if f.endswith(".py")
@@ -30,6 +32,7 @@ def test_real_launch_file_snapshot(filename):
 
     assert os.path.exists(output_path), f"Misssing expected output: {output_path}"
 
+    load_user_handlers_from_directory(PLUGIN_DIR)
     result = parse_and_format_launch_file(input_path)
     expected = json.load(open(output_path))
 

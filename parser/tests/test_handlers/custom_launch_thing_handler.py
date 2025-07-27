@@ -12,10 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from parser.resolution.resolution_registry import register_resolver
-import ast
+from parser.parser.user_handler import register_user_handler
 
-@register_resolver(ast.Tuple)
-def resolve_tuple(node: ast.Tuple, engine):
-    elements = tuple(engine.resolve(el) for el in node.elts)
-    return str(elements)
+@register_user_handler("MyCustomLaunchThing")
+def handle_custom_launch_thing(node, context):
+    return {
+        "type": "CustomHandler",
+        "type_name": "MyCustomLaunchThing",
+        "metadata": {
+            "info": "example"
+        }
+    }

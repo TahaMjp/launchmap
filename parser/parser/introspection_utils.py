@@ -42,6 +42,10 @@ def collect_launch_config_usages(grouped: dict) -> list[dict]:
         elif isinstance(obj, list):
             for idx, item in enumerate(obj):
                 walk(item, f"{path}[{idx}]")
+
+        elif isinstance(obj, tuple):
+            for idx, item in enumerate(obj):
+                walk(item, f"{path}[{idx}]")
         
         elif isinstance(obj, str):
             for match in LAUNCH_CONFIG_REGEX.finditer(obj):
@@ -68,6 +72,9 @@ def collect_event_handler_usages(grouped: dict) -> list[dict]:
             for key, value in obj.items():
                 walk(value, f"{path}.{key}" if path else key)
         elif isinstance(obj, list):
+            for idx, item in enumerate(obj):
+                walk(item, f"{path}[{idx}]")
+        elif isinstance(obj, tuple):
             for idx, item in enumerate(obj):
                 walk(item, f"{path}[{idx}]")
         elif isinstance(obj, str):
@@ -104,6 +111,10 @@ def collect_python_variable_usages(grouped: dict) -> list[dict]:
                 walk(value, f"{path}.{key}" if path else key)
         
         elif isinstance(obj, list):
+            for idx, item in enumerate(obj):
+                walk(item, f"{path}[{idx}]")
+
+        elif isinstance(obj, tuple):
             for idx, item in enumerate(obj):
                 walk(item, f"{path}[{idx}]")
 

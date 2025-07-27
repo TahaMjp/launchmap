@@ -36,22 +36,6 @@ def register_user_handler(type_name: str):
         # Wrap with validation
         def wrapper(node, context):
             result = fn(node, context)
-
-            if not isinstance(result, dict):
-                raise TypeError(f"[LaunchMap] Handler '{type_name}' must return a dict.")
-            
-            if result.get("type") != "CustomHandler":
-                raise ValueError(
-                    f"[LaunchMap] Handler '{type_name}' must return dict with "
-                    f"'type': 'CustomHandler'. Got: {result.get('type')}"
-                )
-            
-            if result.get("type_name") != type_name:
-                raise ValueError(
-                    f"[LaunchMap] Handler '{type_name}' must return dict with "
-                    f"'type_name': '{type_name}'. Got: {result.get('type_name')}"
-                )
-            
             return result
         
         return register_handler(type_name)(wrapper)

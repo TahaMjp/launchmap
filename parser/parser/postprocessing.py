@@ -57,6 +57,13 @@ def _simplify_command(obj):
 def _simplify_this_launch_file_dir(obj):
     return f"${{ThisLaunchFileDir}}"
 
+def _simplify_custom_handler(obj):
+    type_name = obj.get("type_name")
+    format_symbolic_part = lambda p: simplify_launch_configurations(p) if isinstance(p, dict) else f"'{p}'" if isinstance(p, str) else str(p)
+    kwarg_strs = [f"{k}={format_symbolic_part(v)}" for k, v in obj.items() if k not in {"type", "type_name"}]
+    kwargs = ", ".join(kwarg_strs)
+    return f"${{CustomHandler:{type_name}({kwargs})}}"
+
 # Dispatcher registry
 simplifier_registry = {
     "LaunchConfiguration": _simplify_launch_config,
@@ -64,5 +71,6 @@ simplifier_registry = {
     "FindPackageShare": _simplify_find_package,
     "Command": _simplify_command,
     "FindExecutable": _simplify_find_executable,
-    "ThisLaunchFileDir": _simplify_this_launch_file_dir
+    "ThisLaunchFileDir": _simplify_this_launch_file_dir,
+    "CustomHandler": _simplify_custom_handler,
 }
