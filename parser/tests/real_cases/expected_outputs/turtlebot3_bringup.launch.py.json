@@ -11,11 +11,6 @@
       "name": "usb_port"
     },
     {
-      "default_value": "${var:tb3_param_dir}",
-      "description": "Full path to turtlebot3 parameter file to load",
-      "name": "tb3_param_dir"
-    },
-    {
       "default_value": "${LaunchConfiguration:namespace}",
       "description": "Namespace for nodes",
       "name": "namespace"
@@ -31,7 +26,7 @@
       "included": {}
     },
     {
-      "launch_description_source": "${var:lidar_pkg_dir}/hlds_laser.launch.py",
+      "launch_description_source": "${var:lidar_pkg_dir}${var:LDS_LAUNCH_FILE}",
       "launch_arguments": {
         "port": "/dev/ttyUSB0",
         "frame_id": "base_scan",
@@ -76,7 +71,7 @@
     },
     {
       "argument": "namespace",
-      "path": "arguments[3].default_value"
+      "path": "arguments[2].default_value"
     },
     {
       "argument": "use_sim_time",
@@ -99,7 +94,7 @@
       ]
     },
     {
-      "body": "if LDS_MODEL == 'LDS-01':\n    lidar_pkg_dir = LaunchConfiguration('lidar_pkg_dir', default=os.path.join(get_package_share_directory('hls_lfcd_lds_driver'), 'launch'))\nelif LDS_MODEL == 'LDS-02':\n    lidar_pkg_dir = LaunchConfiguration('lidar_pkg_dir', default=os.path.join(get_package_share_directory('ld08_driver'), 'launch'))\n    LDS_LAUNCH_FILE = '/ld08.launch.py'\nelif LDS_MODEL == 'LDS-03':\n    lidar_pkg_dir = LaunchConfiguration('lidar_pkg_dir', default=os.path.join(get_package_share_directory('coin_d4_driver'), 'launch'))\n    LDS_LAUNCH_FILE = '/single_lidar_node.launch.py'\nelse:\n    lidar_pkg_dir = LaunchConfiguration('lidar_pkg_dir', default=os.path.join(get_package_share_directory('hls_lfcd_lds_driver'), 'launch'))",
+      "body": "if LDS_MODEL == 'LDS-01':\n    lidar_pkg_dir = LaunchConfiguration('lidar_pkg_dir', default=os.path.join(get_package_share_directory('hls_lfcd_lds_driver'), 'launch'))\nelif LDS_MODEL == 'LDS-02':\n    lidar_pkg_dir = LaunchConfiguration('lidar_pkg_dir', default=os.path.join(get_package_share_directory('ld08_driver'), 'launch'))\n    LDS_LAUNCH_FILE = '/ld08.launch.py'\nelif LDS_MODEL == 'LDS-03':\n    lidar_pkg_dir = LaunchConfiguration('lidar_pkg_dir', default=os.path.join(get_package_share_directory('coin_d4_driver'), 'launch'))\n    LDS_LAUNCH_FILE = '/single_lidar_node.launch.py'\nelse:\n    lidar_pkg_dir = LaunchConfiguration('lidar_pkg_dir', default=os.path.join(get_package_share_directory('hls_lfcd_lds_driver'), 'launch'))\n    LDS_LAUNCH_FILE = '/hlds_laser.launch.py'",
       "variables": [
         "${var:LDS_LAUNCH_FILE}",
         "${var:lidar_pkg_dir}"
@@ -112,11 +107,11 @@
       "path": "nodes[0].parameters[0]"
     },
     {
-      "variable": "tb3_param_dir",
-      "path": "arguments[2].default_value"
+      "variable": "lidar_pkg_dir",
+      "path": "includes[1].launch_description_source"
     },
     {
-      "variable": "lidar_pkg_dir",
+      "variable": "LDS_LAUNCH_FILE",
       "path": "includes[1].launch_description_source"
     }
   ]

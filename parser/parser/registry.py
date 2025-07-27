@@ -12,50 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""
-To register:
-📦 launch.actions
-	•	DeclareLaunchArgument
-	•	IncludeLaunchDescription
-	•	GroupAction
-	•	SetEnvironmentVariable
-	•	SetLaunchConfiguration
-	•	LogInfo
-	•	ExecuteProcess
-	•	RegisterEventHandler
-	•	OpaqueFunction
-	•	EmitEvent
-	•	Shutdown
-
-📦 launch.conditions
-	•	IfCondition
-	•	UnlessCondition
-
-📦 launch.substitutions
-	•	LaunchConfiguration
-	•	PythonExpression
-	•	ThisLaunchFileDir
-	•	EnvironmentVariable
-	•	PathJoinSubstitution
-	•	TextSubstitution
-	•	Command
-	•	FindExecutable
-
-📦 launch_ros.actions
-	•	Node
-	•	PushRosNamespace
-	•	SetParameter
-	•	LoadComposableNodes
-	•	LifecycleNode
-
-📦 launch_ros.descriptions
-	•	ComposableNode
-	•	ParameterFile
-
-📦 nav2_common.launch
-	•	RewrittenYaml
-"""
-
 from typing import Callable, Dict, Optional
 import warnings
 import ast
