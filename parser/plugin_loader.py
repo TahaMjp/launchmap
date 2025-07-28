@@ -13,6 +13,7 @@
 # limitations under the License.
 
 import importlib.util
+import sys
 import os
 
 def load_user_handlers_from_directory(base_dir):
@@ -28,6 +29,6 @@ def load_user_handlers_from_directory(base_dir):
                 module = importlib.util.module_from_spec(spec)
                 try:
                     spec.loader.exec_module(module)
-                    print(f"[LaunchMap] Loaded plugin: {file}")
+                    print(f"[LaunchMap] Loaded plugin: {file}", file=sys.stderr)
                 except Exception as e:
-                    print(f"[LaunchMap] Failed to load plugin {file}: {e}")
+                    print(f"[LaunchMap] Failed to load plugin {file}: {e}", file=sys.stderr)

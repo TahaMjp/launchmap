@@ -16,9 +16,10 @@ import * as vscode from 'vscode';
 import * as cp from 'child_process';
 import * as path from 'path';
 import * as which from 'which';
+import { getPluginDir } from '../utils/launchmapConfig';
 
 export async function runPythonParser(filePath: string): Promise<string> {
-    return new Promise((resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
         const pythonCmd = detectPythonCommand();
 
         if (!pythonCmd) {
@@ -29,8 +30,14 @@ export async function runPythonParser(filePath: string): Promise<string> {
         }
 
         const scriptPath = path.join(__dirname, '..', '..', 'parse.py');
-        const cmd = `"${pythonCmd}" "${scriptPath}" "${filePath}"`;
+        const cmdParts = [`"${pythonCmd}"`, `"${scriptPath}"`, `"${filePath}"`];
 
+        const pluginDir = await getPluginDir();
+        if (pluginDir) {
+            cmdParts.push('--plugin-dir', `"${pluginDir}"`);
+        }
+
+        const cmd = cmdParts.join(' ');
         cp.exec(cmd, (err, stdout, stderr) => {
             if (err) {
                 vscode.window.showErrorMessage("Parser error: " + stderr);

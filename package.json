@@ -40,7 +40,8 @@
     "activationEvents": [
         "onCommand:launchmap.openVisualizer",
         "onCommand:launchmap.exportAsJson",
-        "onCommand:launchmap.importJson"
+        "onCommand:launchmap.importJson",
+        "onCommand:launchmap.setPluginDir"
     ],
     "contributes": {
         "commands": [
@@ -55,6 +56,10 @@
             {
                 "command": "launchmap.importJson",
                 "title": "LaunchMap: Import Graph from Json"
+            },
+            {
+                "command": "launchmap.setPluginDir",
+                "title": "LaunchMap: Set Plugin Dir"
             }
         ]
     },

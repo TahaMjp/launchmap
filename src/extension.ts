@@ -16,9 +16,14 @@ import * as vscode from 'vscode';
 import { registerOpenVisualizer } from './commands/openVisualizer';
 import { registerExportJson } from './commands/exportJson';
 import { registerImportJson } from './commands/importJson';
+import { registerSetPluginDir } from './commands/setPluginDir';
+import { initPluginDirStatusBar } from './ui/pluginDirStatusBar';
 
 export function activate(context: vscode.ExtensionContext) {
     registerOpenVisualizer(context);
     registerExportJson(context);
     registerImportJson(context);
+    registerSetPluginDir(context);
+
+    initPluginDirStatusBar();
 }
