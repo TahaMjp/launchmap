@@ -36,6 +36,10 @@ def _simplify_launch_config(obj):
     name = obj.get("name")
     return f"${{LaunchConfiguration:{name}}}"
 
+def _simplify_environment_variable(obj):
+    name = obj.get("name")
+    return f"${{EnvironmentVariable:{name}}}"
+
 def _simplify_path_join(obj):
     format_symbolic_part = lambda p: simplify_launch_configurations(p) if isinstance(p, dict) else f"'{p}'" if isinstance(p, str) else str(p)
     parts = ", ".join(format_symbolic_part(p) for p in obj.get("parts"))
@@ -67,6 +71,7 @@ def _simplify_custom_handler(obj):
 # Dispatcher registry
 simplifier_registry = {
     "LaunchConfiguration": _simplify_launch_config,
+    "EnvironmentVariable": _simplify_environment_variable,
     "PathJoinSubstitution": _simplify_path_join,
     "FindPackageShare": _simplify_find_package,
     "Command": _simplify_command,

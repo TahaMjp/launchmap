@@ -13,7 +13,8 @@
 # limitations under the License.
 
 from parser.entrypoint.parser_runner import parse_launch_file
-from parser.parser.introspection_utils import collect_launch_config_usages, collect_event_handler_usages, collect_python_variable_usages
+from parser.parser.introspection_utils import (collect_environment_variable_usages, collect_launch_config_usages, 
+                                               collect_event_handler_usages, collect_python_variable_usages)
 from parser.parser.postprocessing import simplify_launch_configurations
 from parser.parser.utils.common import group_entities_by_type
 
@@ -35,6 +36,11 @@ def parse_and_format_launch_file(filepath: str) -> dict:
     undeclared_launch_configurations = raw.get("undeclared_launch_configurations")
     if undeclared_launch_configurations:
         grouped["undeclared_launch_configurations"] = undeclared_launch_configurations
+
+    environment_variable_usages = collect_environment_variable_usages(grouped)
+    if environment_variable_usages:
+        grouped["environment_variables"] = raw.get("environment_variables")
+        grouped["environment_variable_usages"] = environment_variable_usages
 
     event_handlers = collect_event_handler_usages(grouped)
     if event_handlers:

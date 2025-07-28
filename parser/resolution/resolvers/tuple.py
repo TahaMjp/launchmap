@@ -18,4 +18,4 @@ import ast
 @register_resolver(ast.Tuple)
 def resolve_tuple(node: ast.Tuple, engine):
     elements = tuple(engine.resolve(el) for el in node.elts)
-    return str(elements)
+    return elements

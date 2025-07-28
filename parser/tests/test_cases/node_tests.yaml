@@ -41,7 +41,7 @@ tests:
           parameters:
             - use_sim_time: "${LaunchConfiguration:use_sim_time}"
           remappings: 
-            - "('/input', '/robot1/input')"
+            - ['/input', '/robot1/input']
   
   - name: node_from_variable_list
     description: Node assigned to a variable and passed to LaunchDescription

@@ -17,6 +17,7 @@ from parser.parser.type_mapping import TYPE_KEY_MAP
 import re
 
 LAUNCH_CONFIG_REGEX = re.compile(r"\${LaunchConfiguration:([a-zA-Z0-9_]+)}")
+ENVIRONMENT_VAR_REGEX = re.compile(r"\${EnvironmentVariable:([a-zA-Z0-9_]+)}")
 EVENT_HANDLER_REGEX = re.compile(r"\${EventHandler\[(\d+)\]:(\w+)}")
 PYTHON_VAR_REGEX = re.compile(r"\${var:([a-zA-Z_][a-zA-Z0-9_]*)}")
 
@@ -49,6 +50,46 @@ def collect_launch_config_usages(grouped: dict) -> list[dict]:
         
         elif isinstance(obj, str):
             for match in LAUNCH_CONFIG_REGEX.finditer(obj):
+                usages.append({
+                    "argument": match.group(1),
+                    "path": path
+                })
+    
+    for top_key in TYPE_KEY_MAP.values():
+        for idx, entry in enumerate(grouped.get(top_key, [])):
+            walk(entry, f"{top_key}[{idx}]")
+    
+    return usages
+
+def collect_environment_variable_usages(grouped: dict) -> list[dict]:
+    """
+    Recursively walk the grouped data and return all EnvironmentVariable usages
+    with field + JSON-style path, for traceability.
+    """
+    usages = []
+
+    def walk(obj, path):
+        if isinstance(obj, dict):
+            for key, value in obj.items():
+                if key == "type" and obj.get("type") == "EnvironmentVariable":
+                    arg = obj.get("name")
+                    usages.append({
+                        "argument": arg,
+                        "path": path
+                    })
+                else:
+                    walk(value, f"{path}.{key}" if path else key)
+
+        elif isinstance(obj, list):
+            for idx, item in enumerate(obj):
+                walk(item, f"{path}[{idx}]")
+
+        elif isinstance(obj, tuple):
+            for idx, item in enumerate(obj):
+                walk(item, f"{path}[{idx}]")
+        
+        elif isinstance(obj, str):
+            for match in ENVIRONMENT_VAR_REGEX.finditer(obj):
                 usages.append({
                     "argument": match.group(1),
                     "path": path

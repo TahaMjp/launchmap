@@ -42,7 +42,7 @@ tests:
           parameters:
             - use_sim_time: 'true'
           remappings:
-            - "('input', 'camera_input')"
+            - ['input', 'camera_input']
     
   - name: composable_node_to_container
     description: Composable node defined within a container using ComposableNodeContainer
