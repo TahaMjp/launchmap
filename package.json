@@ -2,7 +2,7 @@
     "name": "launchmap",
     "displayName": "LaunchMap",
     "description": "Visualize ROS2 Launch Files",
-    "version": "0.1.4",
+    "version": "0.1.5",
     "publisher": "kodorobotics",
     "icon": "assets/launchmap-logo.png",
     "bugs": {
@@ -40,7 +40,8 @@
     "activationEvents": [
         "onCommand:launchmap.openVisualizer",
         "onCommand:launchmap.exportAsJson",
-        "onCommand:launchmap.importJson"
+        "onCommand:launchmap.importJson",
+        "onCommand:launchmap.setPluginDir"
     ],
     "contributes": {
         "commands": [
@@ -55,16 +56,25 @@
             {
                 "command": "launchmap.importJson",
                 "title": "LaunchMap: Import Graph from Json"
+            },
+            {
+                "command": "launchmap.setPluginDir",
+                "title": "LaunchMap: Set Plugin Dir"
             }
         ]
     },
     "scripts": {
-        "compile": "tsc"
+        "compile": "tsc",
+        "test:e2e": "node dist/test/runTest.js"
     },
     "devDependencies": {
+        "@types/mocha": "^10.0.10",
         "@types/node": "^24.0.1",
         "@types/vscode": "^1.70.0",
         "@types/which": "^3.0.4",
+        "@vscode/test-electron": "^2.5.2",
+        "mocha": "^11.7.1",
+        "ts-node": "^10.9.2",
         "typescript": "^4.7.4"
     },
     "dependencies": {

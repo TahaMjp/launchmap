@@ -27,6 +27,7 @@ Whether you are debugging a complex `launch.py`, exploring a new package, or onb
 - Opens the graph in a **new tab** within VSCode
 - Displays a warning banner for unsupported or skipped components
 - Export and import parsed launch graphs as JSON
+- Parser support for Custom ROS2 Constructs
 
 ---
 
@@ -109,6 +110,35 @@ You can also reload a previously saved `.json` graph:
 2. Run: LaunchMap: Import Graph from JSON.
 3. Choose any valid `launch_graph.json` file.
 4. The graph will open in the visualizer, no ROS or launch file needed.
+
+---
+
+## 📦 Custom ROS2 Construct Support
+
+LaunchMap supports custom plugin directories for parsing launch files. This allows you to extend parsing with additional includes or user defined launch constructs.
+
+### 🔧 Setting the Plugin Directory
+
+1. Press `Ctrl+Shift+P` / `Cmd+Shift+P`.
+2. Run: LaunchMap: Set Plugin Directory.
+3. Choose a folder containing your custom plugins.
+4. LaunchMap will save the setting to a `.launchmap` file in your workspace root.
+
+### 📌 Current Plugin Directory
+
+LaunchMap shows the active plugin directory in the VS Code status bar:
+- 📦 Plugin: my_plugins → active directory
+- 📦 No Plugin Dir → none configured
+
+Clicking the status bar item opens the Set Plugin Directory command.
+
+### 📂 Examples
+
+For examples, see `parser/tests/real_cases/launch_files/`.
+
+- `turtlebot4_bringup.launch.py` demonstrates the use of `RewrittenYaml`, which is handled by `custom_handlers/rewritten_yaml_handler.py`.
+
+More examples coming soon!
 
 ---
 

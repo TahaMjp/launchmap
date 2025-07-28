@@ -46,5 +46,9 @@ function renderInclude(include, namespace, layoutCtx, options) {
     const args = include.launch_arguments || {};
     block.appendChild(renderSection("launch_arguments", "📥", "Args", args, renderOptions))
 
+    if (include.condition) {
+        block.appendChild(renderSection("condition", "❓", "Condition", include.condition, renderOptions));
+    }
+
     return block;
 }

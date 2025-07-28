@@ -14,16 +14,22 @@
 
 import sys
 import json
+import argparse
 from parser.entrypoint.user_interface import parse_and_format_launch_file
+from parser.plugin_loader import load_user_handlers_from_directory
 
 def main():
-    if len(sys.argv) != 2:
-        print("Usage: python3 parse.py <launch_file.py>")
-        sys.exit(1)
-    
-    filepath = sys.argv[1]
+    parser = argparse.ArgumentParser(description="Parse a ROS2 launch file.")
+    parser.add_argument("launch_file", help="Path to launch file to parse.")
+    parser.add_argument("--plugin-dir", help="Directory containing user-defined custom handlers.")
+
+    args = parser.parse_args()
+
+    if args.plugin_dir:
+        load_user_handlers_from_directory(args.plugin_dir)
+
     try:
-        result = parse_and_format_launch_file(filepath)
+        result = parse_and_format_launch_file(args.launch_file)
         print(json.dumps(result, indent=2))
     except Exception as e:
         print(f"Error: {e}")

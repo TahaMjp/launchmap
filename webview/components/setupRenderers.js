@@ -22,9 +22,15 @@ import { renderComposableContainerGroup } from "./renderComposableContainer.js";
 import { renderComposableNodeGroup } from "./renderComposableNode.js";
 import { renderEventHandlerGroup } from "./renderEventHandler.js";
 import { renderPythonExpressions } from "./renderPythonExpressions.js";
+import { renderEnvironmentVariables } from "./renderEnvironmentVariables.js";
+import { renderTimerActions } from "./renderTimerActions.js";
 
 registerRenderer("arguments", (obj, container, layoutCtx, options) => {
     renderArguments(container, obj.value || [], layoutCtx, options);
+});
+
+registerRenderer("environment_variables", (obj, container, layoutCtx, options) => {
+    renderEnvironmentVariables(container, obj.value || [], layoutCtx, options);
 });
 
 registerRenderer("python_expressions", (obj, container, layoutCtx, options) => {
@@ -41,6 +47,10 @@ registerRenderer("includes", (obj, container, layoutCtx, options) => {
 
 registerRenderer("groups", (obj, container, layoutCtx, options) => {
     renderGroupGroup(container, obj.value || [], obj.namespace || "", layoutCtx, options);
+});
+
+registerRenderer("timer_actions", (obj, container, layoutCtx, options) => {
+    renderTimerActions(container, obj.value || [], obj.namespace || "", layoutCtx, options);
 });
 
 registerRenderer("opaque_functions", (obj, container, layoutCtx, options) => {

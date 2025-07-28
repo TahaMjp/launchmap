@@ -1,0 +1,133 @@
+{
+  "arguments": [
+    {
+      "default_value": "${PathJoinSubstitution:['${get_package_share_directory:turtlebot4_bringup}', 'config', 'turtlebot4.yaml']}",
+      "description": "Turtlebot4 Robot param file",
+      "name": "param_file"
+    }
+  ],
+  "groups": [
+    {
+      "actions": {
+        "includes": [
+          {
+            "launch_description_source": "${PathJoinSubstitution:['${get_package_share_directory:turtlebot4_bringup}', 'launch', 'robot.launch.py']}",
+            "launch_arguments": [
+              [
+                "model",
+                "lite"
+              ],
+              [
+                "param_file",
+                "${CustomHandler:RewrittenYaml(source_file=${LaunchConfiguration:param_file}, root_key=${EnvironmentVariable:ROBOT_NAMESPACE}, param_rewrites={}, convert_types=True)}"
+              ]
+            ],
+            "included": {}
+          },
+          {
+            "launch_description_source": "${PathJoinSubstitution:['${get_package_share_directory:turtlebot4_bringup}', 'launch', 'joy_teleop.launch.py']}",
+            "launch_arguments": [
+              [
+                "namespace",
+                "${EnvironmentVariable:ROBOT_NAMESPACE}"
+              ]
+            ],
+            "included": {}
+          },
+          {
+            "launch_description_source": "${PathJoinSubstitution:['${get_package_share_directory:turtlebot4_bringup}', 'launch', 'rplidar.launch.py']}",
+            "launch_arguments": {},
+            "included": {}
+          },
+          {
+            "launch_description_source": "${PathJoinSubstitution:['${get_package_share_directory:turtlebot4_description}', 'launch', 'robot_description.launch.py']}",
+            "launch_arguments": [
+              [
+                "model",
+                "lite"
+              ]
+            ],
+            "included": {}
+          },
+          {
+            "launch_description_source": "${PathJoinSubstitution:['${get_package_share_directory:turtlebot4_diagnostics}', 'launch', 'diagnostics.launch.py']}",
+            "launch_arguments": [
+              [
+                "namespace",
+                "${EnvironmentVariable:ROBOT_NAMESPACE}"
+              ]
+            ],
+            "included": {},
+            "condition": "${IfCondition:${EnvironmentVariable:TURTLEBOT4_DIAGNOSTICS}}"
+          }
+        ],
+        "timer_actions": [
+          {
+            "period": 30.0,
+            "actions": {
+              "includes": [
+                {
+                  "launch_description_source": "${PathJoinSubstitution:['${get_package_share_directory:turtlebot4_bringup}', 'launch', 'oakd.launch.py']}",
+                  "launch_arguments": [
+                    [
+                      "camera",
+                      "oakd_lite"
+                    ],
+                    [
+                      "namespace",
+                      "${EnvironmentVariable:ROBOT_NAMESPACE}"
+                    ]
+                  ],
+                  "included": {}
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "namespace": "${EnvironmentVariable:ROBOT_NAMESPACE}"
+    }
+  ],
+  "launch_argument_usages": [
+    {
+      "argument": "param_file",
+      "path": "groups[0].actions.includes[0].launch_arguments[1][1]"
+    }
+  ],
+  "environment_variables": [
+    {
+      "default_value": "1",
+      "name": "TURTLEBOT4_DIAGNOSTICS"
+    },
+    {
+      "default_value": "",
+      "name": "ROBOT_NAMESPACE"
+    }
+  ],
+  "environment_variable_usages": [
+    {
+      "argument": "ROBOT_NAMESPACE",
+      "path": "groups[0].actions.includes[0].launch_arguments[1][1]"
+    },
+    {
+      "argument": "ROBOT_NAMESPACE",
+      "path": "groups[0].actions.includes[1].launch_arguments[0][1]"
+    },
+    {
+      "argument": "ROBOT_NAMESPACE",
+      "path": "groups[0].actions.includes[4].launch_arguments[0][1]"
+    },
+    {
+      "argument": "TURTLEBOT4_DIAGNOSTICS",
+      "path": "groups[0].actions.includes[4].condition"
+    },
+    {
+      "argument": "ROBOT_NAMESPACE",
+      "path": "groups[0].actions.timer_actions[0].actions.includes[0].launch_arguments[1][1]"
+    },
+    {
+      "argument": "ROBOT_NAMESPACE",
+      "path": "groups[0].namespace"
+    }
+  ]
+}

@@ -30,6 +30,7 @@ def handle_include(node: ast.Call, context: ParseContext) -> dict:
 
     launch_source = kwargs.get("launch_description_source") or (args[0] if args else None)
     launch_args = kwargs.get("launch_arguments") or (args[1] if len(args) > 1 else {})
+    condition = kwargs.get("condition", None)
 
     if not isinstance(launch_source, dict) or "filename" not in launch_source:
         raise ValueError("Could not resolve include path from launch_description_source")
@@ -51,9 +52,14 @@ def handle_include(node: ast.Call, context: ParseContext) -> dict:
     #     passed_arguments = launch_args
     # )
 
-    return {
+    result = {
         "type": "IncludeLaunchDescription",
         "launch_description_source": path,
         "launch_arguments": launch_args,
         "included": {}
     }
+
+    if condition:
+        result["condition"] = condition
+
+    return result

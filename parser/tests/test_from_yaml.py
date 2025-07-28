@@ -13,8 +13,7 @@
 # limitations under the License.
 
 import pytest
-from parser.tests.test_utils import mock_tempfile_and_fs
-from parser.tests.test_helpers import load_yaml_tests, parse_launch_string
+from parser.tests.test_helpers import load_yaml_tests, load_custom_handler_tests, parse_launch_string
 
 @pytest.mark.parametrize("code,expected", load_yaml_tests("test_cases/node_tests.yaml"))
 def test_node_parsing(code, expected):
@@ -61,9 +60,13 @@ def test_composable_nodes_parsing(code, expected):
 @pytest.mark.parametrize("code,expected", load_yaml_tests("test_cases/event_handler_tests.yaml"))
 def test_event_handlers_parsing(code, expected):
     result = parse_launch_string(code)
-    print(result)
-    print(expected)
     for key in ["nodes", "event_handlers"]:
+        assert result.get(key, []) == expected.get(key, [])
+
+@pytest.mark.parametrize("code,expected", load_custom_handler_tests("test_cases/custom_handlers_tests.yaml", "test_handlers"))
+def test_custom_handlers_parsing(code, expected):
+    result = parse_launch_string(code)
+    for key in ["arguments", "nodes", "launch_argument_usages", "custom_components"]:
         assert result.get(key, []) == expected.get(key, [])
 
 # @pytest.mark.parametrize("code,expected,files", load_yaml_tests("test_cases/recursive_include_tests.yaml", with_files=True))

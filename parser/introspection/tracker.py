@@ -23,6 +23,9 @@ class IntrospectionTracker:
         # All names used in LaunchConfiguration(...)
         self.used_launch_configs: set[str] = set()
 
+        # Environment variables
+        self.environment_variables: dict[str, dict] = {}
+
         # Event Handler List
         self.event_handlers: list[str] = []
 
@@ -53,6 +56,20 @@ class IntrospectionTracker:
         Useful for validation and diagnostics.
         """
         return self.used_launch_configs - set(self.declared_launch_args.keys())
+    
+    # Environment Variables
+    def track_environment_variable(self, name: str, metadata: dict):
+        """
+        Called by EnvironmentVariable handler.
+        Adds the name to the used set.
+        """
+        self.environment_variables[name] = metadata or {}
+    
+    def get_environment_variables(self) -> list:
+        """
+        Returns all EnvironmentVariable.
+        """
+        return list(self.environment_variables.values())
     
     # Event Handler
     def add_event_handler(self, handler: str):

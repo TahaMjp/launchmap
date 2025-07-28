@@ -58,6 +58,7 @@ def parse_launch_file(filepath: str) -> dict:
         "used_launch_config": sorted(context.introspection.used_launch_configs),
         "declared_arguments": sorted(context.introspection.declared_launch_args.keys()),
         "undeclared_launch_configurations": sorted(context.introspection.get_undeclared_launch_configs()),
+        "environment_variables": context.introspection.get_environment_variables(),
         "python_expressions": context.introspection.get_python_expressions(),
         "composable_node_containers": sorted(context.get_composable_node_groups()),
         "additional_components": context.introspection.get_registered_entities()

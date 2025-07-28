@@ -17,8 +17,9 @@ import yaml
 import pytest
 from parser.entrypoint.parser_runner import parse_launch_file
 from parser.entrypoint.user_interface import parse_and_format_launch_file
+from parser.plugin_loader import load_user_handlers_from_directory
 
-def load_yaml_tests(file_path, with_files = False):
+def load_yaml_tests(file_path):
     with open(file_path, 'r') as f:
         data = yaml.safe_load(f)
     
@@ -27,14 +28,13 @@ def load_yaml_tests(file_path, with_files = False):
         code = test["input"]
         expected = test["expected"]
         test_id = test.get("name", "Unnamed Test")
-
-        if with_files:
-            files = test.get("files", {})
-            tests.append(pytest.param(code, expected, files, id=test_id))
-        else:
-            tests.append(pytest.param(code, expected, id=test_id))
+        tests.append(pytest.param(code, expected, id=test_id))
 
     return tests
+
+def load_custom_handler_tests(file_path, handler_directory):
+    load_user_handlers_from_directory(handler_directory)
+    return load_yaml_tests(file_path)
 
 def parse_launch_string(code: str) -> dict:
     with tempfile.NamedTemporaryFile("w", suffix=".py", delete=False) as tmp:
