@@ -17,6 +17,7 @@ TYPE_KEY_MAP = {
     "DeclareLaunchArgument": "arguments",
     "IncludeLaunchDescription": "includes",
     "GroupAction": "groups",
+    "TimerAction": "timer_actions",
     "SetParameter": "parameters",
     "OpaqueFunction": "opaque_functions",
     "ComposableNode": "unattached_composable_nodes",
