@@ -18,7 +18,6 @@ import * as path from 'path';
 import * as fs from 'fs';
 import * as os from 'os';
 import { promisify } from 'util';
-import { config } from 'process';
 
 const mkdtemp = promisify(fs.mkdtemp);
 const rm = promisify(fs.rm || fs.rmdir);
@@ -76,7 +75,6 @@ suite('End-to-End Workflow Test', () => {
         const configContent = await fs.promises.readFile(configPath, 'utf8');
         const parsed = JSON.parse(configContent);
 
-        console.log("Here");
         assert.strictEqual(parsed.pluginDir, pluginDir, 'Expected pluginDir to be set correctly in .launchmap');
     });
 

@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [0.1.5] - 2025-07-28
+
+### Added
+- Add support for `EnvironmentVariable` and `TimerAction`.
+- Support for including custom ROS2 Launch constructs.
+- Refactor VSCode Extension codebase and add tests.
+
+## [0.1.4] - 2025-07-23
+
+### Added
+- Support for exporting and importing launch graphs as standalone `.json` files. 
+
 ## [0.1.3] - 2025-07-21
 
 ### Added

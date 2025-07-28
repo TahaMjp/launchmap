@@ -94,16 +94,16 @@
       "path": "groups[0].actions.includes[0].launch_arguments[1][1]"
     }
   ],
-  "environment_variables": {
-    "TURTLEBOT4_DIAGNOSTICS": {
+  "environment_variables": [
+    {
       "default_value": "1",
       "name": "TURTLEBOT4_DIAGNOSTICS"
     },
-    "ROBOT_NAMESPACE": {
+    {
       "default_value": "",
       "name": "ROBOT_NAMESPACE"
     }
-  },
+  ],
   "environment_variable_usages": [
     {
       "argument": "ROBOT_NAMESPACE",
