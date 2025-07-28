@@ -21,6 +21,12 @@ export function renderEdges(data, portRegistry) {
         connectPorts(fromPortId, toPortId, portRegistry);
     });
 
+    (data.environment_variable_usages || []).forEach(usage => {
+        const fromPortId = `argument:${usage.argument}.argument`;
+        const toPortId = `${usage.path}`;
+        connectPorts(fromPortId, toPortId, portRegistry);
+    });
+
     (data.python_expression_usages || []).forEach(usage => {
         const fromPortId = `variable:${usage.variable}.variable`;
         const toPortId = `${usage.path}`;

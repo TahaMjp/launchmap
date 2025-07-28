@@ -65,11 +65,11 @@ class IntrospectionTracker:
         """
         self.environment_variables[name] = metadata or {}
     
-    def get_environment_variables(self) -> set[str]:
+    def get_environment_variables(self) -> list:
         """
         Returns all EnvironmentVariable.
         """
-        return self.environment_variables
+        return list(self.environment_variables.values())
     
     # Event Handler
     def add_event_handler(self, handler: str):

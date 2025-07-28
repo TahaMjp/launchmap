@@ -17,7 +17,9 @@ export function getTypeLabel(type) {
         case 'node': return 'NODE';
         case 'include': return 'INCLUDE LAUNCH DESCRIPTION';
         case 'group': return 'GROUP ACTION';
+        case 'timer-action': return 'TIMER ACTION';
         case 'argument': return 'DECLARE LAUNCH ARGUMENT';
+        case 'environment-variable': return 'ENVIRONMENT VARIABLE';
         case 'opaque-function': return 'OPAQUE FUNCTION';
         case 'composable-node': return 'COMPOSABLE NODE';
         case 'composable-container': return 'COMPOSABLE NODE CONTAINER';
