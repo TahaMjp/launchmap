@@ -5,6 +5,7 @@
 
 [![VSCode Marketplace](https://img.shields.io/visual-studio-marketplace/v/KodoRobotics.launchmap?label=VSCode%20Marketplace)](https://marketplace.visualstudio.com/items?itemName=KodoRobotics.launchmap)
 [![License](https://img.shields.io/github/license/Kodo-Robotics/launchmap?color=blue)](./LICENSE)
+[![Join Discord](https://img.shields.io/badge/Discord-Join%20Community-5865F2?logo=discord&logoColor=white)](https://discord.gg/EK3pHZxrKy)
 
 **LaunchMap** is a Visual Studio Code extension that lets you visualize the structure of ROS 2 launch files as interactive graphs directly inside VSCode.
 
@@ -177,3 +178,12 @@ New to the ROS 2 ecosystem? Here are some great resources to get you started:
 
 Contributions are welcome!
 Please open an issue, suggest a feature, or submit a pull request.
+
+---
+
+## 💬 Community
+
+We now have a **Kodo Robotics Discord Community**!  
+Join us to share feedback, ideas, and connect with other ROS 2 developers.
+
+[![Join Discord](https://img.shields.io/badge/Discord-Join%20Community-5865F2?logo=discord&logoColor=white)](https://discord.gg/EK3pHZxrKy)
