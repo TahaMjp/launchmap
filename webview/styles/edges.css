@@ -24,8 +24,9 @@
   position: absolute;
   top: 0;
   left: 0;
-  min-width: 5000px;
-  min-height: 5000px;
+  width: 100000px;
+  height: 100000px;
+  overflow: visible;
   pointer-events: none;
   z-index: 0;
 }

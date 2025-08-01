@@ -18,6 +18,7 @@ import { enableZoomAndPan } from "./zoomPanController.js";
 import { renderEdges } from "./renderEdges.js";
 import { getRegisteredRenderKeys } from "./dispatcher.js";
 import { LayoutManager } from "./layoutManager.js";
+import { autoFitToScreen } from "../utils/autoFitToScreen.js";
 
 export function renderAll(data) {
     const editor = document.getElementById("editor");
@@ -56,6 +57,10 @@ export function renderAll(data) {
         }
     }
 
-    renderEdges(data, registrySystem.portRegistry);
+    requestAnimationFrame(() => {
+        autoFitToScreen(editor, zoomLayer);
+        renderEdges(data, registrySystem.portRegistry);
+    });
+    
     enableZoomAndPan(editor, zoomLayer, () => renderEdges(data, registrySystem.portRegistry));
 }
