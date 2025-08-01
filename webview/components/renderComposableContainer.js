@@ -16,21 +16,21 @@ import { renderBaseBlock } from './renderBaseBlock.js';
 import { renderAutoResizableBody } from './renderAutoResizableBody.js';
 import { renderComponent } from './renderComponent.js';
 import { renderSection } from './renderSection.js';
+import { LayoutManager } from '../core/layoutManager.js';
 
-export function renderComposableContainerGroup(container, groups, namespace, layoutCtx, options = {}) {
+export function renderComposableContainerGroup(container, groups, options = {}) {
     groups.forEach((group, idx) => {
         const path = options.pathPrefix ? `${options.pathPrefix}.composable_nodes_container[${idx}]` : `composable_nodes_container[${idx}]`;
-        renderComposableContainer(group, container, layoutCtx, { ...options, path });
+        const block = renderComposableContainer(group, { ...options, path });
+        
+        container.appendChild(block);
+        options.renderBlock(block, "composable-container");
     });
-
-    layoutCtx.x += 350;
-    layoutCtx.y = 100;
 }
 
-export function renderComposableContainer(group, container, layoutCtx, options = {}) {
+export function renderComposableContainer(group, options = {}) {
     const composableContainer = renderBaseBlock({
         type: "composable-container",
-        layoutCtx,
         options: {
             ...options,
             events: group.events
@@ -67,22 +67,26 @@ export function renderComposableContainer(group, container, layoutCtx, options =
     body.className = "composable-container-body";
     composableContainer.appendChild(body);
 
-    const innerLayout = { x: 20, y: 40 };
+    const innerLayoutManager = new LayoutManager(20, 40, 80, 40);
     const childOptions = { 
         ...options,
         stopPropagation: true, 
         constrainToParent: true,
-        pathPrefix: `${options.path}`
+        pathPrefix: `${options.path}`,
+        renderBlock: (block, columnType) => {
+            requestAnimationFrame(() => {
+                innerLayoutManager.placeBlock(block, columnType);
+            })
+        }
     };
 
     // Render composable nodes
     renderComponent(
         { type: "composable_nodes", value: group.composable_nodes, namespace: group.namespace }, 
-        body, innerLayout, childOptions
+        body, childOptions
     );
-    container.appendChild(composableContainer);
 
     renderAutoResizableBody(composableContainer, "block", [".composable-container-header"]);
 
-    layoutCtx.x += 350;
+    return composableContainer;
 }

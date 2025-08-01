@@ -25,46 +25,46 @@ import { renderPythonExpressions } from "./renderPythonExpressions.js";
 import { renderEnvironmentVariables } from "./renderEnvironmentVariables.js";
 import { renderTimerActions } from "./renderTimerActions.js";
 
-registerRenderer("arguments", (obj, container, layoutCtx, options) => {
-    renderArguments(container, obj.value || [], layoutCtx, options);
+registerRenderer("arguments", (obj, container, options) => {
+    renderArguments(container, obj.value || [], options);
 });
 
-registerRenderer("environment_variables", (obj, container, layoutCtx, options) => {
-    renderEnvironmentVariables(container, obj.value || [], layoutCtx, options);
+registerRenderer("environment_variables", (obj, container, options) => {
+    renderEnvironmentVariables(container, obj.value || [], options);
 });
 
-registerRenderer("python_expressions", (obj, container, layoutCtx, options) => {
-    renderPythonExpressions(container, obj.value || [], layoutCtx, options);
+registerRenderer("python_expressions", (obj, container, options) => {
+    renderPythonExpressions(container, obj.value || [], options);
 });
 
-registerRenderer("nodes", (obj, container, layoutCtx, options) => {
-    renderNodeGroup(container, obj.value || [], obj.namespace || "", layoutCtx, options);
+registerRenderer("event_handlers", (obj, container, options) => {
+    renderEventHandlerGroup(container, obj.value || [], options);
 });
 
-registerRenderer("includes", (obj, container, layoutCtx, options) => {
-    renderIncludesGroup(container, obj.value || [], obj.namespace || "", layoutCtx, options);
+registerRenderer("nodes", (obj, container, options) => {
+    renderNodeGroup(container, obj.value || [], options);
 });
 
-registerRenderer("groups", (obj, container, layoutCtx, options) => {
-    renderGroupGroup(container, obj.value || [], obj.namespace || "", layoutCtx, options);
+registerRenderer("includes", (obj, container, options) => {
+    renderIncludesGroup(container, obj.value || [], options);
 });
 
-registerRenderer("timer_actions", (obj, container, layoutCtx, options) => {
-    renderTimerActions(container, obj.value || [], obj.namespace || "", layoutCtx, options);
+registerRenderer("groups", (obj, container, options) => {
+    renderGroupGroup(container, obj.value || [], options);
 });
 
-registerRenderer("opaque_functions", (obj, container, layoutCtx, options) => {
-    renderOpaqueFunctionGroup(container, obj.value || [], obj.namespace || "", layoutCtx, options);
+registerRenderer("timer_actions", (obj, container, options) => {
+    renderTimerActions(container, obj.value || [], options);
 });
 
-registerRenderer("composable_nodes_container", (obj, container, layoutCtx, options) => {
-    renderComposableContainerGroup(container, obj.value || [], obj.namespace || "", layoutCtx, options);
+registerRenderer("opaque_functions", (obj, container, options) => {
+    renderOpaqueFunctionGroup(container, obj.value || [], options);
 });
 
-registerRenderer("composable_nodes", (obj, container, layoutCtx, options) => {
-    renderComposableNodeGroup(container, obj.value || [], obj.namespace || "", layoutCtx, options);
+registerRenderer("composable_nodes_container", (obj, container, options) => {
+    renderComposableContainerGroup(container, obj.value || [], options);
 });
 
-registerRenderer("event_handlers", (obj, container, layoutCtx, options) => {
-    renderEventHandlerGroup(container, obj.value || [], obj.namespace || "", layoutCtx, options);
+registerRenderer("composable_nodes", (obj, container, options) => {
+    renderComposableNodeGroup(container, obj.value || [], options);
 });

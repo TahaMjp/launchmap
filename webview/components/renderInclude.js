@@ -15,34 +15,30 @@
 import { renderBaseBlock } from './renderBaseBlock.js';
 import { renderSection } from './renderSection.js';
 
-export function renderIncludesGroup(container, includes, namespace, layoutCtx, options={}) {
+export function renderIncludesGroup(container, includes, options={}) {
     includes.forEach((include, idx) => {
         const path = options.pathPrefix ? `${options.pathPrefix}.includes[${idx}]` : `includes[${idx}]`;
-        const block = renderInclude(include, namespace, layoutCtx, { ...options, path });
-        container.appendChild(block);
-        layoutCtx.y += 100;
-    });
+        const block = renderInclude(include, { ...options, path });
 
-    layoutCtx.x += 250;
-    layoutCtx.y = 100;
+        container.appendChild(block);
+        options.renderBlock(block, "include");
+    });
 }
 
-function renderInclude(include, namespace, layoutCtx, options) {
+function renderInclude(include, options) {
     const block = renderBaseBlock({
         type: 'include',
-        layoutCtx,
         options: {
             ...options,
             events: include.events
         }
     });
 
-    // Path
+    // Render
     const renderOptions = { includeLeftPort: true, portIdPrefix: options.path, portRegistry: options.portRegistry };
     const path = include.launch_description_source || "<unresolved>";
     block.appendChild(renderSection("launch_description_source", "📂", "Path", path, renderOptions));
     
-    // Launch arguments
     const args = include.launch_arguments || {};
     block.appendChild(renderSection("launch_arguments", "📥", "Args", args, renderOptions))
 

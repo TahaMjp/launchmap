@@ -16,21 +16,21 @@ import { renderBaseBlock } from './renderBaseBlock.js';
 import { renderAutoResizableBody } from './renderAutoResizableBody.js';
 import { renderComponent } from './renderComponent.js';
 import { renderSection } from './renderSection.js';
+import { LayoutManager } from '../core/layoutManager.js';
 
-export function renderTimerActions(container, timerActions, namespace, layoutCtx, options = {}) {
+export function renderTimerActions(container, timerActions, options = {}) {
     timerActions.forEach((group, idx) => {
         const path = options.pathPrefix ? `${options.pathPrefix}.timer_actions[${idx}]` : `timer_actions[${idx}]`;
-        renderTimerAction(group, container, layoutCtx, { ...options, path });
-    });
+        const block = renderTimerAction(group, { ...options, path });
 
-    layoutCtx.x += 350;
-    layoutCtx.y = 100;
+        container.appendChild(block);
+        options.renderBlock(block, "timer-action");
+    });
 }
 
-export function renderTimerAction(timerAction, container, layoutCtx, options = {}) {
+export function renderTimerAction(timerAction, options = {}) {
     const timerActionBox = renderBaseBlock({
         type: "timer-action",
-        layoutCtx,
         options
     });
 
@@ -61,21 +61,25 @@ export function renderTimerAction(timerAction, container, layoutCtx, options = {
     body.className = "timer-action-body";
     timerActionBox.appendChild(body);
 
-    const innerLayout = { x: 20, y: 40 };
+    const innerLayoutManager = new LayoutManager(20, 40, 80, 40);
     const childOptions = { 
         ...options,
         stopPropagation: true, 
         constrainToParent: true,
-        pathPrefix: `${options.path}.actions`
+        pathPrefix: `${options.path}.actions`,
+        renderBlock: (block, columnType) => { 
+            requestAnimationFrame(() => {
+                innerLayoutManager.placeBlock(block, columnType);
+            });
+        }
     };
 
     const actions = timerAction.actions || {};
     for (const [key, value] of Object.entries(actions)) {
-        renderComponent({ type: key, value: value }, body, innerLayout, childOptions);
+        renderComponent({ type: key, value: value }, body, childOptions);
     }
-    container.appendChild(timerActionBox);
 
     renderAutoResizableBody(timerActionBox, "block", [".timer-action-header"]);
 
-    layoutCtx.x += 350;
+    return timerActionBox;
 }
