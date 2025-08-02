@@ -15,22 +15,19 @@
 import { renderSection } from './renderSection.js';
 import { renderBaseBlock } from './renderBaseBlock.js';
 
-export function renderComposableNodeGroup(container, nodes, namespace, layoutCtx, options={}) {
+export function renderComposableNodeGroup(container, nodes, options={}) {
     nodes.forEach((node, idx) => {
         const path = options.pathPrefix ? `${options.pathPrefix}.composable_nodes[${idx}]` : `composable_nodes[${idx}]`;
-        const block = renderComposableNode(node, namespace, layoutCtx, { ...options, path });
+        const block = renderComposableNode(node, { ...options, path });
+        
         container.appendChild(block);
-        layoutCtx.y += 100;
+        options.renderBlock(block, "composable-node");
     });
-
-    layoutCtx.x += 250;
-    layoutCtx.y = 100;
 }
 
-function renderComposableNode(node, namespace, layoutCtx, options) {
+function renderComposableNode(node, options) {
     const block = renderBaseBlock({
         type: 'composable-node',
-        layoutCtx,
         options: {
             ...options,
             events: node.events
@@ -39,11 +36,10 @@ function renderComposableNode(node, namespace, layoutCtx, options) {
 
     // Node name
     const titleLabel = node.name || node.plugin || "(anonymous)";
-    const fullName = namespace ? `${namespace}/${titleLabel}` : titleLabel;
 
     // Sections
     const renderOptions = { includeLeftPort: true, portIdPrefix: options.path, portRegistry: options.portRegistry };
-    block.appendChild(renderSection("name", "📛", "Name", fullName, renderOptions));
+    block.appendChild(renderSection("name", "📛", "Name", titleLabel, renderOptions));
     block.appendChild(renderSection("package", "📦", "Package", node.package, renderOptions));
     block.appendChild(renderSection("plugin", "🔌", "Plugin", node.plugin, renderOptions));
 

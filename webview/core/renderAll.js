@@ -17,6 +17,8 @@ import { renderComponent } from "../components/renderComponent.js";
 import { enableZoomAndPan } from "./zoomPanController.js";
 import { renderEdges } from "./renderEdges.js";
 import { getRegisteredRenderKeys } from "./dispatcher.js";
+import { LayoutManager } from "./layoutManager.js";
+import { autoFitToScreen } from "../utils/autoFitToScreen.js";
 
 export function renderAll(data) {
     const editor = document.getElementById("editor");
@@ -34,11 +36,16 @@ export function renderAll(data) {
     zoomLayer.appendChild(edgeLayer);
 
     // Render
-    const layoutCtx = { x: 100, y: 100 };
+    const layoutManager = new LayoutManager();
     const context = {
         parsedData: data,
         portRegistry: registrySystem.portRegistry,
-        renderEdges
+        renderEdges,
+        renderBlock: (block, columnType) => { 
+            requestAnimationFrame(() => {
+                layoutManager.placeBlock(block, columnType);
+            }); 
+        }
     };
 
     const renderKeys = getRegisteredRenderKeys();
@@ -46,11 +53,14 @@ export function renderAll(data) {
         if (renderKeys.includes(key)) {
             const value = data[key];
             const typeHint = Array.isArray(value) ? key : value.type || key;
-            renderComponent({ value: value, type: typeHint }, zoomLayer, layoutCtx, context);
-            layoutCtx.y += 100;
+            renderComponent({ value: value, type: typeHint }, zoomLayer, context);
         }
     }
 
-    renderEdges(data, registrySystem.portRegistry);
+    requestAnimationFrame(() => {
+        autoFitToScreen(editor, zoomLayer);
+        renderEdges(data, registrySystem.portRegistry);
+    });
+    
     enableZoomAndPan(editor, zoomLayer, () => renderEdges(data, registrySystem.portRegistry));
 }

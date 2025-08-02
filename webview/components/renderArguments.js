@@ -15,30 +15,20 @@
 import { renderBaseBlock } from './renderBaseBlock.js';
 import { renderSection } from './renderSection.js';
 
-export function renderArguments(container, argumentsList, layoutCtx, options) {
+export function renderArguments(container, argumentsList, options) {
     if (!argumentsList || argumentsList.length === 0) return;
 
     argumentsList.forEach((arg, idx) => {
         const path = `${options.pathPrefix || "arguments"}[${idx}]`;
-        const block = renderArgument(arg, layoutCtx, {
-            ...options,
-            path
-        });
-        container.appendChild(block);
-        layoutCtx.y += 80;
-    });
+        const block = renderArgument(arg, { ...options, path });
 
-    layoutCtx.x += 250;
-    layoutCtx.y = 100;
+        container.appendChild(block);
+        options.renderBlock(block, "argument");
+    });
 }
 
-export function renderArgument(arg, layoutCtx, options) {
-    const block = renderBaseBlock({
-        type: "argument",
-        label: arg.name,
-        layoutCtx,
-        options
-    });
+export function renderArgument(arg, options) {
+    const block = renderBaseBlock({ type: "argument", options });
 
     const value = arg.default_value !== undefined ? arg.default_value : "";
     const argSection = renderSection("argument", "🚀", arg.name, value, 

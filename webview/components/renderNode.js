@@ -15,22 +15,19 @@
 import { renderSection } from './renderSection.js';
 import { renderBaseBlock } from './renderBaseBlock.js';
 
-export function renderNodeGroup(container, nodes, namespace, layoutCtx, options={}) {
+export function renderNodeGroup(container, nodes, options={}) {
     nodes.forEach((node, idx) => {
         const path = options.pathPrefix ? `${options.pathPrefix}.nodes[${idx}]` : `nodes[${idx}]`;
-        const block = renderNode(node, namespace, layoutCtx, { ...options, path });
-        container.appendChild(block);
-        layoutCtx.y += 100;
-    });
+        const block = renderNode(node, { ...options, path });
 
-    layoutCtx.x += 250;
-    layoutCtx.y = 100;
+        container.appendChild(block);
+        options.renderBlock(block, "node");
+    });
 }
 
-function renderNode(node, namespace, layoutCtx, options) {
+function renderNode(node, options) {
     const block = renderBaseBlock({
         type: 'node',
-        layoutCtx,
         options: {
             ...options,
             events: node.events
@@ -39,11 +36,10 @@ function renderNode(node, namespace, layoutCtx, options) {
 
     // Node name
     const titleLabel = node.name || node.executable || "(anonymous)";
-    const fullName = namespace ? `${namespace}/${titleLabel}` : titleLabel;
 
     // Sections
     const renderOptions = { includeLeftPort: true, portIdPrefix: options.path, portRegistry: options.portRegistry };
-    block.appendChild(renderSection("name", "📛", "Name", fullName, renderOptions));
+    block.appendChild(renderSection("name", "📛", "Name", titleLabel, renderOptions));
     block.appendChild(renderSection("package", "📦", "Package", node.package, renderOptions));
     block.appendChild(renderSection("executable", "▶️", "Executable", node.executable, renderOptions));
     block.appendChild(renderSection("output", "🖥️", "Output", node.output || "—", renderOptions));

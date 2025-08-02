@@ -15,30 +15,20 @@
 import { renderBaseBlock } from './renderBaseBlock.js';
 import { renderSection } from './renderSection.js';
 
-export function renderEnvironmentVariables(container, argumentsList, layoutCtx, options) {
+export function renderEnvironmentVariables(container, argumentsList, options) {
     if (!argumentsList || argumentsList.length === 0) return;
 
     argumentsList.forEach((arg, idx) => {
         const path = `${options.pathPrefix || "environment_variables"}[${idx}]`;
-        const block = renderEnvironmentVariable(arg, layoutCtx, {
-            ...options,
-            path
-        });
-        container.appendChild(block);
-        layoutCtx.y += 80;
-    });
+        const block = renderEnvironmentVariable(arg, { ...options, path });
 
-    layoutCtx.x += 250;
-    layoutCtx.y = 100;
+        container.appendChild(block);
+        options.renderBlock(block, "environment-variable");
+    });
 }
 
-export function renderEnvironmentVariable(arg, layoutCtx, options) {
-    const block = renderBaseBlock({
-        type: "environment-variable",
-        label: arg.name,
-        layoutCtx,
-        options
-    });
+export function renderEnvironmentVariable(arg, options) {
+    const block = renderBaseBlock({ type: "environment-variable", options });
 
     const value = arg.default_value !== undefined ? arg.default_value : "";
     const argSection = renderSection("argument", "🚀", arg.name, value, 

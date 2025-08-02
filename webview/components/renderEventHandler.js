@@ -15,22 +15,19 @@
 import { renderSection } from './renderSection.js';
 import { renderBaseBlock } from './renderBaseBlock.js';
 
-export function renderEventHandlerGroup(container, handlers, namespace, layoutCtx, options={}) {
+export function renderEventHandlerGroup(container, handlers, options={}) {
     handlers.forEach((handler, idx) => {
         const path = `events[${idx}]`;
-        const block = renderEventHandler(handler, namespace, layoutCtx, { ...options, path });
-        container.appendChild(block);
-        layoutCtx.y += 100;
-    });
+        const block = renderEventHandler(handler, { ...options, path });
 
-    layoutCtx.x += 250;
-    layoutCtx.y = 100;
+        container.appendChild(block);
+        options.renderBlock(block, "event-handler");
+    });
 }
 
-function renderEventHandler(handler, namespace, layoutCtx, options) {
+function renderEventHandler(handler, options) {
     const block = renderBaseBlock({
         type: "event-handler",
-        layoutCtx,
         options: {
             ...options,
             events: {

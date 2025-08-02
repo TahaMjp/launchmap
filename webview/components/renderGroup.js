@@ -16,24 +16,23 @@ import { renderBaseBlock } from './renderBaseBlock.js';
 import { renderAutoResizableBody } from './renderAutoResizableBody.js';
 import { renderComponent } from './renderComponent.js';
 import { renderSection } from './renderSection.js';
+import { LayoutManager } from '../core/layoutManager.js';
 
-export function renderGroupGroup(container, groups, namespace, layoutCtx, options = {}) {
+export function renderGroupGroup(container, groups, options = {}) {
     groups.forEach((group, idx) => {
         const path = options.pathPrefix ? `${options.pathPrefix}.groups[${idx}]` : `groups[${idx}]`;
-        renderGroup(group, container, layoutCtx, { ...options, path });
-    });
+        const block = renderGroup(group, { ...options, path });
 
-    layoutCtx.x += 350;
-    layoutCtx.y = 100;
+        container.appendChild(block);
+        options.renderBlock(block, "group");
+    });
 }
 
-export function renderGroup(group, container, layoutCtx, options = {}) {
+export function renderGroup(group, options = {}) {
     const ns = group.namespace || "";
 
     const groupBox = renderBaseBlock({
         type: "group",
-        label: ns,
-        layoutCtx,
         options: {
             ...options,
             events: group.events
@@ -68,21 +67,25 @@ export function renderGroup(group, container, layoutCtx, options = {}) {
     body.className = "group-body";
     groupBox.appendChild(body);
 
-    const innerLayout = { x: 20, y: 40 };
+    const innerLayoutManager = new LayoutManager(20, 40, 80, 40);
     const childOptions = { 
         ...options,
         stopPropagation: true, 
         constrainToParent: true,
-        pathPrefix: `${options.path}.actions`
+        pathPrefix: `${options.path}.actions`,
+        renderBlock: (block, columnType) => { 
+            requestAnimationFrame(() => {
+                innerLayoutManager.placeBlock(block, columnType);
+            });
+        }
     };
 
     const actions = group.actions || {};
     for (const [key, value] of Object.entries(actions)) {
-        renderComponent({ type: key, value: value, namespace: ns }, body, innerLayout, childOptions);
+        renderComponent({ type: key, value: value, namespace: ns }, body, childOptions);
     }
-    container.appendChild(groupBox);
 
     renderAutoResizableBody(groupBox, "block", [".group-header"]);
 
-    layoutCtx.x += 350;
+    return groupBox;
 }

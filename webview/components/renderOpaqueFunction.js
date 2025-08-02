@@ -15,21 +15,21 @@
 import { renderBaseBlock } from './renderBaseBlock.js';
 import { renderAutoResizableBody } from './renderAutoResizableBody.js';
 import { renderComponent } from './renderComponent.js';
+import { LayoutManager } from '../core/layoutManager.js';
 
-export function renderOpaqueFunctionGroup(container, opaqueFcns, namespace, layoutCtx, options = {}) {
+export function renderOpaqueFunctionGroup(container, opaqueFcns, options = {}) {
     opaqueFcns.forEach((opaqueFcn, idx) => {
         const path = options.pathPrefix ? `${options.pathPrefix}.opaque_functions[${idx}]` : `opaque_functions[${idx}]`;
-        renderOpaqueFunction(opaqueFcn, namespace, path, container, layoutCtx, { ...options, path });
-    });
+        const block = renderOpaqueFunction(opaqueFcn, { ...options, path });
 
-    layoutCtx.x += 350;
-    layoutCtx.y = 100;
+        container.appendChild(block);
+        options.renderBlock(block, "opaque-function")
+    });
 }
 
-export function renderOpaqueFunction(opaqueFcn, namespace, prefix, container, layoutCtx, options = {}) {
+export function renderOpaqueFunction(opaqueFcn, options = {}) {
     const fcnBox = renderBaseBlock({
         type: "opaque-function",
-        layoutCtx,
         options: {
             ...options,
             events: opaqueFcn.events
@@ -53,21 +53,25 @@ export function renderOpaqueFunction(opaqueFcn, namespace, prefix, container, la
     body.className = "opaque-function-body";
     fcnBox.appendChild(body);
 
-    const innerLayout = { x: 20, y: 40 };
+    const innerLayoutManager = new LayoutManager(20, 40, 80, 40);
     const childOptions = { 
         ...options,
         stopPropagation: true, 
         constrainToParent: true,
-        pathPrefix: `${prefix}.returns`
+        pathPrefix: `${options.path}.returns`,
+        renderBlock: (block, columnType) => {
+            requestAnimationFrame(() => {
+                innerLayoutManager.placeBlock(block, columnType);
+            })
+        }
     };
 
     const returns = opaqueFcn.returns || {};
     for (const [key, value] of Object.entries(returns)) {
-        renderComponent({ type: key, value: value, namespace: namespace }, body, innerLayout, childOptions);
+        renderComponent({ type: key, value: value }, body, childOptions);
     }
-    container.appendChild(fcnBox);
 
     renderAutoResizableBody(fcnBox, "block", [".opaque-function-header"]);
 
-    layoutCtx.x += 350;
+    return fcnBox;
 }

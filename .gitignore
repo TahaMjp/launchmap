@@ -10,3 +10,5 @@ tsconfig.lsif.json
 *.db
 *.tsbuildinfo
 **/dist/
+**/playwright-report
+**/test-results

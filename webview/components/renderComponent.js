@@ -14,7 +14,7 @@
 
 import { getRenderer } from "../core/dispatcher.js";
 
-export function renderComponent(obj, container, layoutCtx, options = {}) {
+export function renderComponent(obj, container, options = {}) {
     if (!obj || typeof obj !== "object") return;
 
     const type = obj.type || detectType(obj);
@@ -25,7 +25,7 @@ export function renderComponent(obj, container, layoutCtx, options = {}) {
         return;
     }
 
-    renderer(obj, container, layoutCtx, {
+    renderer(obj, container, {
         ...options,
         renderComponent
     });

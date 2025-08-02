@@ -16,12 +16,10 @@ import { makeDraggable } from "../utils/drag.js";
 import { getTypeLabel } from "../utils/labels.js";
 import { renderEventPortRow } from "./renderEventPortRow.js";
 
-export function renderBaseBlock({ type, label, layoutCtx, options }) {
+export function renderBaseBlock({ type, options }) {
     const block = document.createElement("div");
     block.className = `block ${type}-block`;
     block.style.position = "absolute";
-    block.style.left = `${layoutCtx.x}px`;
-    block.style.top = `${layoutCtx.y}px`;
 
     // Header container
     const header = document.createElement("div");

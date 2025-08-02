@@ -15,25 +15,21 @@
 import { renderBaseBlock } from './renderBaseBlock.js';
 import { renderSection } from './renderSection.js';
 
-export function renderPythonExpressions(container, expressionsList, layoutCtx, options) {
+export function renderPythonExpressions(container, expressionsList, options) {
     if (!expressionsList || expressionsList.length === 0) return;
 
     expressionsList.forEach((expr, idx) => {
         const path = `python_expressions[${idx}]`;
-        const block = renderPythonExpression(expr, layoutCtx, { ...options, path });
+        const block = renderPythonExpression(expr, { ...options, path });
+        
         container.appendChild(block);
-        layoutCtx.y += 140;
+        options.renderBlock(block, "python-expression");
     });
-
-    layoutCtx.x += 300;
-    layoutCtx.y = 100;
 }
 
-export function renderPythonExpression(expr, layoutCtx, options) {
+export function renderPythonExpression(expr, options) {
     const block = renderBaseBlock({
         type: "python-expression",
-        label: "Python Expression",
-        layoutCtx,
         options
     })
 
