@@ -12,16 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { defineConfig } from '@playwright/test';
+import { TestServer } from './server.js';
 
-export default defineConfig({
-    testDir: './tests',
-    snapshotDir: './tests/__screenshots__',
-    globalSetup: './tests/global-setup.js',
-    use: {
-        headless: true,
-        viewport: { width: 1600, height: 900 },
-        baseURL: process.env.TEST_SERVER_URL || 'http://localhost:3000',
-    },
-    reporter: [['list'], ['html']],
-});
+let server;
+
+async function globalSetup(config) {
+    server = new TestServer();
+    await server.start();
+
+    process.env.TEST_SERVER_URL = server.url;
+
+    return async () => {
+        await server.stop();
+    };
+}
+
+export default globalSetup;

@@ -15,25 +15,15 @@
 import { test, expect } from '@playwright/test';
 import fs from 'fs';
 import path from 'path';
-import { TestServer } from './server';
 
 const launchFilesDir = path.resolve(__dirname, '../../parser/tests/real_cases/expected_outputs');
-const server = new TestServer();
-
-test.beforeAll(async () => {
-    await server.start();
-})
-
-test.afterAll(async () => {
-    await server.stop();
-})
 
 test.describe("LaunchMap Visual Tests", () => {
     const files = fs.readdirSync(launchFilesDir).filter(f => f.endsWith(".json"));
 
     for (const file of files) {
         test(`renders correctly for ${file}`, async ({ page }) => {
-            await page.goto(server.url);
+            await page.goto(process.env.TEST_SERVER_URL);
 
             const launchData = JSON.parse(
                 fs.readFileSync(path.join(launchFilesDir, file), "utf8")
