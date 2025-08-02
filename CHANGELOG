@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [0.1.6] - 2025-08-02
+
+### Added
+- **Visual Alignment Improvements**
+  - Introduced a clean column based visual alignment system for components.
+  - Ensures Launch Arguments, Nodes/Includes, and Groups/Containers render in distinct columns.
+- **Autofit on Initialization**
+  - Visualization now automatically scales to fit the screen on load.
+- **Automated Testing**
+  - Integrated Playwright based **visual regression tests** to ensure consistent rendering.
+  - Added **interaction tests** for zoom, pan, and drag to verify user interactions.
+  - Added **component drag tests** including support for nested elements like group nodes and opaque nodes.
+- **Testing Scripts**
+  - Updated `package.json` with scripts to run automated tests easily.
+
+---
+
 ## [0.1.5] - 2025-07-28
 
 ### Added
