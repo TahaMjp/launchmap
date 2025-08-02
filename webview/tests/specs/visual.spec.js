@@ -16,7 +16,7 @@ import { test, expect } from '@playwright/test';
 import fs from 'fs';
 import path from 'path';
 
-const launchFilesDir = path.resolve(__dirname, '../../parser/tests/real_cases/expected_outputs');
+const launchFilesDir = path.resolve(__dirname, '../../../parser/tests/real_cases/expected_outputs');
 
 test.describe("LaunchMap Visual Tests", () => {
     const files = fs.readdirSync(launchFilesDir).filter(f => f.endsWith(".json"));

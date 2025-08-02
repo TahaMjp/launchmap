@@ -15,9 +15,9 @@
 import { defineConfig } from '@playwright/test';
 
 export default defineConfig({
-    testDir: './tests',
-    snapshotDir: './tests/__screenshots__',
-    globalSetup: './tests/global-setup.js',
+    testDir: './specs',
+    snapshotDir: './__screenshots__',
+    globalSetup: './fixtures/global-setup.js',
     use: {
         headless: true,
         viewport: { width: 1600, height: 900 },

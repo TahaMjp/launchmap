@@ -17,7 +17,7 @@ import http from 'http';
 import serveHandler from 'serve-handler';
 
 export class TestServer {
-    constructor(port = 3000, publicDir = path.join(__dirname, '../../webview')) {
+    constructor(port = 3000, publicDir = path.join(__dirname, '../../../webview')) {
         this.port = port;
         this.publicDir = publicDir;
         this.server = null;
@@ -38,6 +38,6 @@ export class TestServer {
     }
 
     get url() {
-        return `http://localhost:${this.port}/tests/index.html`;
+        return `http://localhost:${this.port}/tests/assets/index.html`;
     }
 }
