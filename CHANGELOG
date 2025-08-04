@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [0.1.7] - 2025-08-04
+
+### Added
+- Support for `ParameterFile`
+- Test coverage for `nav2_bringup.launch.py`, including custom handler `LaunchConfigAsBool`
+
 ## [0.1.6] - 2025-08-02
 
 ### Added
