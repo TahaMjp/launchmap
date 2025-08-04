@@ -15,9 +15,13 @@
 import os
 import json
 from parser.entrypoint.user_interface import parse_and_format_launch_file
+from parser.plugin_loader import load_user_handlers_from_directory
 
 INPUT_DIR = "parser/tests/real_cases/launch_files"
 OUTPUT_DIR = "parser/tests/real_cases/expected_outputs"
+PLUGIN_DIR = "parser/tests/real_cases/launch_files/custom_handlers"
+
+load_user_handlers_from_directory(PLUGIN_DIR)
 
 for fname in os.listdir(INPUT_DIR):
     if fname.endswith(".py"):

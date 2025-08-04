@@ -43,7 +43,7 @@ def parse_and_format_launch_file(filepath: str) -> dict:
 
     environment_variable_usages = collect_environment_variable_usages(grouped)
     if environment_variable_usages:
-        grouped["environment_variables"] = raw.get("environment_variables")
+        grouped["environment_variable_usages"] = environment_variable_usages
 
     event_handlers = collect_event_handler_usages(grouped)
     if event_handlers:
@@ -52,7 +52,7 @@ def parse_and_format_launch_file(filepath: str) -> dict:
     python_expressions = raw.get("python_expressions")
     if python_expressions:
         grouped["python_expressions"] = raw.get("python_expressions")
-        
+
     python_expression_usages = collect_python_variable_usages(grouped)
     if python_expression_usages:
         grouped["python_expression_usages"] = python_expression_usages
