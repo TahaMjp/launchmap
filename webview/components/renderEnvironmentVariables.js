@@ -30,8 +30,10 @@ export function renderEnvironmentVariables(container, argumentsList, options) {
 export function renderEnvironmentVariable(arg, options) {
     const block = renderBaseBlock({ type: "environment-variable", options });
 
-    const value = arg.default_value !== undefined ? arg.default_value : "";
-    const argSection = renderSection("argument", "🚀", arg.name, value, 
+    const value = arg.default_value !== undefined 
+                  ? arg.default_value 
+                  : (arg.value !== undefined ? arg.value : "");
+    const argSection = renderSection("argument", "🌍", arg.name, value, 
         { includeRightPort: true, portIdPrefix: `argument:${arg.name}`, portRegistry: options.portRegistry });
     block.appendChild(argSection);
 
