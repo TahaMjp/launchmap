@@ -1,4 +1,4 @@
-name: Tests & Linting
+name: 🧪 Tests & 🧹 Linting
 
 on:
   push:
@@ -7,7 +7,8 @@ on:
     branches: [ main ]
 
 jobs:
-  lint:
+  lint-js:
+    name: 🧼 ESLint (JS/TS)
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -20,6 +21,16 @@ jobs:
 
       - name: Install Node.js dependencies
         run: npm install
+      
+      - name: Run ESLint
+        run: npm run lint:js
+
+  lint-py:
+    name: 🐍 Ruff (Python)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -31,10 +42,11 @@ jobs:
           python -m pip install --upgrade pip
           pip install ruff
       
-      - name: Run lint
-        run: npm run lint
+      - name: Ruff check
+        run: npm run lint:py
 
   parser-tests:
+    name: 🧪 Parser Tests
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -55,6 +67,7 @@ jobs:
         run: npm run test:parser
 
   webview-tests:
+    name: 🎨 Webview Visual Tests
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -75,6 +88,7 @@ jobs:
         run: xvfb-run -a npm run test:webview
 
   extension-tests:
+    name: 🧩 Extension Tests (VS Code)
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
