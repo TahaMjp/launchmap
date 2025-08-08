@@ -12,12 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from parser.resolution.resolution_engine import ResolutionEngine
-from parser.resolution.resolution_registry import register_resolver
-import copy
 import ast
 
+from parser.resolution.resolution_engine import ResolutionEngine
+from parser.resolution.resolution_registry import register_resolver
 from parser.resolution.utils import bind_function_args
+
 
 @register_resolver(ast.Call, priority=5)
 def resolve_user_function(node: ast.Call, engine):
@@ -29,7 +29,7 @@ def resolve_user_function(node: ast.Call, engine):
         fn_def = engine.context.lookup_function(func_name)
     else:
         return None
-        
+
     # Bind parameters
     resolved_args = [engine.resolve(arg) for arg in node.args]
     resolved_kwargs = {kw.arg: engine.resolve(kw.value) for kw in node.keywords}
@@ -49,5 +49,5 @@ def resolve_user_function(node: ast.Call, engine):
             return sub_engine.resolve(stmt.value)
         else:
             sub_engine.resolve(stmt.value)
-    
+
     return "Handled"

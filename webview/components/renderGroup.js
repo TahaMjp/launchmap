@@ -19,73 +19,73 @@ import { renderSection } from './renderSection.js';
 import { LayoutManager } from '../core/layoutManager.js';
 
 export function renderGroupGroup(container, groups, options = {}) {
-    groups.forEach((group, idx) => {
-        const path = options.pathPrefix ? `${options.pathPrefix}.groups[${idx}]` : `groups[${idx}]`;
-        const block = renderGroup(group, { ...options, path });
+  groups.forEach((group, idx) => {
+    const path = options.pathPrefix ? `${options.pathPrefix}.groups[${idx}]` : `groups[${idx}]`;
+    const block = renderGroup(group, { ...options, path });
 
-        container.appendChild(block);
-        options.renderBlock(block, "group");
-    });
+    container.appendChild(block);
+    options.renderBlock(block, 'group');
+  });
 }
 
 export function renderGroup(group, options = {}) {
-    const ns = group.namespace || "";
+  const ns = group.namespace || '';
 
-    const groupBox = renderBaseBlock({
-        type: "group",
-        options: {
-            ...options,
-            events: group.events
-        }
-    });
-
-    // Header
-    const header = document.createElement("div");
-    header.className = "group-header";
-
-    // Render additional sections
-    const metaSections = [
-        { key: "namespace", icon: "🧭", label: "Namespace", value: ns },
-        { key: "condition", icon: "❓", label: "Condition", value: group.condition }
-    ];
-
-    metaSections.forEach(( {key, icon, label, value }) => {
-        if (value) {
-            const section = renderSection(key, icon, label, value, {
-                includeLeftPort: true,
-                portIdPrefix: options.path,
-                portRegistry: options.portRegistry
-            });
-            header.appendChild(section);
-        }
-    });
-
-    groupBox.append(header);
-
-    // Body
-    const body = document.createElement("div");
-    body.className = "group-body";
-    groupBox.appendChild(body);
-
-    const innerLayoutManager = new LayoutManager(20, 40, 80, 40);
-    const childOptions = { 
-        ...options,
-        stopPropagation: true, 
-        constrainToParent: true,
-        pathPrefix: `${options.path}.actions`,
-        renderBlock: (block, columnType) => { 
-            requestAnimationFrame(() => {
-                innerLayoutManager.placeBlock(block, columnType);
-            });
-        }
-    };
-
-    const actions = group.actions || {};
-    for (const [key, value] of Object.entries(actions)) {
-        renderComponent({ type: key, value: value, namespace: ns }, body, childOptions);
+  const groupBox = renderBaseBlock({
+    type: 'group',
+    options: {
+      ...options,
+      events: group.events
     }
+  });
 
-    renderAutoResizableBody(groupBox, "block", [".group-header"]);
+  // Header
+  const header = document.createElement('div');
+  header.className = 'group-header';
 
-    return groupBox;
+  // Render additional sections
+  const metaSections = [
+    { key: 'namespace', icon: '🧭', label: 'Namespace', value: ns },
+    { key: 'condition', icon: '❓', label: 'Condition', value: group.condition }
+  ];
+
+  metaSections.forEach(({ key, icon, label, value }) => {
+    if (value) {
+      const section = renderSection(key, icon, label, value, {
+        includeLeftPort: true,
+        portIdPrefix: options.path,
+        portRegistry: options.portRegistry
+      });
+      header.appendChild(section);
+    }
+  });
+
+  groupBox.append(header);
+
+  // Body
+  const body = document.createElement('div');
+  body.className = 'group-body';
+  groupBox.appendChild(body);
+
+  const innerLayoutManager = new LayoutManager(20, 40, 80, 40);
+  const childOptions = {
+    ...options,
+    stopPropagation: true,
+    constrainToParent: true,
+    pathPrefix: `${options.path}.actions`,
+    renderBlock: (block, columnType) => {
+      requestAnimationFrame(() => {
+        innerLayoutManager.placeBlock(block, columnType);
+      });
+    }
+  };
+
+  const actions = group.actions || {};
+  for (const [key, value] of Object.entries(actions)) {
+    renderComponent({ type: key, value: value, namespace: ns }, body, childOptions);
+  }
+
+  renderAutoResizableBody(groupBox, 'block', ['.group-header']);
+
+  return groupBox;
 }

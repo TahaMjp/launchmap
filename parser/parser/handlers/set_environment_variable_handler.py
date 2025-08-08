@@ -13,6 +13,7 @@
 # limitations under the License.
 
 import ast
+
 from parser.context import ParseContext
 from parser.parser.registry import register_handler
 from parser.resolution.utils import resolve_call_signature
@@ -21,7 +22,7 @@ from parser.resolution.utils import resolve_call_signature
 @register_handler("SetEnvironmentVariable", "launch.actions.SetEnvironmentVariable")
 def handle_set_environment_variable(node: ast.Call, context: ParseContext) -> dict:
     args, kwargs = resolve_call_signature(node, context.engine)
-    
+
     # Handle both positional and keyword style
     if "name" not in kwargs and args:
         kwargs["name"] = args[0]

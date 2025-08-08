@@ -13,10 +13,9 @@
 # limitations under the License.
 
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument, OpaqueFunction, IncludeLaunchDescription
+from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription, OpaqueFunction
 from launch.launch_description_sources import PythonLaunchDescriptionSource
-from launch.substitutions import LaunchConfiguration, PathJoinSubstitution
-from launch_ros.actions import Node
+from launch.substitutions import PathJoinSubstitution
 from launch_ros.substitutions import FindPackageShare
 
 
@@ -42,25 +41,16 @@ def launch_setup(context, *args, **kwargs):
                 )
             ]
         ),
-        launch_arguments={
-            "driver1_param_file": driver1_param_path
-        }.items(),
+        launch_arguments={"driver1_param_file": driver1_param_path}.items(),
     )
 
-    return [
-        driver1_launch
-    ]
+    return [driver1_launch]
 
 
 def generate_launch_description():
     declared_arguments = []
 
     def add_launch_arg(name: str, default_value: str = None):
-        declared_arguments.append(
-            DeclareLaunchArgument(name, default_value=default_value)
-        )
+        declared_arguments.append(DeclareLaunchArgument(name, default_value=default_value))
 
-    return LaunchDescription(
-        [*declared_arguments, OpaqueFunction(function=launch_setup)]
-    )
-
+    return LaunchDescription([*declared_arguments, OpaqueFunction(function=launch_setup)])

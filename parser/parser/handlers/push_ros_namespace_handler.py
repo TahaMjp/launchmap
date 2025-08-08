@@ -12,17 +12,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import ast
+
 from parser.context import ParseContext
 from parser.parser.registry import register_handler
 from parser.resolution.utils import resolve_call_signature
-import ast
+
 
 @register_handler("PushRosNamespace", "launch_ros.actions.PushRosNamespace")
 def handle_push_ros_namespace(node: ast.Call, context: ParseContext):
     args, kwargs = resolve_call_signature(node, context.engine)
 
     ns = args[0] if args else kwargs.get("namespace")
-    return {
-        "type": "PushRosNamespace",
-        "namespace": ns
-    }
+    return {"type": "PushRosNamespace", "namespace": ns}

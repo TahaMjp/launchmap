@@ -16,22 +16,22 @@ import * as path from 'path';
 import Mocha from 'mocha';
 
 export async function run(): Promise<void> {
-    const mocha = new Mocha({ ui: 'tdd', timeout: 10000 });
-    
-    mocha.addFile(path.resolve(__dirname, 'workflow.test'));
+  const mocha = new Mocha({ ui: 'tdd', timeout: 10000 });
 
-    await new Promise<void>((resolve, reject) => {
-        mocha.run(failures => {
-            if (failures > 0) {
-                console.error(`${failures} tests failed.`);
-                reject(new Error("Test failures"));
-            } else {
-                console.log('✅ All tests passed.');
-                resolve();
-            }
-        });
+  mocha.addFile(path.resolve(__dirname, 'workflow.test'));
+
+  await new Promise<void>((resolve, reject) => {
+    mocha.run(failures => {
+      if (failures > 0) {
+        console.error(`${failures} tests failed.`);
+        reject(new Error('Test failures'));
+      } else {
+        console.log('✅ All tests passed.');
+        resolve();
+      }
     });
+  });
 
-    console.log("All tests done, exiting...");
-    process.exit(0);
+  console.log('All tests done, exiting...');
+  process.exit(0);
 }

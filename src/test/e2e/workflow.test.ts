@@ -23,87 +23,89 @@ const mkdtemp = promisify(fs.mkdtemp);
 const rm = promisify(fs.rm || fs.rmdir);
 
 suite('End-to-End Workflow Test', () => {
-    let tempDir: string;
-    let exportPath: string;
-    const fixturePath = path.resolve(__dirname, '../../../src/test/fixtures/test.launch.py');
+  let tempDir: string;
+  let exportPath: string;
+  const fixturePath = path.resolve(__dirname, '../../../src/test/fixtures/test.launch.py');
 
-    suiteSetup(async () => {
-        // Create a temp directory for export
-        tempDir = await mkdtemp(path.join(os.tmpdir(), 'launchmap-test-'));
-        exportPath = path.join(tempDir, 'launch_graph.json');
+  suiteSetup(async () => {
+    // Create a temp directory for export
+    tempDir = await mkdtemp(path.join(os.tmpdir(), 'launchmap-test-'));
+    exportPath = path.join(tempDir, 'launch_graph.json');
+  });
+
+  test('1️⃣ Open Visualizer → Panel created', async () => {
+    const doc = await vscode.workspace.openTextDocument(fixturePath);
+    await vscode.window.showTextDocument(doc);
+
+    await vscode.commands.executeCommand('launchmap.openVisualizer');
+    assert.ok(true, 'Visualizer command executed without error');
+  });
+
+  test('2️⃣ Export as JSON → File saved', async () => {
+    // Mock save dialog to return temp file path
+    vscode.window.showSaveDialog = async () => vscode.Uri.file(exportPath);
+
+    await vscode.commands.executeCommand('launchmap.exportAsJson');
+    const exists = fs.existsSync(exportPath);
+    assert.ok(exists, 'Expected exported JSON file to exist');
+  });
+
+  test('3️⃣ Import JSON → Panel created again', async () => {
+    // Mock open dialog to return exported file path
+    vscode.window.showOpenDialog = async () => [vscode.Uri.file(exportPath)];
+
+    await vscode.commands.executeCommand('launchmap.importJson');
+    assert.ok(true, 'Import command executed without error');
+  });
+
+  test('4️⃣ Set Plugin Dir via command → Stored in .launchmap file', async () => {
+    const pluginDir = path.join(tempDir, 'plugins');
+    await fs.promises.mkdir(pluginDir, { recursive: true });
+    const configPath = path.join(tempDir, '.launchmap');
+
+    // Stub workspace folder to point to temp directory
+    Object.defineProperty(vscode.workspace, 'workspaceFolders', {
+      get: () => [{ uri: vscode.Uri.file(tempDir) }],
+      configurable: true
     });
 
-    test('1️⃣ Open Visualizer → Panel created', async () => {
-        const doc = await vscode.workspace.openTextDocument(fixturePath);
-        await vscode.window.showTextDocument(doc);
+    vscode.window.showOpenDialog = async () => [vscode.Uri.file(pluginDir)];
 
-        await vscode.commands.executeCommand('launchmap.openVisualizer');
-        assert.ok(true, 'Visualizer command executed without error');
+    await vscode.commands.executeCommand('launchmap.setPluginDir');
+
+    const configContent = await fs.promises.readFile(configPath, 'utf8');
+    const parsed = JSON.parse(configContent);
+
+    assert.strictEqual(parsed.pluginDir, pluginDir, 'Expected pluginDir to be set correctly in .launchmap');
+  });
+
+  test('5️⃣ Plugin Dir via .launchmap → Used in parser call', async () => {
+    const pluginDir = path.join(tempDir, 'plugins');
+    await fs.promises.mkdir(pluginDir, { recursive: true });
+    await fs.promises.writeFile(path.join(pluginDir, 'dummpy.py'), '# dummy plugin');
+
+    const configPath = path.join(tempDir, '.launchmap');
+    const config = { pluginDir };
+    await fs.promises.writeFile(configPath, JSON.stringify(config, null, 2));
+
+    // Stub workspace folder to point to temp directory
+    Object.defineProperty(vscode.workspace, 'workspaceFolders', {
+      get: () => [{ uri: vscode.Uri.file(tempDir) }],
+      configurable: true,
     });
 
-    test('2️⃣ Export as JSON → File saved', async () => {
-        // Mock save dialog to return temp file path
-        vscode.window.showSaveDialog = async () => vscode.Uri.file(exportPath);
+    const doc = await vscode.workspace.openTextDocument(fixturePath);
+    await vscode.window.showTextDocument(doc);
 
-        await vscode.commands.executeCommand('launchmap.exportAsJson');
-        const exists = fs.existsSync(exportPath);
-        assert.ok(exists, 'Expected exported JSON file to exist');
-    });
+    await vscode.commands.executeCommand('launchmap.openVisualizer');
 
-    test('3️⃣ Import JSON → Panel created again', async () => {
-        // Mock open dialog to return exported file path
-        vscode.window.showOpenDialog = async () => [vscode.Uri.file(exportPath)];
+    assert.ok(true, 'Visualizer executed with .launchmap pluginDir present');
 
-        await vscode.commands.executeCommand('launchmap.importJson');
-        assert.ok(true, 'Import command executed without error');
-    });
+    await fs.promises.unlink(configPath);
+  });
 
-    test('4️⃣ Set Plugin Dir via command → Stored in .launchmap file', async () => {
-        const workspaceDir = path.join(tempDir, 'workspace');
-        await fs.promises.mkdir(workspaceDir, { recursive: true });
-
-        vscode.workspace.updateWorkspaceFolders(0, 0, { uri: vscode.Uri.file(workspaceDir) });
-
-        const pluginDir = path.join(workspaceDir, 'plugins');
-        await fs.promises.mkdir(pluginDir, { recursive: true });
-        const configPath = path.join(workspaceDir, '.launchmap');
-
-        vscode.window.showOpenDialog = async () => [vscode.Uri.file(pluginDir)];
-
-        await vscode.commands.executeCommand('launchmap.setPluginDir');
-        
-        const configContent = await fs.promises.readFile(configPath, 'utf8');
-        const parsed = JSON.parse(configContent);
-
-        assert.strictEqual(parsed.pluginDir, pluginDir, 'Expected pluginDir to be set correctly in .launchmap');
-    });
-
-    test('5️⃣ Plugin Dir via .launchmap → Used in parser call', async () => {
-        const workspaceDir = path.join(tempDir, 'workspace');
-        await fs.promises.mkdir(workspaceDir, { recursive: true });
-
-        vscode.workspace.updateWorkspaceFolders(0, 0, { uri: vscode.Uri.file(workspaceDir) });
-
-        const pluginDir = path.join(workspaceDir, 'plugins');
-        await fs.promises.mkdir(pluginDir, { recursive: true });
-        await fs.promises.writeFile(path.join(pluginDir, 'dummpy.py'), '# dummy plugin');
-
-        const configPath = path.join(workspaceDir, '.launchmap');
-        const config = { pluginDir };
-        await fs.promises.writeFile(configPath, JSON.stringify(config, null, 2));
-
-        const doc = await vscode.workspace.openTextDocument(fixturePath);
-        await vscode.window.showTextDocument(doc);
-
-        await vscode.commands.executeCommand('launchmap.openVisualizer');
-
-        assert.ok(true, 'Visualizer executed with .launchmap pluginDir present');
-
-        await fs.promises.unlink(configPath);
-    });
-
-    suiteTeardown(async () => {
-        // Clean up temp directory after all tests
-        await rm(tempDir, { recursive: true, force: true });
-    });
+  suiteTeardown(async () => {
+    // Clean up temp directory after all tests
+    await rm(tempDir, { recursive: true, force: true });
+  });
 });

@@ -12,55 +12,55 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { registrySystem } from "./registry.js";
-import { renderComponent } from "../components/renderComponent.js";
-import { enableZoomAndPan } from "./zoomPanController.js";
-import { renderEdges } from "./renderEdges.js";
-import { getRegisteredRenderKeys } from "./dispatcher.js";
-import { LayoutManager } from "./layoutManager.js";
-import { autoFitToScreen } from "../utils/autoFitToScreen.js";
+import { registrySystem } from './registry.js';
+import { renderComponent } from '../components/renderComponent.js';
+import { enableZoomAndPan } from './zoomPanController.js';
+import { renderEdges } from './renderEdges.js';
+import { getRegisteredRenderKeys } from './dispatcher.js';
+import { LayoutManager } from './layoutManager.js';
+import { autoFitToScreen } from '../utils/autoFitToScreen.js';
 
 export function renderAll(data) {
-    const editor = document.getElementById("editor");
-    editor.innerHTML = "";
+  const editor = document.getElementById('editor');
+  editor.innerHTML = '';
 
-    // Create zoom layer
-    const zoomLayer = document.createElement("div");
-    zoomLayer.id = "zoom-layer";
-    editor.appendChild(zoomLayer);
+  // Create zoom layer
+  const zoomLayer = document.createElement('div');
+  zoomLayer.id = 'zoom-layer';
+  editor.appendChild(zoomLayer);
 
-    // Edges
-    const edgeLayer = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-    edgeLayer.setAttribute("id", "edge-layer");
-    edgeLayer.classList.add("edge-layer");
-    zoomLayer.appendChild(edgeLayer);
+  // Edges
+  const edgeLayer = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  edgeLayer.setAttribute('id', 'edge-layer');
+  edgeLayer.classList.add('edge-layer');
+  zoomLayer.appendChild(edgeLayer);
 
-    // Render
-    const layoutManager = new LayoutManager();
-    const context = {
-        parsedData: data,
-        portRegistry: registrySystem.portRegistry,
-        renderEdges,
-        renderBlock: (block, columnType) => { 
-            requestAnimationFrame(() => {
-                layoutManager.placeBlock(block, columnType);
-            }); 
-        }
-    };
-
-    const renderKeys = getRegisteredRenderKeys();
-    for (const key of Object.keys(data)) {
-        if (renderKeys.includes(key)) {
-            const value = data[key];
-            const typeHint = Array.isArray(value) ? key : value.type || key;
-            renderComponent({ value: value, type: typeHint }, zoomLayer, context);
-        }
+  // Render
+  const layoutManager = new LayoutManager();
+  const context = {
+    parsedData: data,
+    portRegistry: registrySystem.portRegistry,
+    renderEdges,
+    renderBlock: (block, columnType) => {
+      requestAnimationFrame(() => {
+        layoutManager.placeBlock(block, columnType);
+      });
     }
+  };
 
-    requestAnimationFrame(() => {
-        autoFitToScreen(editor, zoomLayer);
-        renderEdges(data, registrySystem.portRegistry);
-    });
-    
-    enableZoomAndPan(editor, zoomLayer, () => renderEdges(data, registrySystem.portRegistry));
+  const renderKeys = getRegisteredRenderKeys();
+  for (const key of Object.keys(data)) {
+    if (renderKeys.includes(key)) {
+      const value = data[key];
+      const typeHint = Array.isArray(value) ? key : value.type || key;
+      renderComponent({ value: value, type: typeHint }, zoomLayer, context);
+    }
+  }
+
+  requestAnimationFrame(() => {
+    autoFitToScreen(editor, zoomLayer);
+    renderEdges(data, registrySystem.portRegistry);
+  });
+
+  enableZoomAndPan(editor, zoomLayer, () => renderEdges(data, registrySystem.portRegistry));
 }

@@ -18,94 +18,94 @@ import path from 'path';
 
 const launchFilesDir = path.resolve(__dirname, '../../../parser/tests/real_cases/expected_outputs');
 
-test.describe("Zoom, Pan, and Drag interactions with visualization state checks", () => {
-    const files = fs.readdirSync(launchFilesDir).filter(f => f.endsWith(".json"));
+test.describe('Zoom, Pan, and Drag interactions with visualization state checks', () => {
+  const files = fs.readdirSync(launchFilesDir).filter(f => f.endsWith('.json'));
 
-    for (const file of files) {
-        test(`state consistent for ${file}`, async ({ page }) => {
-            await page.goto(process.env.TEST_SERVER_URL);
+  for (const file of files) {
+    test(`state consistent for ${file}`, async ({ page }) => {
+      await page.goto(process.env.TEST_SERVER_URL);
 
-            const launchData = JSON.parse(
-                fs.readFileSync(path.join(launchFilesDir, file), "utf8")
-            );
+      const launchData = JSON.parse(
+        fs.readFileSync(path.join(launchFilesDir, file), 'utf8')
+      );
 
-            await page.evaluate((data) => {
-                window.postMessage({ type: 'launchmap-data', data }, '*');
-            }, launchData);
+      await page.evaluate((data) => {
+        window.postMessage({ type: 'launchmap-data', data }, '*');
+      }, launchData);
 
-            await page.waitForSelector(".block");
-            
-            // Capture initial edge positions
-            const edgesBefore = await page.$$eval('#edge-layer path', paths =>
-                paths.map(p => p.getAttribute('d'))
-            );
-            if (edgesBefore.length === 0) {
-                console.warn(`⚠️ No edges found in ${file}, skipping edge checks.`);
-            }
+      await page.waitForSelector('.block');
 
-            // Drag Test
-            const block = page.locator('.block-header').first();
-            const boxBefore = await block.boundingBox();
+      // Capture initial edge positions
+      const edgesBefore = await page.$$eval('#edge-layer path', paths =>
+        paths.map(p => p.getAttribute('d'))
+      );
+      if (edgesBefore.length === 0) {
+        console.warn(`⚠️ No edges found in ${file}, skipping edge checks.`);
+      }
 
-            await block.dragTo(page.locator('body'), {
-                targetPosition: { x: 300, y: 200 },
-            });
+      // Drag Test
+      const block = page.locator('.block-header').first();
+      const boxBefore = await block.boundingBox();
 
-            const boxAfter = await block.boundingBox();
-            expect(boxAfter.x).not.toBe(boxBefore.x);
-            expect(boxAfter.y).not.toBe(boxBefore.y);
+      await block.dragTo(page.locator('body'), {
+        targetPosition: { x: 300, y: 200 },
+      });
 
-            const edgesAfterDrag = await page.$$eval('#edge-layer path', paths =>
-                paths.map(p => p.getAttribute('d'))
-            );
-            if (edgesBefore.length > 0) {
-                expect(edgesAfterDrag).not.toEqual(edgesBefore);
-            }
+      const boxAfter = await block.boundingBox();
+      expect(boxAfter.x).not.toBe(boxBefore.x);
+      expect(boxAfter.y).not.toBe(boxBefore.y);
 
-            // Pan test
-            const zoomLayer = page.locator('#zoom-layer');
-            const transformBeforePan = await zoomLayer.evaluate(el => el.style.transform);
+      const edgesAfterDrag = await page.$$eval('#edge-layer path', paths =>
+        paths.map(p => p.getAttribute('d'))
+      );
+      if (edgesBefore.length > 0) {
+        expect(edgesAfterDrag).not.toEqual(edgesBefore);
+      }
 
-            await page.keyboard.down('Shift');
-            await page.mouse.move(300, 300);
-            await page.mouse.down();
-            await page.mouse.move(500, 400);
-            await page.mouse.up();
-            await page.keyboard.up('Shift');
+      // Pan test
+      const zoomLayer = page.locator('#zoom-layer');
+      const transformBeforePan = await zoomLayer.evaluate(el => el.style.transform);
 
-            const transformAfterPan = await zoomLayer.evaluate(el => el.style.transform);
-            expect(transformAfterPan).not.toBe(transformBeforePan);
+      await page.keyboard.down('Shift');
+      await page.mouse.move(300, 300);
+      await page.mouse.down();
+      await page.mouse.move(500, 400);
+      await page.mouse.up();
+      await page.keyboard.up('Shift');
 
-            const edgesAfterPan = await page.$$eval('#edge-layer path', paths =>
-                paths.map(p => p.getAttribute('d'))
-            );
-            if (edgesBefore.length > 0) {
-                expect(edgesAfterPan).not.toEqual(edgesAfterDrag);
-            }
+      const transformAfterPan = await zoomLayer.evaluate(el => el.style.transform);
+      expect(transformAfterPan).not.toBe(transformBeforePan);
 
-            // Zoom Test
-            const transformBeforeZoom = await zoomLayer.evaluate(el => el.style.transform);
+      const edgesAfterPan = await page.$$eval('#edge-layer path', paths =>
+        paths.map(p => p.getAttribute('d'))
+      );
+      if (edgesBefore.length > 0) {
+        expect(edgesAfterPan).not.toEqual(edgesAfterDrag);
+      }
 
-            await page.mouse.wheel(0, -200);
-            const transformAfterZoomIn = await zoomLayer.evaluate(el => el.style.transform);
-            expect(transformAfterZoomIn).not.toBe(transformBeforeZoom);
+      // Zoom Test
+      const transformBeforeZoom = await zoomLayer.evaluate(el => el.style.transform);
 
-            await page.mouse.wheel(0, 200);
-            const transformAfterZoomOut = await zoomLayer.evaluate(el => el.style.transform);
-            expect(transformAfterZoomOut).not.toBe(transformAfterZoomIn);
+      await page.mouse.wheel(0, -200);
+      const transformAfterZoomIn = await zoomLayer.evaluate(el => el.style.transform);
+      expect(transformAfterZoomIn).not.toBe(transformBeforeZoom);
 
-            const edgesAfterZoom = await page.$$eval('#edge-layer path', paths =>
-                paths.map(p => p.getAttribute('d'))
-            );
-            if (edgesBefore.length > 0) {
-                expect(edgesAfterZoom).not.toEqual(edgesAfterPan);
-            }
+      await page.mouse.wheel(0, 200);
+      const transformAfterZoomOut = await zoomLayer.evaluate(el => el.style.transform);
+      expect(transformAfterZoomOut).not.toBe(transformAfterZoomIn);
 
-            // Final Visual Snapshot
-            await expect(page).toHaveScreenshot(`${file}-final.png`, {
-                fullPage: true,
-                maxDiffPixelRatio: 0.02
-            });
-        });
-    }
+      const edgesAfterZoom = await page.$$eval('#edge-layer path', paths =>
+        paths.map(p => p.getAttribute('d'))
+      );
+      if (edgesBefore.length > 0) {
+        expect(edgesAfterZoom).not.toEqual(edgesAfterPan);
+      }
+
+      // Final Visual Snapshot
+      await expect(page).toHaveScreenshot(`${file}-final.png`, {
+        fullPage: true,
+        maxDiffPixelRatio: 0.02
+      });
+    });
+  }
 });

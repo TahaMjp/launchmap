@@ -17,27 +17,27 @@ import http from 'http';
 import serveHandler from 'serve-handler';
 
 export class TestServer {
-    constructor(port = 3000, publicDir = path.join(__dirname, '../../../webview')) {
-        this.port = port;
-        this.publicDir = publicDir;
-        this.server = null;
-    }
+  constructor(port = 3000, publicDir = path.join(__dirname, '../../../webview')) {
+    this.port = port;
+    this.publicDir = publicDir;
+    this.server = null;
+  }
 
-    async start() {
-        this.server = http.createServer((req, res) =>
-            serveHandler(req, res, { public: this.publicDir })
-        );
-        await new Promise((resolve) => this.server.listen(this.port, resolve));
-        console.log(`✅ Test server running at http://localhost:${this.port}`);
-    }
+  async start() {
+    this.server = http.createServer((req, res) =>
+      serveHandler(req, res, { public: this.publicDir })
+    );
+    await new Promise((resolve) => this.server.listen(this.port, resolve));
+    console.log(`✅ Test server running at http://localhost:${this.port}`);
+  }
 
-    async stop() {
-        if (!this.server) return;
-        await new Promise((resolve) => this.server.close(resolve));
-        console.log(`🛑 Test server stopped`);
-    }
+  async stop() {
+    if (!this.server) return;
+    await new Promise((resolve) => this.server.close(resolve));
+    console.log('🛑 Test server stopped');
+  }
 
-    get url() {
-        return `http://localhost:${this.port}/tests/assets/index.html`;
-    }
+  get url() {
+    return `http://localhost:${this.port}/tests/assets/index.html`;
+  }
 }

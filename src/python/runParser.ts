@@ -19,44 +19,45 @@ import * as which from 'which';
 import { getPluginDir } from '../utils/launchmapConfig';
 
 export async function runPythonParser(filePath: string): Promise<string> {
-    return new Promise(async (resolve, reject) => {
-        const pythonCmd = detectPythonCommand();
+  // eslint-disable-next-line no-async-promise-executor
+  return new Promise(async (resolve, reject) => {
+    const pythonCmd = detectPythonCommand();
 
-        if (!pythonCmd) {
-            vscode.window.showErrorMessage(
-                "Python iterpreter not found. Please install Python 3 and make sure it is available in your PATH."  
-            );
-            return reject(new Error("No Python interpreter found."));
-        }
+    if (!pythonCmd) {
+      vscode.window.showErrorMessage(
+        'Python iterpreter not found. Please install Python 3 and make sure it is available in your PATH.'
+      );
+      return reject(new Error('No Python interpreter found.'));
+    }
 
-        const scriptPath = path.join(__dirname, '..', '..', 'parse.py');
-        const cmdParts = [`"${pythonCmd}"`, `"${scriptPath}"`, `"${filePath}"`];
+    const scriptPath = path.join(__dirname, '..', '..', 'parse.py');
+    const cmdParts = [`"${pythonCmd}"`, `"${scriptPath}"`, `"${filePath}"`];
 
-        const pluginDir = await getPluginDir();
-        if (pluginDir) {
-            cmdParts.push('--plugin-dir', `"${pluginDir}"`);
-        }
+    const pluginDir = await getPluginDir();
+    if (pluginDir) {
+      cmdParts.push('--plugin-dir', `"${pluginDir}"`);
+    }
 
-        const cmd = cmdParts.join(' ');
-        cp.exec(cmd, (err, stdout, stderr) => {
-            if (err) {
-                vscode.window.showErrorMessage("Parser error: " + stderr);
-                return reject(err);
-            }
-            resolve(stdout);
-        });
+    const cmd = cmdParts.join(' ');
+    cp.exec(cmd, (err, stdout, stderr) => {
+      if (err) {
+        vscode.window.showErrorMessage('Parser error: ' + stderr);
+        return reject(err);
+      }
+      resolve(stdout);
     });
+  });
 }
 
 function detectPythonCommand(): string | null {
-    const candidates = ['python3', 'python', 'py'];
-    for (const cmd of candidates) {
-        try {
-            which.sync(cmd);
-            return cmd;
-        } catch (_) {
-            continue;
-        }
+  const candidates = ['python3', 'python', 'py'];
+  for (const cmd of candidates) {
+    try {
+      which.sync(cmd);
+      return cmd;
+    } catch {
+      continue;
     }
-    return null;
+  }
+  return null;
 }

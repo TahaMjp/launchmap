@@ -16,40 +16,40 @@ import { renderSection } from './renderSection.js';
 import { renderBaseBlock } from './renderBaseBlock.js';
 
 export function renderComposableNodeGroup(container, nodes, options={}) {
-    nodes.forEach((node, idx) => {
-        const path = options.pathPrefix ? `${options.pathPrefix}.composable_nodes[${idx}]` : `composable_nodes[${idx}]`;
-        const block = renderComposableNode(node, { ...options, path });
-        
-        container.appendChild(block);
-        options.renderBlock(block, "composable-node");
-    });
+  nodes.forEach((node, idx) => {
+    const path = options.pathPrefix ? `${options.pathPrefix}.composable_nodes[${idx}]` : `composable_nodes[${idx}]`;
+    const block = renderComposableNode(node, { ...options, path });
+
+    container.appendChild(block);
+    options.renderBlock(block, 'composable-node');
+  });
 }
 
 function renderComposableNode(node, options) {
-    const block = renderBaseBlock({
-        type: 'composable-node',
-        options: {
-            ...options,
-            events: node.events
-        }
-    })
-
-    // Node name
-    const titleLabel = node.name || node.plugin || "(anonymous)";
-
-    // Sections
-    const renderOptions = { includeLeftPort: true, portIdPrefix: options.path, portRegistry: options.portRegistry };
-    block.appendChild(renderSection("name", "📛", "Name", titleLabel, renderOptions));
-    block.appendChild(renderSection("package", "📦", "Package", node.package, renderOptions));
-    block.appendChild(renderSection("plugin", "🔌", "Plugin", node.plugin, renderOptions));
-
-    if (node.parameters?.length > 0) {
-        block.appendChild(renderSection("parameters", "⚙️", "Params", node.parameters, renderOptions));
+  const block = renderBaseBlock({
+    type: 'composable-node',
+    options: {
+      ...options,
+      events: node.events
     }
+  });
 
-    if (node.arguments?.length > 0) {
-        block.appendChild(renderSection("arguments", "💬", "Args", node.arguments, renderOptions));
-    }
+  // Node name
+  const titleLabel = node.name || node.plugin || '(anonymous)';
 
-    return block;
+  // Sections
+  const renderOptions = { includeLeftPort: true, portIdPrefix: options.path, portRegistry: options.portRegistry };
+  block.appendChild(renderSection('name', '📛', 'Name', titleLabel, renderOptions));
+  block.appendChild(renderSection('package', '📦', 'Package', node.package, renderOptions));
+  block.appendChild(renderSection('plugin', '🔌', 'Plugin', node.plugin, renderOptions));
+
+  if (node.parameters?.length > 0) {
+    block.appendChild(renderSection('parameters', '⚙️', 'Params', node.parameters, renderOptions));
+  }
+
+  if (node.arguments?.length > 0) {
+    block.appendChild(renderSection('arguments', '💬', 'Args', node.arguments, renderOptions));
+  }
+
+  return block;
 }

@@ -13,8 +13,10 @@
 # limitations under the License.
 
 import ast
-from parser.resolution.utils import collect_assigned_variable_names
+
 from parser.resolution.resolution_registry import register_resolver
+from parser.resolution.utils import collect_assigned_variable_names
+
 
 @register_resolver(ast.If)
 def resolve_if_expression(node: ast.If, engine):
@@ -25,7 +27,7 @@ def resolve_if_expression(node: ast.If, engine):
 
     # Extract code as string
     code_str = ast.unparse(node)
-    
+
     # Collect all variables assigned in any branch
     assigned_vars = set()
 
@@ -42,7 +44,7 @@ def resolve_if_expression(node: ast.If, engine):
         else:
             collect_from_block(orelse)
             break
-    
+
     # Track variables
     symbolic_vars = [f"${{var:{v}}}" for v in sorted(assigned_vars)]
     context.introspection.track_python_expression(code_str, symbolic_vars)

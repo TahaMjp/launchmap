@@ -18,26 +18,26 @@ import path from 'path';
 
 const launchFilesDir = path.resolve(__dirname, '../../../parser/tests/real_cases/expected_outputs');
 
-test.describe("LaunchMap Visual Tests", () => {
-    const files = fs.readdirSync(launchFilesDir).filter(f => f.endsWith(".json"));
+test.describe('LaunchMap Visual Tests', () => {
+  const files = fs.readdirSync(launchFilesDir).filter(f => f.endsWith('.json'));
 
-    for (const file of files) {
-        test(`renders correctly for ${file}`, async ({ page }) => {
-            await page.goto(process.env.TEST_SERVER_URL);
+  for (const file of files) {
+    test(`renders correctly for ${file}`, async ({ page }) => {
+      await page.goto(process.env.TEST_SERVER_URL);
 
-            const launchData = JSON.parse(
-                fs.readFileSync(path.join(launchFilesDir, file), "utf8")
-            );
+      const launchData = JSON.parse(
+        fs.readFileSync(path.join(launchFilesDir, file), 'utf8')
+      );
 
-            await page.evaluate((data) => {
-                window.postMessage({ type: 'launchmap-data', data }, '*');
-            }, launchData);
+      await page.evaluate((data) => {
+        window.postMessage({ type: 'launchmap-data', data }, '*');
+      }, launchData);
 
-            await page.waitForSelector(".block");
-            await expect(page).toHaveScreenshot(`${file}.png`, { 
-                fullPage: true,
-                maxDiffPixelRatio: 0.01 
-            });
-        });
-    }
+      await page.waitForSelector('.block');
+      await expect(page).toHaveScreenshot(`${file}.png`, {
+        fullPage: true,
+        maxDiffPixelRatio: 0.01
+      });
+    });
+  }
 });

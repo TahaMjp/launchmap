@@ -13,8 +13,9 @@
 # limitations under the License.
 
 from parser.parser.postprocessing import simplify_launch_configurations
-from parser.resolution.utils import resolve_call_kwargs
 from parser.parser.user_handler import register_user_handler
+from parser.resolution.utils import resolve_call_kwargs
+
 
 @register_user_handler("RewrittenYaml")
 def handle_rewritten_yaml(node, context):
@@ -22,9 +23,7 @@ def handle_rewritten_yaml(node, context):
     Handler for RewrittenYaml
     """
     kwargs = resolve_call_kwargs(node, context.engine)
-    
-    return simplify_launch_configurations({
-        "type": "CustomHandler",
-        "type_name": "RewrittenYaml",
-        **kwargs
-    })
+
+    return simplify_launch_configurations(
+        {"type": "CustomHandler", "type_name": "RewrittenYaml", **kwargs}
+    )

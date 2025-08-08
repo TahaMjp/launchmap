@@ -13,5 +13,5 @@
 // limitations under the License.
 
 export const registrySystem = {
-    portRegistry: {},
-}
+  portRegistry: {},
+};

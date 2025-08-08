@@ -15,6 +15,7 @@
 import ast
 import warnings
 
+
 def resolve_python_expression(left, op, right):
     if isinstance(op, ast.Add):
         return left + right
@@ -27,7 +28,7 @@ def resolve_python_expression(left, op, right):
     elif isinstance(op, ast.Mod):
         return left % right
     elif isinstance(op, ast.Pow):
-        return left ** right
+        return left**right
     elif isinstance(op, ast.LShift):
         return left << right
     elif isinstance(op, ast.RShift):
@@ -40,7 +41,8 @@ def resolve_python_expression(left, op, right):
         return left ^ right
     else:
         raise NotImplementedError(f"Unsupported op: {type(op).__name__}")
-    
+
+
 def get_func_name(func_node: ast.expr) -> str:
     """
     Reconstructs the fully qualified name from an AST function call,
@@ -58,13 +60,16 @@ def get_func_name(func_node: ast.expr) -> str:
         return ".".join(parts)
     raise TypeError(f"Unsupported function node type: {type(func_node).__name__}")
 
+
 def resolve_call_kwargs(node: ast.Call, engine):
     return {kw.arg: engine.resolve(kw.value) for kw in node.keywords}
+
 
 def resolve_call_signature(node: ast.Call, engine):
     args = [engine.resolve(arg) for arg in node.args]
     kwargs = {kw.arg: engine.resolve(kw.value) for kw in node.keywords}
     return args, kwargs
+
 
 def try_all_resolvers(node: ast.AST, engine) -> object:
     """
@@ -81,13 +86,16 @@ def try_all_resolvers(node: ast.AST, engine) -> object:
             return result
 
     if not resolvers:
-        source = getattr(node, 'lineno', '?')
+        source = getattr(node, "lineno", "?")
         node_type = type(node).__name__
         warnings.warn(f"Unhandled AST node ({node_type}) at line {source}: {ast.dump(node)}")
-    
+
     return None
 
-def bind_function_args(fn_def: ast.FunctionDef, args: list, kwargs: dict, exclude_first: bool = False) -> dict:
+
+def bind_function_args(
+    fn_def: ast.FunctionDef, args: list, kwargs: dict, exclude_first: bool = False
+) -> dict:
     """
     Bind args and kwargs to the function definition's parameters.
     Returns a mapping from parameter names to actual passed value.
@@ -106,12 +114,12 @@ def bind_function_args(fn_def: ast.FunctionDef, args: list, kwargs: dict, exclud
         binding[name] = value
 
     # Remaining positional args (*args)
-    remaining_args = args[len(param_names):]
+    remaining_args = args[len(param_names) :]
     if vararg_name:
         binding[vararg_name] = remaining_args
-    
+
     # Named kwargs that match a param name
-    for name in param_names[len(args):]:
+    for name in param_names[len(args) :]:
         if name in kwargs:
             binding[name] = kwargs[name]
 
@@ -122,6 +130,7 @@ def bind_function_args(fn_def: ast.FunctionDef, args: list, kwargs: dict, exclud
         binding[kwarg_name] = extra_kwargs
 
     return binding
+
 
 def collect_assigned_variable_names(stmt: ast.stmt) -> set[str]:
     """

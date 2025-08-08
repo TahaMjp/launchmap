@@ -12,9 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from parser.parser.registry import register_handler
-from parser.resolution.utils import resolve_call_signature
 import ast
+
+from parser.parser.registry import register_handler
+
 
 @register_handler("perform")
 def handle_perform(node: ast.Call, context):

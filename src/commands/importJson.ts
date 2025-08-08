@@ -18,28 +18,28 @@ import { createVisualizerPanel } from '../panel/createVisualizerPanel';
 import { setLastParsedData } from './openVisualizer';
 
 export function registerImportJson(context: vscode.ExtensionContext) {
-    context.subscriptions.push(
-        vscode.commands.registerCommand('launchmap.importJson', async () => {
-            const fileUris = await vscode.window.showOpenDialog({
-                canSelectMany: false,
-                filters: { 'JSON': ['json'] },
-                openLabel: 'Import Launch Graph JSON'
-            });
+  context.subscriptions.push(
+    vscode.commands.registerCommand('launchmap.importJson', async () => {
+      const fileUris = await vscode.window.showOpenDialog({
+        canSelectMany: false,
+        filters: { 'JSON': ['json'] },
+        openLabel: 'Import Launch Graph JSON'
+      });
 
-            if (!fileUris || fileUris.length === 0) return;
+      if (!fileUris || fileUris.length === 0) return;
 
-            try {
-                const importedName = path.basename(fileUris[0].fsPath);
+      try {
+        const importedName = path.basename(fileUris[0].fsPath);
 
-                const contentBytes = await vscode.workspace.fs.readFile(fileUris[0]);
-                const content = Buffer.from(contentBytes).toString('utf8');
-                const parsed = JSON.parse(content);
+        const contentBytes = await vscode.workspace.fs.readFile(fileUris[0]);
+        const content = Buffer.from(contentBytes).toString('utf8');
+        const parsed = JSON.parse(content);
 
-                setLastParsedData(parsed);
-                createVisualizerPanel(context, parsed, importedName);
-            } catch (error) {
-                vscode.window.showErrorMessage("Failed to load or parse the JSON file.");
-            }
-        })
-    );
+        setLastParsedData(parsed);
+        createVisualizerPanel(context, parsed, importedName);
+      } catch {
+        vscode.window.showErrorMessage('Failed to load or parse the JSON file.');
+      }
+    })
+  );
 }

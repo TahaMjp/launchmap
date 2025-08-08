@@ -16,13 +16,14 @@ import './components/setupRenderers.js';
 import { renderAll } from './core/renderAll.js';
 
 window.addEventListener('message', (event) => {
-    const message = event.data;
-    if (message.type == 'launchmap-data') {
-        renderAll(message.data);
-    }
+  const message = event.data;
+  if (message.type == 'launchmap-data') {
+    renderAll(message.data);
+  }
 });
 
+// eslint-disable-next-line no-undef
 const vscode = acquireVsCodeApi();
 document.getElementById('export-btn')?.addEventListener('click', () => {
-    vscode.postMessage({ type: 'export-json' });
+  vscode.postMessage({ type: 'export-json' });
 });

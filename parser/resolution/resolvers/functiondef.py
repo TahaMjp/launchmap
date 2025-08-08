@@ -13,7 +13,9 @@
 # limitations under the License.
 
 import ast
+
 from parser.resolution.resolution_registry import register_resolver
+
 
 @register_resolver(ast.FunctionDef)
 def resolve_function_def(node: ast.FunctionDef, engine):

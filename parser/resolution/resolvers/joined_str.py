@@ -13,7 +13,9 @@
 # limitations under the License.
 
 import ast
+
 from parser.resolution.resolution_registry import register_resolver
+
 
 @register_resolver(ast.JoinedStr)
 def resolve_function_def(node: ast.FunctionDef, engine):
@@ -26,5 +28,5 @@ def resolve_function_def(node: ast.FunctionDef, engine):
             parts.append(str(value.value))
         else:
             parts.append(f"<unresolved:{type(value).__name__}")
-    
+
     return "".join(parts)

@@ -15,10 +15,10 @@
 import * as vscode from 'vscode';
 
 export function getWebviewHtml(webview: vscode.Webview, extensionUri: vscode.Uri): string {
-    const scriptUri = webview.asWebviewUri(vscode.Uri.joinPath(extensionUri, 'webview', 'script.js'));
-    const styleUri = webview.asWebviewUri(vscode.Uri.joinPath(extensionUri, 'webview', 'style.css'));
+  const scriptUri = webview.asWebviewUri(vscode.Uri.joinPath(extensionUri, 'webview', 'script.js'));
+  const styleUri = webview.asWebviewUri(vscode.Uri.joinPath(extensionUri, 'webview', 'style.css'));
 
-    return `
+  return `
         <!DOCTYPE html>
         <html>
         <head>
@@ -33,5 +33,5 @@ export function getWebviewHtml(webview: vscode.Webview, extensionUri: vscode.Uri
             <script src="${scriptUri}" type="module"></script>
         </body>
         </html>
-    `
+    `;
 }

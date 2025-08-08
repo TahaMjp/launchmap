@@ -16,41 +16,41 @@ import * as vscode from 'vscode';
 import { getWebviewHtml } from './getWebviewHtml';
 
 export function createVisualizerPanel(
-    context: vscode.ExtensionContext,
-    data: any,
-    titleHint?: string
+  context: vscode.ExtensionContext,
+  data: null,
+  titleHint?: string
 ): vscode.WebviewPanel {
-    const panelTitle = titleHint
-        ? `${titleHint} : ROS2 LaunchMap Visualizer`
-        : 'ROS2 LaunchMap Visualizer'
+  const panelTitle = titleHint
+    ? `${titleHint} : ROS2 LaunchMap Visualizer`
+    : 'ROS2 LaunchMap Visualizer';
 
-    const panel = vscode.window.createWebviewPanel(
-        'launchmap',
-        panelTitle,
-        vscode.ViewColumn.One,
-        {
-            enableScripts: true,
-            retainContextWhenHidden: true
-        }
-    );
+  const panel = vscode.window.createWebviewPanel(
+    'launchmap',
+    panelTitle,
+    vscode.ViewColumn.One,
+    {
+      enableScripts: true,
+      retainContextWhenHidden: true
+    }
+  );
 
-    panel.webview.html = getWebviewHtml(panel.webview, context.extensionUri);
-    panel.webview.postMessage({ type: 'launchmap-data', data });
+  panel.webview.html = getWebviewHtml(panel.webview, context.extensionUri);
+  panel.webview.postMessage({ type: 'launchmap-data', data });
 
-    panel.webview.onDidReceiveMessage(async (message) => {
-        if (message.type === 'export-json') {
-            const result = await vscode.commands.executeCommand('launchmap.exportAsJson');
-            if (result) {
-                panel.webview.postMessage({ type: 'export-complete', path: result });
-            } 
-        }
-    });
+  panel.webview.onDidReceiveMessage(async (message) => {
+    if (message.type === 'export-json') {
+      const result = await vscode.commands.executeCommand('launchmap.exportAsJson');
+      if (result) {
+        panel.webview.postMessage({ type: 'export-complete', path: result });
+      }
+    }
+  });
 
-    panel.onDidChangeViewState((e) => {
-        if (e.webviewPanel.visible) {
-            panel.webview.postMessage({ type: 'launchmap-data', data });
-        }
-    });
+  panel.onDidChangeViewState((e) => {
+    if (e.webviewPanel.visible) {
+      panel.webview.postMessage({ type: 'launchmap-data', data });
+    }
+  });
 
-    return panel;
+  return panel;
 }

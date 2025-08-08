@@ -16,26 +16,26 @@ import { renderBaseBlock } from './renderBaseBlock.js';
 import { renderSection } from './renderSection.js';
 
 export function renderArguments(container, argumentsList, options) {
-    if (!argumentsList || argumentsList.length === 0) return;
+  if (!argumentsList || argumentsList.length === 0) return;
 
-    argumentsList.forEach((arg, idx) => {
-        const path = `${options.pathPrefix || "arguments"}[${idx}]`;
-        const block = renderArgument(arg, { ...options, path });
+  argumentsList.forEach((arg, idx) => {
+    const path = `${options.pathPrefix || 'arguments'}[${idx}]`;
+    const block = renderArgument(arg, { ...options, path });
 
-        container.appendChild(block);
-        options.renderBlock(block, "argument");
-    });
+    container.appendChild(block);
+    options.renderBlock(block, 'argument');
+  });
 }
 
 export function renderArgument(arg, options) {
-    const block = renderBaseBlock({ type: "argument", options });
+  const block = renderBaseBlock({ type: 'argument', options });
 
-    const value = arg.default_value !== undefined ? arg.default_value : "";
-    const argSection = renderSection("argument", "🚀", arg.name, value, 
-        { includeRightPort: true, portIdPrefix: `argument:${arg.name}`, portRegistry: options.portRegistry });
-    block.appendChild(argSection);
+  const value = arg.default_value !== undefined ? arg.default_value : '';
+  const argSection = renderSection('argument', '🚀', arg.name, value,
+    { includeRightPort: true, portIdPrefix: `argument:${arg.name}`, portRegistry: options.portRegistry });
+  block.appendChild(argSection);
 
-    block.dataset.argument = arg.name;
+  block.dataset.argument = arg.name;
 
-    return block;
+  return block;
 }

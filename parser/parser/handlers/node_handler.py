@@ -13,9 +13,11 @@
 # limitations under the License.
 
 import ast
+
 from parser.context import ParseContext
 from parser.parser.registry import register_handler
 from parser.resolution.utils import resolve_call_kwargs
+
 
 @register_handler("Node", "launch_ros.actions.Node")
 def handle_node(node: ast.Call, context: ParseContext) -> dict:
@@ -24,7 +26,7 @@ def handle_node(node: ast.Call, context: ParseContext) -> dict:
     Adds namespace context if not explicitly passed.
     """
     kwargs = resolve_call_kwargs(node, context.engine)
-    
+
     if "namespace" not in kwargs:
         ns = context.current_namespace()
         if ns:

@@ -13,10 +13,12 @@
 # limitations under the License.
 
 import ast
+
 from parser.context import ParseContext
 from parser.parser.registry import register_handler
 from parser.parser.utils.common import flatten_once, group_entities_by_type
 from parser.resolution.utils import resolve_call_signature
+
 
 @register_handler("TimerAction", "launch.actions.TimerAction")
 def handle_timer_action(node: ast.Call, context: ParseContext) -> dict:
@@ -32,8 +34,8 @@ def handle_timer_action(node: ast.Call, context: ParseContext) -> dict:
 
     actions = []
     for item in resolved_flat:
-            actions.append(item)
-    
+        actions.append(item)
+
     grouped = group_entities_by_type(actions)
 
     result = {
@@ -43,4 +45,3 @@ def handle_timer_action(node: ast.Call, context: ParseContext) -> dict:
     }
 
     return result
-        

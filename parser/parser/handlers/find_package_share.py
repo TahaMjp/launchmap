@@ -13,9 +13,11 @@
 # limitations under the License.
 
 import ast
+
 from parser.context import ParseContext
 from parser.parser.registry import register_handler
 from parser.resolution.utils import resolve_call_signature
+
 
 @register_handler("FindPackageShare", "launch.substitutions.FindPackageShare")
 def handle_find_package_share(node: ast.Call, context: ParseContext) -> dict:
@@ -23,7 +25,4 @@ def handle_find_package_share(node: ast.Call, context: ParseContext) -> dict:
     if not args:
         raise ValueError("FindPackageShare requires a package name.")
 
-    return {
-        "type": "FindPackageShare",
-        "package": args[0]
-    }
+    return {"type": "FindPackageShare", "package": args[0]}

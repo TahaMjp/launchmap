@@ -12,10 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from collections import defaultdict
-from parser.introspection.tracker import IntrospectionTracker
-from typing import Any
 import ast
+from collections import defaultdict
+from typing import Any
+
+from parser.introspection.tracker import IntrospectionTracker
+
 
 class ParseContext:
     def __init__(self, introspection: IntrospectionTracker = None):
@@ -46,45 +48,45 @@ class ParseContext:
     ## Variable Management
 
     def define_variable(self, name: str, value: Any):
-        """ Define or update a variable in context. """
+        """Define or update a variable in context."""
         self.variables[name] = value
 
     def has_variable(self, name: str) -> bool:
-        """ Check variable exists in context """
+        """Check variable exists in context"""
         return name in self.variables
 
     def lookup_variable(self, name: str) -> Any:
-        """ Resolve a variable by name. Raises if undefined. """
+        """Resolve a variable by name. Raises if undefined."""
         if name not in self.variables:
             raise NameError(f"Variable '{name}' is not defined in context.")
         return self.variables[name]
-    
+
     ## Function API
 
     def define_function(self, name: str, fn_def: ast.FunctionDef):
-        """ Define or update a function in context. """
+        """Define or update a function in context."""
         self.functions[name] = fn_def
 
     def has_function(self, name: str) -> bool:
-        """ Check function exists in context. """
+        """Check function exists in context."""
         return name in self.functions
 
     def lookup_function(self, name: str) -> ast.FunctionDef | None:
-        """ Return the AST of a function by name, or None if not found. """
+        """Return the AST of a function by name, or None if not found."""
         return self.functions.get(name)
-    
+
     ## Namespace stack
-    
+
     def push_namespace(self, ns: str):
         self.namespace_stack.append(ns)
-    
+
     def pop_namespace(self):
         if self.namespace_stack:
             self.namespace_stack.pop()
 
     def current_namespace(self) -> str | None:
         return "/".join(self.namespace_stack) if self.namespace_stack else None
-    
+
     ## Composable node groups
 
     def register_composable_node_group(self, container_name: str, container_metadata: dict):
@@ -99,25 +101,22 @@ class ParseContext:
             if not data["composable_nodes"]:
                 continue
 
-            entry = {
-                "target_container": name,
-                "composable_nodes": data["composable_nodes"]
-            }
+            entry = {"target_container": name, "composable_nodes": data["composable_nodes"]}
 
             for key, value in data.items():
                 if key in ("composable_nodes",):
                     continue
                 if value not in (None, "", [], {}):
                     entry[key] = value
-            
+
             results.append(entry)
 
         return results
-    
+
     ## Utility
 
     def get_func_name(self, func_node) -> str:
-        """ Resolve a dotted name from an AST function call. """
+        """Resolve a dotted name from an AST function call."""
         from parser.resolution.utils import get_func_name
+
         return get_func_name(func_node)
-    

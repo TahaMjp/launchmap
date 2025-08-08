@@ -16,38 +16,38 @@ import { renderSection } from './renderSection.js';
 import { renderBaseBlock } from './renderBaseBlock.js';
 
 export function renderEventHandlerGroup(container, handlers, options={}) {
-    handlers.forEach((handler, idx) => {
-        const path = `events[${idx}]`;
-        const block = renderEventHandler(handler, { ...options, path });
+  handlers.forEach((handler, idx) => {
+    const path = `events[${idx}]`;
+    const block = renderEventHandler(handler, { ...options, path });
 
-        container.appendChild(block);
-        options.renderBlock(block, "event-handler");
-    });
+    container.appendChild(block);
+    options.renderBlock(block, 'event-handler');
+  });
 }
 
 function renderEventHandler(handler, options) {
-    const block = renderBaseBlock({
-        type: "event-handler",
-        options: {
-            ...options,
-            events: {
-                triggered_by: handler.triggered_by,
-                triggers: handler.triggers
-            },
-            eventLabels: handler.type === "OnProcessExit"
-                ? { left: "← target_action", right: "on_exit →" }
-                : handler.type === "OnProcessStart"
-                    ? { left: "← target_action", right: "on_start →" }
-                    : undefined
-        }
-    });
+  const block = renderBaseBlock({
+    type: 'event-handler',
+    options: {
+      ...options,
+      events: {
+        triggered_by: handler.triggered_by,
+        triggers: handler.triggers
+      },
+      eventLabels: handler.type === 'OnProcessExit'
+        ? { left: '← target_action', right: 'on_exit →' }
+        : handler.type === 'OnProcessStart'
+          ? { left: '← target_action', right: 'on_start →' }
+          : undefined
+    }
+  });
 
-    // Main Section
-    const type = handler.type || 'EventHandler';
-    block.appendChild(renderSection("type", "📣", "Type", type, {
-        includeLeftPort: false,
-        includeRightPort: false
-    }));
+  // Main Section
+  const type = handler.type || 'EventHandler';
+  block.appendChild(renderSection('type', '📣', 'Type', type, {
+    includeLeftPort: false,
+    includeRightPort: false
+  }));
 
-    return block;
+  return block;
 }

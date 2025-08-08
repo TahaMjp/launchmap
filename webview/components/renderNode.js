@@ -16,45 +16,45 @@ import { renderSection } from './renderSection.js';
 import { renderBaseBlock } from './renderBaseBlock.js';
 
 export function renderNodeGroup(container, nodes, options={}) {
-    nodes.forEach((node, idx) => {
-        const path = options.pathPrefix ? `${options.pathPrefix}.nodes[${idx}]` : `nodes[${idx}]`;
-        const block = renderNode(node, { ...options, path });
+  nodes.forEach((node, idx) => {
+    const path = options.pathPrefix ? `${options.pathPrefix}.nodes[${idx}]` : `nodes[${idx}]`;
+    const block = renderNode(node, { ...options, path });
 
-        container.appendChild(block);
-        options.renderBlock(block, "node");
-    });
+    container.appendChild(block);
+    options.renderBlock(block, 'node');
+  });
 }
 
 function renderNode(node, options) {
-    const block = renderBaseBlock({
-        type: 'node',
-        options: {
-            ...options,
-            events: node.events
-        }
-    })
-
-    // Node name
-    const titleLabel = node.name || node.executable || "(anonymous)";
-
-    // Sections
-    const renderOptions = { includeLeftPort: true, portIdPrefix: options.path, portRegistry: options.portRegistry };
-    block.appendChild(renderSection("name", "📛", "Name", titleLabel, renderOptions));
-    block.appendChild(renderSection("package", "📦", "Package", node.package, renderOptions));
-    block.appendChild(renderSection("executable", "▶️", "Executable", node.executable, renderOptions));
-    block.appendChild(renderSection("output", "🖥️", "Output", node.output || "—", renderOptions));
-
-    if (node.condition) {
-        block.appendChild(renderSection("condition", "❓", "Condition", node.condition, renderOptions));
+  const block = renderBaseBlock({
+    type: 'node',
+    options: {
+      ...options,
+      events: node.events
     }
+  });
 
-    if (node.parameters?.length > 0) {
-        block.appendChild(renderSection("parameters", "⚙️", "Params", node.parameters, renderOptions));
-    }
+  // Node name
+  const titleLabel = node.name || node.executable || '(anonymous)';
 
-    if (node.arguments?.length > 0) {
-        block.appendChild(renderSection("arguments", "💬", "Args", node.arguments, renderOptions));
-    }
+  // Sections
+  const renderOptions = { includeLeftPort: true, portIdPrefix: options.path, portRegistry: options.portRegistry };
+  block.appendChild(renderSection('name', '📛', 'Name', titleLabel, renderOptions));
+  block.appendChild(renderSection('package', '📦', 'Package', node.package, renderOptions));
+  block.appendChild(renderSection('executable', '▶️', 'Executable', node.executable, renderOptions));
+  block.appendChild(renderSection('output', '🖥️', 'Output', node.output || '—', renderOptions));
 
-    return block;
+  if (node.condition) {
+    block.appendChild(renderSection('condition', '❓', 'Condition', node.condition, renderOptions));
+  }
+
+  if (node.parameters?.length > 0) {
+    block.appendChild(renderSection('parameters', '⚙️', 'Params', node.parameters, renderOptions));
+  }
+
+  if (node.arguments?.length > 0) {
+    block.appendChild(renderSection('arguments', '💬', 'Args', node.arguments, renderOptions));
+  }
+
+  return block;
 }

@@ -17,96 +17,99 @@
 
 
 from ament_index_python.packages import get_package_share_directory
-
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument, GroupAction, IncludeLaunchDescription, TimerAction  # noqa: E501
+from launch.actions import (  # noqa: E501
+    DeclareLaunchArgument,
+    GroupAction,
+    IncludeLaunchDescription,
+    TimerAction,
+)
+from launch.conditions import IfCondition
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import EnvironmentVariable, LaunchConfiguration, PathJoinSubstitution
-from launch.conditions import IfCondition
 from launch_ros.actions import PushRosNamespace
-
 from nav2_common.launch import RewrittenYaml
 
 
 def generate_launch_description():
     ld = LaunchDescription()
 
-    diagnostics_enable = EnvironmentVariable('TURTLEBOT4_DIAGNOSTICS', default_value='1')
-    namespace = EnvironmentVariable('ROBOT_NAMESPACE', default_value='')
+    diagnostics_enable = EnvironmentVariable("TURTLEBOT4_DIAGNOSTICS", default_value="1")
+    namespace = EnvironmentVariable("ROBOT_NAMESPACE", default_value="")
 
-    pkg_turtlebot4_bringup = get_package_share_directory('turtlebot4_bringup')
-    pkg_turtlebot4_diagnostics = get_package_share_directory('turtlebot4_diagnostics')
-    pkg_turtlebot4_description = get_package_share_directory('turtlebot4_description')
+    pkg_turtlebot4_bringup = get_package_share_directory("turtlebot4_bringup")
+    pkg_turtlebot4_diagnostics = get_package_share_directory("turtlebot4_diagnostics")
+    pkg_turtlebot4_description = get_package_share_directory("turtlebot4_description")
 
     param_file_cmd = DeclareLaunchArgument(
-        'param_file',
-        default_value=PathJoinSubstitution(
-            [pkg_turtlebot4_bringup, 'config', 'turtlebot4.yaml']),
-        description='Turtlebot4 Robot param file'
+        "param_file",
+        default_value=PathJoinSubstitution([pkg_turtlebot4_bringup, "config", "turtlebot4.yaml"]),
+        description="Turtlebot4 Robot param file",
     )
 
-    param_file = LaunchConfiguration('param_file')
+    param_file = LaunchConfiguration("param_file")
 
     namespaced_param_file = RewrittenYaml(
-        source_file=param_file,
-        root_key=namespace,
-        param_rewrites={},
-        convert_types=True)
+        source_file=param_file, root_key=namespace, param_rewrites={}, convert_types=True
+    )
 
     # Launch files
     turtlebot4_robot_launch_file = PathJoinSubstitution(
-        [pkg_turtlebot4_bringup, 'launch', 'robot.launch.py'])
+        [pkg_turtlebot4_bringup, "launch", "robot.launch.py"]
+    )
     joy_teleop_launch_file = PathJoinSubstitution(
-        [pkg_turtlebot4_bringup, 'launch', 'joy_teleop.launch.py'])
+        [pkg_turtlebot4_bringup, "launch", "joy_teleop.launch.py"]
+    )
     diagnostics_launch_file = PathJoinSubstitution(
-        [pkg_turtlebot4_diagnostics, 'launch', 'diagnostics.launch.py'])
+        [pkg_turtlebot4_diagnostics, "launch", "diagnostics.launch.py"]
+    )
     rplidar_launch_file = PathJoinSubstitution(
-        [pkg_turtlebot4_bringup, 'launch', 'rplidar.launch.py'])
-    oakd_launch_file = PathJoinSubstitution(
-        [pkg_turtlebot4_bringup, 'launch', 'oakd.launch.py'])
+        [pkg_turtlebot4_bringup, "launch", "rplidar.launch.py"]
+    )
+    oakd_launch_file = PathJoinSubstitution([pkg_turtlebot4_bringup, "launch", "oakd.launch.py"])
     description_launch_file = PathJoinSubstitution(
-        [pkg_turtlebot4_description, 'launch', 'robot_description.launch.py']
+        [pkg_turtlebot4_description, "launch", "robot_description.launch.py"]
     )
 
     actions = [
-            PushRosNamespace(namespace),
+        PushRosNamespace(namespace),
+        IncludeLaunchDescription(
+            PythonLaunchDescriptionSource([turtlebot4_robot_launch_file]),
+            launch_arguments=[("model", "lite"), ("param_file", namespaced_param_file)],
+        ),
+        IncludeLaunchDescription(
+            PythonLaunchDescriptionSource([joy_teleop_launch_file]),
+            launch_arguments=[("namespace", namespace)],
+        ),
+        IncludeLaunchDescription(PythonLaunchDescriptionSource([rplidar_launch_file])),
+        # Delay the OAK-D startup for a bit
+        # This prevents spiking the current on the USB by having the lidar and camera
+        # start up at the same time as everything else
+        TimerAction(
+            period=30.0,
+            actions=[
+                IncludeLaunchDescription(
+                    PythonLaunchDescriptionSource([oakd_launch_file]),
+                    launch_arguments=[
+                        ("camera", "oakd_lite"),
+                        ("namespace", namespace),
+                    ],
+                )
+            ],
+        ),
+        IncludeLaunchDescription(
+            PythonLaunchDescriptionSource([description_launch_file]),
+            launch_arguments=[("model", "lite")],
+        ),
+    ]
 
-            IncludeLaunchDescription(
-                PythonLaunchDescriptionSource([turtlebot4_robot_launch_file]),
-                launch_arguments=[('model', 'lite'),
-                                  ('param_file', namespaced_param_file)]),
-
-            IncludeLaunchDescription(
-                PythonLaunchDescriptionSource([joy_teleop_launch_file]),
-                launch_arguments=[('namespace', namespace)]),
-
-            IncludeLaunchDescription(
-                PythonLaunchDescriptionSource([rplidar_launch_file])),
-
-            # Delay the OAK-D startup for a bit
-            # This prevents spiking the current on the USB by having the lidar and camera
-            # start up at the same time as everything else
-            TimerAction(
-                period=30.0,
-                actions=[
-                    IncludeLaunchDescription(
-                        PythonLaunchDescriptionSource([oakd_launch_file]),
-                        launch_arguments=[
-                            ('camera', 'oakd_lite'),
-                            ('namespace', namespace),
-                        ])
-                ]
-            ),
-
-            IncludeLaunchDescription(
-                PythonLaunchDescriptionSource([description_launch_file]),
-                launch_arguments=[('model', 'lite')]),
-        ]
-
-    actions.append(IncludeLaunchDescription(
+    actions.append(
+        IncludeLaunchDescription(
             PythonLaunchDescriptionSource([diagnostics_launch_file]),
-            launch_arguments=[('namespace', namespace)],
-            condition=IfCondition(diagnostics_enable)))
+            launch_arguments=[("namespace", namespace)],
+            condition=IfCondition(diagnostics_enable),
+        )
+    )
 
     turtlebot4_lite = GroupAction(actions)
 

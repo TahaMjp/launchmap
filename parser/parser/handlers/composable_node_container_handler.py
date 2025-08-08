@@ -13,10 +13,12 @@
 # limitations under the License.
 
 import ast
+
 from parser.context import ParseContext
 from parser.parser.registry import register_handler
 from parser.parser.utils.common import flatten_once, group_entities_by_type
 from parser.resolution.utils import resolve_call_signature
+
 
 @register_handler("ComposableNodeContainer", "launch_ros.actions.ComposableNodeContainer")
 def handle_composable_container(node: ast.Call, context: ParseContext) -> dict:
@@ -37,13 +39,10 @@ def handle_composable_container(node: ast.Call, context: ParseContext) -> dict:
     }
     for key, value in kwargs.items():
         if key not in {"composable_node_descriptions", "name"}:
-            container_metadata[key] = value   
+            container_metadata[key] = value
 
     # Register container and attach nodes
     context.register_composable_node_group(container_name, container_metadata)
     context.extend_composable_node_group(container_name, composable_nodes)
 
-    return {
-        "type": "ComposableNodeContainer",
-        "target_container": container_name
-    }
+    return {"type": "ComposableNodeContainer", "target_container": container_name}

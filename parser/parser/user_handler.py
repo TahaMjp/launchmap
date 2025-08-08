@@ -12,8 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from parser.parser.registry import register_handler
 import inspect
+
+from parser.parser.registry import register_handler
+
 
 def register_user_handler(type_name: str):
     """
@@ -21,6 +23,7 @@ def register_user_handler(type_name: str):
     - Signature validation (must accept (node, context))
     - Output validation (must return dict with 'type': "CustomHandler", 'type_name': <type_name>)
     """
+
     def decorator(fn):
         # Check signature
         sig = inspect.signature(fn)
@@ -32,12 +35,12 @@ def register_user_handler(type_name: str):
                 f"User handler for '{type_name}' must have signature: "
                 f"({', '.join(expected_args)}), but got: ({', '.join(actual_args)})"
             )
-        
+
         # Wrap with validation
         def wrapper(node, context):
             result = fn(node, context)
             return result
-        
+
         return register_handler(type_name)(wrapper)
-    
+
     return decorator

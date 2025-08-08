@@ -14,12 +14,11 @@
 
 from parser.parser.user_handler import register_user_handler
 
+
 @register_user_handler("MyCustomLaunchThing")
 def handle_custom_launch_thing(node, context):
     return {
         "type": "CustomHandler",
         "type_name": "MyCustomLaunchThing",
-        "metadata": {
-            "info": "example"
-        }
+        "metadata": {"info": "example"},
     }

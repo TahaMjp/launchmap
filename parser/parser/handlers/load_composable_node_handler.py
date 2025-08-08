@@ -13,10 +13,12 @@
 # limitations under the License.
 
 import ast
+
 from parser.context import ParseContext
 from parser.parser.registry import register_handler
 from parser.parser.utils.common import flatten_once, group_entities_by_type
 from parser.resolution.utils import resolve_call_signature
+
 
 @register_handler("LoadComposableNodes", "launch_ros.actions.LoadComposableNodes")
 def handle_load_composable_nodes(node: ast.Call, context: ParseContext) -> dict:
@@ -37,7 +39,4 @@ def handle_load_composable_nodes(node: ast.Call, context: ParseContext) -> dict:
     context.register_composable_node_group(target_container, {"target_container": target_container})
     context.extend_composable_node_group(target_container, composable_nodes)
 
-    return {
-        "type": "LoadComposableNodes",
-        "target_container": target_container   
-    }
+    return {"type": "LoadComposableNodes", "target_container": target_container}

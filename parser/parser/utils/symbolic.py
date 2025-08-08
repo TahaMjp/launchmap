@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+
 def is_symbolic(value):
     """
     Determines if a value is symbolic (non-concrete) object from the resolution engine.

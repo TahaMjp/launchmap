@@ -12,10 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import os
 
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument, OpaqueFunction, IncludeLaunchDescription
+from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription, OpaqueFunction
 from launch.conditions import IfCondition
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import LaunchConfiguration, PathJoinSubstitution
@@ -53,7 +52,7 @@ def launch_setup(context, *args, **kwargs):
     )
 
     return [
-    	rviz_node,
+        rviz_node,
         robot_launch,
     ]
 
@@ -62,12 +61,8 @@ def generate_launch_description():
     declared_arguments = []
 
     def add_launch_arg(name: str, default_value: str = None):
-        declared_arguments.append(
-            DeclareLaunchArgument(name, default_value=default_value)
-        )
+        declared_arguments.append(DeclareLaunchArgument(name, default_value=default_value))
 
     add_launch_arg("enable_rviz", "False")
 
-    return LaunchDescription(
-        [*declared_arguments, OpaqueFunction(function=launch_setup)]
-    )
+    return LaunchDescription([*declared_arguments, OpaqueFunction(function=launch_setup)])

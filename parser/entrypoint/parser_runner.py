@@ -13,9 +13,11 @@
 # limitations under the License.
 
 import ast
+
 from parser.context import ParseContext
 from parser.parser.utils.ast_utils import collect_function_defs
 from parser.resolution.resolution_engine import ResolutionEngine
+
 
 def parse_launch_file(filepath: str) -> dict:
     """
@@ -49,7 +51,7 @@ def parse_launch_file(filepath: str) -> dict:
     main_fn = context.lookup_function("generate_launch_description")
     if not main_fn:
         raise ValueError("No generate_launch_description() function found.")
-    
+
     parsed.extend(_parse_launch_function_body(main_fn.body, context, engine))
 
     return {
@@ -57,14 +59,19 @@ def parse_launch_file(filepath: str) -> dict:
         "parsed": parsed,
         "used_launch_config": sorted(context.introspection.used_launch_configs),
         "declared_arguments": sorted(context.introspection.declared_launch_args.keys()),
-        "undeclared_launch_configurations": sorted(context.introspection.get_undeclared_launch_configs()),
+        "undeclared_launch_configurations": sorted(
+            context.introspection.get_undeclared_launch_configs()
+        ),
         "environment_variables": context.introspection.get_environment_variables(),
         "python_expressions": context.introspection.get_python_expressions(),
         "composable_node_containers": sorted(context.get_composable_node_groups()),
-        "additional_components": context.introspection.get_registered_entities()
+        "additional_components": context.introspection.get_registered_entities(),
     }
 
-def _parse_launch_function_body(body: list[ast.stmt], context: ParseContext, engine: ResolutionEngine) -> list:
+
+def _parse_launch_function_body(
+    body: list[ast.stmt], context: ParseContext, engine: ResolutionEngine
+) -> list:
     parsed = []
     for stmt in body:
         if isinstance(stmt, ast.Assign):
@@ -72,7 +79,7 @@ def _parse_launch_function_body(body: list[ast.stmt], context: ParseContext, eng
 
         elif isinstance(stmt, ast.If):
             engine.resolve(stmt)
-        
+
         elif isinstance(stmt, ast.Expr):
             func_name = context.get_func_name(stmt.value.func)
             if func_name.endswith("add_action"):
@@ -82,12 +89,12 @@ def _parse_launch_function_body(body: list[ast.stmt], context: ParseContext, eng
                     parsed.append(result)
             else:
                 engine.resolve(stmt)
-        
+
         elif isinstance(stmt, ast.Return) and isinstance(stmt.value, ast.Call):
             resolved = engine.resolve(stmt.value)
             if isinstance(resolved, list):
                 parsed.extend(resolved)
             elif resolved is not None:
                 parsed.append(resolved)
-    
+
     return parsed

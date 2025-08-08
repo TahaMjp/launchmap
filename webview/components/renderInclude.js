@@ -16,35 +16,35 @@ import { renderBaseBlock } from './renderBaseBlock.js';
 import { renderSection } from './renderSection.js';
 
 export function renderIncludesGroup(container, includes, options={}) {
-    includes.forEach((include, idx) => {
-        const path = options.pathPrefix ? `${options.pathPrefix}.includes[${idx}]` : `includes[${idx}]`;
-        const block = renderInclude(include, { ...options, path });
+  includes.forEach((include, idx) => {
+    const path = options.pathPrefix ? `${options.pathPrefix}.includes[${idx}]` : `includes[${idx}]`;
+    const block = renderInclude(include, { ...options, path });
 
-        container.appendChild(block);
-        options.renderBlock(block, "include");
-    });
+    container.appendChild(block);
+    options.renderBlock(block, 'include');
+  });
 }
 
 function renderInclude(include, options) {
-    const block = renderBaseBlock({
-        type: 'include',
-        options: {
-            ...options,
-            events: include.events
-        }
-    });
-
-    // Render
-    const renderOptions = { includeLeftPort: true, portIdPrefix: options.path, portRegistry: options.portRegistry };
-    const path = include.launch_description_source || "<unresolved>";
-    block.appendChild(renderSection("launch_description_source", "📂", "Path", path, renderOptions));
-    
-    const args = include.launch_arguments || {};
-    block.appendChild(renderSection("launch_arguments", "📥", "Args", args, renderOptions))
-
-    if (include.condition) {
-        block.appendChild(renderSection("condition", "❓", "Condition", include.condition, renderOptions));
+  const block = renderBaseBlock({
+    type: 'include',
+    options: {
+      ...options,
+      events: include.events
     }
+  });
 
-    return block;
+  // Render
+  const renderOptions = { includeLeftPort: true, portIdPrefix: options.path, portRegistry: options.portRegistry };
+  const path = include.launch_description_source || '<unresolved>';
+  block.appendChild(renderSection('launch_description_source', '📂', 'Path', path, renderOptions));
+
+  const args = include.launch_arguments || {};
+  block.appendChild(renderSection('launch_arguments', '📥', 'Args', args, renderOptions));
+
+  if (include.condition) {
+    block.appendChild(renderSection('condition', '❓', 'Condition', include.condition, renderOptions));
+  }
+
+  return block;
 }

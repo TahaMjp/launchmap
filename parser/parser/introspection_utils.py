@@ -12,14 +12,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from collections import defaultdict
-from parser.parser.type_mapping import TYPE_KEY_MAP
 import re
+from collections import defaultdict
+
+from parser.parser.type_mapping import TYPE_KEY_MAP
 
 LAUNCH_CONFIG_REGEX = re.compile(r"\${LaunchConfiguration:([a-zA-Z0-9_]+)}")
 ENVIRONMENT_VAR_REGEX = re.compile(r"\${EnvironmentVariable:([a-zA-Z0-9_]+)}")
 EVENT_HANDLER_REGEX = re.compile(r"\${EventHandler\[(\d+)\]:(\w+)}")
 PYTHON_VAR_REGEX = re.compile(r"\${var:([a-zA-Z_][a-zA-Z0-9_]*)}")
+
 
 def collect_launch_config_usages(grouped: dict) -> list[dict]:
     """
@@ -33,10 +35,7 @@ def collect_launch_config_usages(grouped: dict) -> list[dict]:
             for key, value in obj.items():
                 if key == "type" and obj.get("type") == "LaunchConfiguration":
                     arg = obj.get("name")
-                    usages.append({
-                        "argument": arg,
-                        "path": path
-                    })
+                    usages.append({"argument": arg, "path": path})
                 else:
                     walk(value, f"{path}.{key}" if path else key)
 
@@ -47,19 +46,17 @@ def collect_launch_config_usages(grouped: dict) -> list[dict]:
         elif isinstance(obj, tuple):
             for idx, item in enumerate(obj):
                 walk(item, f"{path}[{idx}]")
-        
+
         elif isinstance(obj, str):
             for match in LAUNCH_CONFIG_REGEX.finditer(obj):
-                usages.append({
-                    "argument": match.group(1),
-                    "path": path
-                })
-    
+                usages.append({"argument": match.group(1), "path": path})
+
     for top_key in TYPE_KEY_MAP.values():
         for idx, entry in enumerate(grouped.get(top_key, [])):
             walk(entry, f"{top_key}[{idx}]")
-    
+
     return usages
+
 
 def collect_environment_variable_usages(grouped: dict) -> list[dict]:
     """
@@ -73,10 +70,7 @@ def collect_environment_variable_usages(grouped: dict) -> list[dict]:
             for key, value in obj.items():
                 if key == "type" and obj.get("type") == "EnvironmentVariable":
                     arg = obj.get("name")
-                    usages.append({
-                        "argument": arg,
-                        "path": path
-                    })
+                    usages.append({"argument": arg, "path": path})
                 else:
                     walk(value, f"{path}.{key}" if path else key)
 
@@ -87,19 +81,17 @@ def collect_environment_variable_usages(grouped: dict) -> list[dict]:
         elif isinstance(obj, tuple):
             for idx, item in enumerate(obj):
                 walk(item, f"{path}[{idx}]")
-        
+
         elif isinstance(obj, str):
             for match in ENVIRONMENT_VAR_REGEX.finditer(obj):
-                usages.append({
-                    "argument": match.group(1),
-                    "path": path
-                })
-    
+                usages.append({"argument": match.group(1), "path": path})
+
     for top_key in TYPE_KEY_MAP.values():
         for idx, entry in enumerate(grouped.get(top_key, [])):
             walk(entry, f"{top_key}[{idx}]")
-    
+
     return usages
+
 
 def collect_event_handler_usages(grouped: dict) -> list[dict]:
     """
@@ -126,18 +118,19 @@ def collect_event_handler_usages(grouped: dict) -> list[dict]:
                 usage_map[idx]["type"] = handler_type
 
                 # Remove trailing index of triggers and triggered_by
-                clean_path = path.rsplit('[', 1)[0] if path.endswith(']') else path
+                clean_path = path.rsplit("[", 1)[0] if path.endswith("]") else path
 
                 if ".triggers" in clean_path:
                     usage_map[idx]["triggered_by"].append(clean_path)
                 elif ".triggered_by" in clean_path:
                     usage_map[idx]["triggers"].append(clean_path)
-    
+
     for key in TYPE_KEY_MAP.values():
         for idx, item in enumerate(grouped.get(key, [])):
             walk(item, f"{key}[{idx}]")
-    
+
     return [v for v in usage_map.values() if v["triggered_by"] or v["triggers"]]
+
 
 def collect_python_variable_usages(grouped: dict) -> list[dict]:
     """
@@ -150,7 +143,7 @@ def collect_python_variable_usages(grouped: dict) -> list[dict]:
         if isinstance(obj, dict):
             for key, value in obj.items():
                 walk(value, f"{path}.{key}" if path else key)
-        
+
         elif isinstance(obj, list):
             for idx, item in enumerate(obj):
                 walk(item, f"{path}[{idx}]")
@@ -161,13 +154,10 @@ def collect_python_variable_usages(grouped: dict) -> list[dict]:
 
         elif isinstance(obj, str):
             for match in PYTHON_VAR_REGEX.finditer(obj):
-                usages.append({
-                    "variable": match.group(1),
-                    "path": path
-                })
-    
+                usages.append({"variable": match.group(1), "path": path})
+
     for top_key in TYPE_KEY_MAP.values():
         for idx, entry in enumerate(grouped.get(top_key, [])):
             walk(entry, f"{top_key}[{idx}]")
-    
+
     return usages

@@ -12,8 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from collections import defaultdict
 from parser.parser.utils.common import compute_entity_key
+
 
 class IntrospectionTracker:
     def __init__(self):
@@ -49,14 +49,14 @@ class IntrospectionTracker:
         Adds the name to the used set.
         """
         self.used_launch_configs.add(name)
-    
+
     def get_undeclared_launch_configs(self) -> set[str]:
         """
         Returns all LaunchConfigurations used but not declared.
         Useful for validation and diagnostics.
         """
         return self.used_launch_configs - set(self.declared_launch_args.keys())
-    
+
     # Environment Variables
     def track_environment_variable(self, name: str, metadata: dict):
         """
@@ -64,13 +64,13 @@ class IntrospectionTracker:
         Adds the name to the used set.
         """
         self.environment_variables[name] = metadata or {}
-    
+
     def get_environment_variables(self) -> list:
         """
         Returns all EnvironmentVariable.
         """
         return list(self.environment_variables.values())
-    
+
     # Event Handler
     def add_event_handler(self, handler: str):
         """
@@ -83,7 +83,7 @@ class IntrospectionTracker:
         Return the index of the next event handler
         """
         return len(self.event_handlers)
-    
+
     def register_entity(self, entity):
         """
         Add entity to output only once (used for nodes, timers, loginfo, etc.)
@@ -91,19 +91,16 @@ class IntrospectionTracker:
         key = compute_entity_key(entity)
         if key not in self.entities_by_key:
             self.entities_by_key[key] = entity
-    
+
     def get_registered_entities(self):
         """
         Get all the registered entities
         """
         return list(self.entities_by_key.values())
-    
+
     # Python Expressions
     def track_python_expression(self, body: str, variables: list[str]):
-        self.symbolic_python_expressions.append({
-            "body": body,
-            "variables": variables
-        })
+        self.symbolic_python_expressions.append({"body": body, "variables": variables})
 
     def get_python_expressions(self) -> list[dict]:
         return self.symbolic_python_expressions

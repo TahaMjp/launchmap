@@ -13,15 +13,14 @@
 # limitations under the License.
 
 import ast
+
 from parser.context import ParseContext
 from parser.parser.registry import register_handler
 from parser.resolution.utils import resolve_call_signature
+
 
 @register_handler("Command", "launch.substitutions.Command")
 def handle_find_package_share(node: ast.Call, context: ParseContext) -> dict:
     args, _ = resolve_call_signature(node, context.engine)
 
-    return {
-        "type": "Command",
-        "command": args[0]
-    }
+    return {"type": "Command", "command": args[0]}

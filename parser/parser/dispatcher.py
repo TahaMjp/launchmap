@@ -13,12 +13,14 @@
 # limitations under the License.
 
 import ast
+
+from parser.context import ParseContext
 from parser.parser.loader import register_builtin_handlers
 from parser.parser.registry import get_handler
-from parser.context import ParseContext
 from parser.resolution.utils import get_func_name
 
 register_builtin_handlers()
+
 
 def dispatch_call(node: ast.Call, context: ParseContext) -> dict:
     """
@@ -33,5 +35,5 @@ def dispatch_call(node: ast.Call, context: ParseContext) -> dict:
 
     if not handler:
         raise ValueError(f"Unrecognized launch construct: '{func_name}'")
-    
+
     return handler(node, context)

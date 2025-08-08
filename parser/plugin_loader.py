@@ -13,16 +13,17 @@
 # limitations under the License.
 
 import importlib.util
-import sys
 import os
+import sys
+
 
 def load_user_handlers_from_directory(base_dir):
     if not os.path.isdir(base_dir):
         print(f"Plugin directory '{base_dir}' not found.")
         return
-    
+
     for file in os.listdir(base_dir):
-        if file.endswith('.py'):
+        if file.endswith(".py"):
             path = os.path.join(base_dir, file)
             spec = importlib.util.spec_from_file_location(f"user_plugin_{file}", path)
             if spec and spec.loader:

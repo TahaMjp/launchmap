@@ -13,10 +13,9 @@
 # limitations under the License.
 
 import io
-import os
-import tempfile
-from unittest.mock import patch, mock_open, MagicMock
 from contextlib import contextmanager
+from unittest.mock import patch
+
 
 @contextmanager
 def mock_tempfile_and_fs(code: str, files: dict):
@@ -38,7 +37,9 @@ def mock_tempfile_and_fs(code: str, files: dict):
                 return io.StringIO(content)
         raise FileNotFoundError(f"No such file: {path}")
 
-    with patch("tempfile.NamedTemporaryFile", side_effect=fake_named_tempfile), \
-         patch("builtins.open", side_effect=fake_file_loader), \
-         patch("os.path.exists", side_effect=lambda p: any(p.endswith(name) for name in files)):
+    with (
+        patch("tempfile.NamedTemporaryFile", side_effect=fake_named_tempfile),
+        patch("builtins.open", side_effect=fake_file_loader),
+        patch("os.path.exists", side_effect=lambda p: any(p.endswith(name) for name in files)),
+    ):
         yield

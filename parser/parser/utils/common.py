@@ -14,6 +14,7 @@
 
 from parser.parser.type_mapping import TYPE_KEY_MAP
 
+
 def flatten_once(items):
     """
     Flatten a list one level deep.
@@ -27,6 +28,7 @@ def flatten_once(items):
             flattened.append(item)
     return flattened
 
+
 def compute_entity_key(entity: dict) -> str:
     """
     Generate a unique key for deduplication and tracking event links.
@@ -37,6 +39,7 @@ def compute_entity_key(entity: dict) -> str:
     exe = entity.get("executable", "")
     name = entity.get("name", "")
     return f"{t}::{pkg}::{exe}::{name}"
+
 
 def group_entities_by_type(entities: list) -> dict:
     grouped = {}
@@ -54,5 +57,5 @@ def group_entities_by_type(entities: list) -> dict:
 
         clean_item = {k: v for k, v in item.items() if k != "type"}
         grouped.setdefault(group_key, []).append(clean_item)
-    
+
     return {k: v for k, v in grouped.items() if v}

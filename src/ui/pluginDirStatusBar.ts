@@ -19,23 +19,23 @@ import * as path from 'path';
 let statusBarItem: vscode.StatusBarItem | undefined;
 
 export async function initPluginDirStatusBar() {
-    if (!statusBarItem) {
-        statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 100);
-        statusBarItem.command = 'launchmap.setPluginDir';
-        statusBarItem.tooltip = 'LaunchMap Plugin Directory';
-    }
+  if (!statusBarItem) {
+    statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 100);
+    statusBarItem.command = 'launchmap.setPluginDir';
+    statusBarItem.tooltip = 'LaunchMap Plugin Directory';
+  }
 
-    await updatePluginDirStatusBar();
-    statusBarItem.show();
+  await updatePluginDirStatusBar();
+  statusBarItem.show();
 }
 
 export async function updatePluginDirStatusBar() {
-    const pluginDir = await getPluginDir();
+  const pluginDir = await getPluginDir();
 
-    if (pluginDir) {
-        const label = path.basename(pluginDir);
+  if (pluginDir) {
+    const label = path.basename(pluginDir);
         statusBarItem!.text = `📦 Plugin: ${label}`;
-    } else {
+  } else {
         statusBarItem!.text = '📦 No Plugin Dir';
-    }
+  }
 }

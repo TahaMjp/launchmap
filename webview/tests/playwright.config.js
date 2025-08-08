@@ -15,13 +15,13 @@
 import { defineConfig } from '@playwright/test';
 
 export default defineConfig({
-    testDir: './specs',
-    snapshotDir: './__screenshots__',
-    globalSetup: './fixtures/global-setup.js',
-    use: {
-        headless: true,
-        viewport: { width: 1600, height: 900 },
-        baseURL: process.env.TEST_SERVER_URL || 'http://localhost:3000',
-    },
-    reporter: [['list'], ['html']],
+  testDir: './specs',
+  snapshotDir: './__screenshots__',
+  globalSetup: './fixtures/global-setup.js',
+  use: {
+    headless: true,
+    viewport: { width: 1600, height: 900 },
+    baseURL: process.env.TEST_SERVER_URL || 'http://localhost:3000',
+  },
+  reporter: [['list'], ['html']],
 });

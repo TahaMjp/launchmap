@@ -19,67 +19,67 @@ import { renderSection } from './renderSection.js';
 import { LayoutManager } from '../core/layoutManager.js';
 
 export function renderTimerActions(container, timerActions, options = {}) {
-    timerActions.forEach((group, idx) => {
-        const path = options.pathPrefix ? `${options.pathPrefix}.timer_actions[${idx}]` : `timer_actions[${idx}]`;
-        const block = renderTimerAction(group, { ...options, path });
+  timerActions.forEach((group, idx) => {
+    const path = options.pathPrefix ? `${options.pathPrefix}.timer_actions[${idx}]` : `timer_actions[${idx}]`;
+    const block = renderTimerAction(group, { ...options, path });
 
-        container.appendChild(block);
-        options.renderBlock(block, "timer-action");
-    });
+    container.appendChild(block);
+    options.renderBlock(block, 'timer-action');
+  });
 }
 
 export function renderTimerAction(timerAction, options = {}) {
-    const timerActionBox = renderBaseBlock({
-        type: "timer-action",
-        options
-    });
+  const timerActionBox = renderBaseBlock({
+    type: 'timer-action',
+    options
+  });
 
-    // Header
-    const header = document.createElement("div");
-    header.className = "timer-action-header";
+  // Header
+  const header = document.createElement('div');
+  header.className = 'timer-action-header';
 
-    // Render additional sections
-    const metaSections = [
-        { key: "period", icon: "🧭", label: "Period", value: timerAction.period },
-    ];
+  // Render additional sections
+  const metaSections = [
+    { key: 'period', icon: '🧭', label: 'Period', value: timerAction.period },
+  ];
 
-    metaSections.forEach(( {key, icon, label, value }) => {
-        if (value) {
-            const section = renderSection(key, icon, label, value, {
-                includeLeftPort: true,
-                portIdPrefix: options.path,
-                portRegistry: options.portRegistry
-            });
-            header.appendChild(section);
-        }
-    });
-
-    timerActionBox.append(header);
-
-    // Body
-    const body = document.createElement("div");
-    body.className = "timer-action-body";
-    timerActionBox.appendChild(body);
-
-    const innerLayoutManager = new LayoutManager(20, 40, 80, 40);
-    const childOptions = { 
-        ...options,
-        stopPropagation: true, 
-        constrainToParent: true,
-        pathPrefix: `${options.path}.actions`,
-        renderBlock: (block, columnType) => { 
-            requestAnimationFrame(() => {
-                innerLayoutManager.placeBlock(block, columnType);
-            });
-        }
-    };
-
-    const actions = timerAction.actions || {};
-    for (const [key, value] of Object.entries(actions)) {
-        renderComponent({ type: key, value: value }, body, childOptions);
+  metaSections.forEach(({ key, icon, label, value }) => {
+    if (value) {
+      const section = renderSection(key, icon, label, value, {
+        includeLeftPort: true,
+        portIdPrefix: options.path,
+        portRegistry: options.portRegistry
+      });
+      header.appendChild(section);
     }
+  });
 
-    renderAutoResizableBody(timerActionBox, "block", [".timer-action-header"]);
+  timerActionBox.append(header);
 
-    return timerActionBox;
+  // Body
+  const body = document.createElement('div');
+  body.className = 'timer-action-body';
+  timerActionBox.appendChild(body);
+
+  const innerLayoutManager = new LayoutManager(20, 40, 80, 40);
+  const childOptions = {
+    ...options,
+    stopPropagation: true,
+    constrainToParent: true,
+    pathPrefix: `${options.path}.actions`,
+    renderBlock: (block, columnType) => {
+      requestAnimationFrame(() => {
+        innerLayoutManager.placeBlock(block, columnType);
+      });
+    }
+  };
+
+  const actions = timerAction.actions || {};
+  for (const [key, value] of Object.entries(actions)) {
+    renderComponent({ type: key, value: value }, body, childOptions);
+  }
+
+  renderAutoResizableBody(timerActionBox, 'block', ['.timer-action-header']);
+
+  return timerActionBox;
 }

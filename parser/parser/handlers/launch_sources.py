@@ -12,12 +12,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from parser.parser.registry import register_handler
-from parser.context import ParseContext
-from parser.resolution.utils import resolve_call_signature
 import ast
 
-@register_handler("PythonLaunchDescriptionSource", "launch.launch_description_sources.PythonLaunchDescriptionSource")
+from parser.context import ParseContext
+from parser.parser.registry import register_handler
+from parser.resolution.utils import resolve_call_signature
+
+
+@register_handler(
+    "PythonLaunchDescriptionSource",
+    "launch.launch_description_sources.PythonLaunchDescriptionSource",
+)
 def handle_python_launch_source(node: ast.Call, context: ParseContext) -> dict:
     """
     Handles PythonLaunchDescriptionSource("sublaunch.py")
@@ -27,20 +32,16 @@ def handle_python_launch_source(node: ast.Call, context: ParseContext) -> dict:
 
     if not args:
         raise ValueError("PythonLaunchDescriptionSource must recieve a file path.")
-    
+
     raw_path = args[0]
 
-    return {
-        "type": "PythonLaunchDescriptionSource",
-        "filename": raw_path
-    }
+    return {"type": "PythonLaunchDescriptionSource", "filename": raw_path}
+
 
 @register_handler("ThisLaunchFileDir", "launch.substitutions.ThisLaunchFileDir")
 def handle_this_launch_file_dir(node: ast.Call, context: ParseContext) -> dict:
     """
     Handles ThisLaunchFileDir() substitution.
-    Returns: {"type": "ThisLaunchFileDir"} 
+    Returns: {"type": "ThisLaunchFileDir"}
     """
-    return {
-        "type": "ThisLaunchFileDir"
-    }
+    return {"type": "ThisLaunchFileDir"}
