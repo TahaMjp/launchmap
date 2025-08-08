@@ -18,10 +18,13 @@ import argparse
 from parser.entrypoint.user_interface import parse_and_format_launch_file
 from parser.plugin_loader import load_user_handlers_from_directory
 
+
 def main():
     parser = argparse.ArgumentParser(description="Parse a ROS2 launch file.")
     parser.add_argument("launch_file", help="Path to launch file to parse.")
-    parser.add_argument("--plugin-dir", help="Directory containing user-defined custom handlers.")
+    parser.add_argument(
+        "--plugin-dir", help="Directory containing user-defined custom handlers."
+    )
 
     args = parser.parse_args()
 
@@ -34,6 +37,7 @@ def main():
     except Exception as e:
         print(f"Error: {e}")
         sys.exit(1)
+
 
 if __name__ == "__main__":
     main()

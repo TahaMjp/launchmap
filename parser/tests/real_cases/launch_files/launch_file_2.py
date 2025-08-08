@@ -47,9 +47,7 @@ def generate_launch_description():
 
     def add_launch_arg(name: str, default_value: str = None, description: str = ""):
         declared_arguments.append(
-            DeclareLaunchArgument(
-                name, default_value=default_value, description=description
-            )
+            DeclareLaunchArgument(name, default_value=default_value, description=description)
         )
 
     add_launch_arg(
@@ -58,6 +56,4 @@ def generate_launch_description():
         description="Path to the driver parameter YAML file",
     )
 
-    return LaunchDescription(
-        [*declared_arguments, OpaqueFunction(function=launch_setup)]
-    )
+    return LaunchDescription([*declared_arguments, OpaqueFunction(function=launch_setup)])

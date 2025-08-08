@@ -13,9 +13,11 @@
 # limitations under the License.
 
 import ast
+
 from parser.context import ParseContext
 from parser.parser.registry import register_handler
 from parser.resolution.utils import resolve_call_signature
+
 
 @register_handler("PathJoinSubstitution", "launch.substitutions.PathJoinSubstitution")
 def handle_find_package_share(node: ast.Call, context: ParseContext) -> dict:
@@ -23,7 +25,4 @@ def handle_find_package_share(node: ast.Call, context: ParseContext) -> dict:
     if not args or not isinstance(args[0], list):
         raise ValueError("PathJoinSubstitution requires a list as its first argument.")
 
-    return {
-        "type": "PathJoinSubstitution",
-        "parts": args[0]
-    }
+    return {"type": "PathJoinSubstitution", "parts": args[0]}

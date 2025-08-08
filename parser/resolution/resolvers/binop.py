@@ -12,13 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import ast
+
 from parser.resolution.resolution_registry import register_resolver
 from parser.resolution.utils import resolve_python_expression
-import ast
+
 
 @register_resolver(ast.BinOp)
 def resolve_binop(node: ast.BinOp, engine):
     left = engine.resolve(node.left)
     right = engine.resolve(node.right)
     return resolve_python_expression(left, node.op, right)
-    

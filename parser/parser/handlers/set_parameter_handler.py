@@ -13,9 +13,11 @@
 # limitations under the License.
 
 import ast
+
 from parser.context import ParseContext
 from parser.parser.registry import register_handler
 from parser.resolution.utils import resolve_call_signature
+
 
 @register_handler("SetParameter", "launch.actions.SetParameter")
 def handle_set_parameter(node: ast.Call, context: ParseContext) -> dict:
@@ -24,8 +26,4 @@ def handle_set_parameter(node: ast.Call, context: ParseContext) -> dict:
     name = kwargs.get("name")
     value = kwargs.get("value")
 
-    return {
-        "type": "SetParameter",
-        "name": name,
-        "value": value
-    }
+    return {"type": "SetParameter", "name": name, "value": value}

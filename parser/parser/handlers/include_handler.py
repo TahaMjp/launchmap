@@ -13,11 +13,12 @@
 # limitations under the License.
 
 import ast
+
 from parser.context import ParseContext
 from parser.parser.postprocessing import simplify_launch_configurations
 from parser.parser.registry import register_handler
-from parser.parser.utils.symbolic import is_symbolic
 from parser.resolution.utils import resolve_call_signature
+
 
 @register_handler("IncludeLaunchDescription", "launch.actions.IncludeLaunchDescription")
 def handle_include(node: ast.Call, context: ParseContext) -> dict:
@@ -34,7 +35,7 @@ def handle_include(node: ast.Call, context: ParseContext) -> dict:
 
     if not isinstance(launch_source, dict) or "filename" not in launch_source:
         raise ValueError("Could not resolve include path from launch_description_source")
-    
+
     file_value = launch_source["filename"]
 
     # Flatten and stringify all parts
@@ -43,7 +44,7 @@ def handle_include(node: ast.Call, context: ParseContext) -> dict:
         path = "".join(str(part) for part in file_value)
     else:
         path = str(file_value)
-    
+
     # Load and parse included file
     # from parser.includes.resolver import resolve_included_launch_file
     # included_output = resolve_included_launch_file(
@@ -56,7 +57,7 @@ def handle_include(node: ast.Call, context: ParseContext) -> dict:
         "type": "IncludeLaunchDescription",
         "launch_description_source": path,
         "launch_arguments": launch_args,
-        "included": {}
+        "included": {},
     }
 
     if condition:

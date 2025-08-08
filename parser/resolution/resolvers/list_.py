@@ -12,8 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from parser.resolution.resolution_registry import register_resolver
 import ast
+
+from parser.resolution.resolution_registry import register_resolver
+
 
 @register_resolver(ast.List)
 def resolve_list(node: ast.List, engine):

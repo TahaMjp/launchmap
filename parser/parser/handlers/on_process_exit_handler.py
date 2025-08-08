@@ -12,11 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import ast
+
 from parser.context import ParseContext
 from parser.parser.registry import register_handler
-from parser.parser.utils.common import compute_entity_key
 from parser.resolution.utils import resolve_call_signature
-import ast
+
 
 @register_handler("OnProcessExit", "launch_ros.handlers.OnProcessExit")
 def handle_on_process_exit(node: ast.Call, context: ParseContext):
@@ -38,7 +39,7 @@ def handle_on_process_exit(node: ast.Call, context: ParseContext):
     for target in target_actions:
         target.setdefault("events", {}).setdefault("triggers", []).append(handler_ref)
         context.introspection.register_entity(target)
-    
+
     for triggered in triggered_actions:
         triggered.setdefault("events", {}).setdefault("triggered_by", []).append(handler_ref)
         context.introspection.register_entity(triggered)

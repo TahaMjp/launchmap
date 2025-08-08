@@ -13,9 +13,11 @@
 # limitations under the License.
 
 import ast
+
 from parser.context import ParseContext
-from parser.resolution.utils import resolve_call_signature
 from parser.parser.registry import register_handler
+from parser.resolution.utils import resolve_call_signature
+
 
 @register_handler("DeclareLaunchArgument", "launch.actions.DeclareLaunchArgument")
 def handle_declare_launch_argument(node: ast.Call, context: ParseContext) -> dict:
@@ -28,7 +30,7 @@ def handle_declare_launch_argument(node: ast.Call, context: ParseContext) -> dic
     # Positional fallback: first arg = name
     if "name" not in kwargs and args:
         kwargs["name"] = args[0]
-    
+
     # Track for introspection
     arg_name = kwargs.get("name")
     if arg_name:

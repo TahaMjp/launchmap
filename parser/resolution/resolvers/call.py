@@ -12,11 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import ast
 import warnings
+
+from parser.parser.dispatcher import dispatch_call
 from parser.parser.postprocessing import simplify_launch_configurations
 from parser.resolution.resolution_registry import register_resolver
-from parser.parser.dispatcher import dispatch_call
-import ast
+
 
 @register_resolver(ast.Call, priority=0)
 def resolve_call(node: ast.Call, engine):
@@ -24,6 +26,7 @@ def resolve_call(node: ast.Call, engine):
         return _resolve_symbolic_call(node, engine)
     else:
         return _resolve_normal_call(node, engine)
+
 
 def _resolve_symbolic_call(node: ast.Call, engine):
     try:
@@ -52,9 +55,10 @@ def _resolve_symbolic_call(node: ast.Call, engine):
 
             arg_strs = [repr(a) for a in args] + [f"{k}={repr(v)}" for k, v in kwargs.items()]
             return f"{func}({', '.join(arg_strs)})"
-        
+
         except Exception as e:
             raise ValueError(f"Unable to symbolically resolve call: {ast.dump(node)} -> {e}")
+
 
 def _resolve_normal_call(node: ast.Call, engine):
     try:
@@ -78,6 +82,5 @@ def _resolve_normal_call(node: ast.Call, engine):
             if isinstance(result, type({}.items())):
                 result = dict(result)
             return result
-    
+
         raise ValueError(f"Cannot resolve non-callable: {func}")
-    

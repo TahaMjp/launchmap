@@ -12,26 +12,31 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument, GroupAction, IncludeLaunchDescription, OpaqueFunction
+from launch.actions import (
+    DeclareLaunchArgument,
+    GroupAction,
+    IncludeLaunchDescription,
+    OpaqueFunction,
+)
 from launch.conditions import IfCondition
-from launch.substitutions import LaunchConfiguration, PythonExpression
-from launch_ros.actions import Node, ComposableNodeContainer
-from launch_ros.descriptions import ComposableNode
 from launch.launch_description_sources import PythonLaunchDescriptionSource
-import os
+from launch.substitutions import LaunchConfiguration, PythonExpression
+from launch_ros.actions import ComposableNodeContainer, Node
+from launch_ros.descriptions import ComposableNode
 
 
 def launch_setup(context, *args, **kwargs):
-    use_sim_time = LaunchConfiguration('use_sim_time').perform(context)
-    robot_description = f"<robot name='demo'>...</robot>"
+    use_sim_time = LaunchConfiguration("use_sim_time").perform(context)
+    robot_description = "<robot name='demo'>...</robot>"
 
     return [
         Node(
-            package='robot_state_publisher',
-            executable='robot_state_publisher',
-            output='screen',
-            parameters=[{'use_sim_time': use_sim_time, 'robot_description': robot_description}]
+            package="robot_state_publisher",
+            executable="robot_state_publisher",
+            output="screen",
+            parameters=[{"use_sim_time": use_sim_time, "robot_description": robot_description}],
         )
     ]
 
@@ -39,37 +44,34 @@ def launch_setup(context, *args, **kwargs):
 def generate_launch_description():
     # Declare arguments
     package_arg = DeclareLaunchArgument(
-        'pkg_name',
-        default_value='my_robot_pkg',
-        description='Package containing the launch files'
+        "pkg_name", default_value="my_robot_pkg", description="Package containing the launch files"
     )
     use_sim_arg = DeclareLaunchArgument(
-        'use_sim_time',
-        default_value='true',
-        description='Use simulation clock'
+        "use_sim_time", default_value="true", description="Use simulation clock"
     )
 
     # Include
     included_launch = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource([
-            LaunchConfiguration('pkg_name'),
-            '/launch/other_launch_file.py'
-        ])
+        PythonLaunchDescriptionSource(
+            [LaunchConfiguration("pkg_name"), "/launch/other_launch_file.py"]
+        )
     )
 
     # Group with condition
     conditional_group = GroupAction(
         actions=[
             Node(
-                package='demo_nodes_cpp',
-                executable='talker',
-                name='conditional_talker',
-                output='screen',
-                parameters=[{'use_sim_time': LaunchConfiguration('use_sim_time')}]
+                package="demo_nodes_cpp",
+                executable="talker",
+                name="conditional_talker",
+                output="screen",
+                parameters=[{"use_sim_time": LaunchConfiguration("use_sim_time")}],
             )
         ],
-        condition=IfCondition(PythonExpression(["'", LaunchConfiguration('use_sim_time'), "' == 'true'"])),
-        namespace='sim_ns'
+        condition=IfCondition(
+            PythonExpression(["'", LaunchConfiguration("use_sim_time"), "' == 'true'"])
+        ),
+        namespace="sim_ns",
     )
 
     # OpaqueFunction
@@ -77,32 +79,27 @@ def generate_launch_description():
 
     # Composable Container + Nodes
     container = ComposableNodeContainer(
-        name='my_container',
-        namespace='',
-        package='rclcpp_components',
-        executable='component_container_mt',
+        name="my_container",
+        namespace="",
+        package="rclcpp_components",
+        executable="component_container_mt",
         composable_node_descriptions=[
             ComposableNode(
-                package='demo_nodes_cpp',
-                plugin='demo_nodes_cpp::Talker',
-                name='talker_component',
-                parameters=[{'use_sim_time': LaunchConfiguration('use_sim_time')}]
+                package="demo_nodes_cpp",
+                plugin="demo_nodes_cpp::Talker",
+                name="talker_component",
+                parameters=[{"use_sim_time": LaunchConfiguration("use_sim_time")}],
             ),
             ComposableNode(
-                package='demo_nodes_cpp',
-                plugin='demo_nodes_cpp::Listener',
-                name='listener_component',
-                parameters=[{'use_sim_time': LaunchConfiguration('use_sim_time')}]
-            )
+                package="demo_nodes_cpp",
+                plugin="demo_nodes_cpp::Listener",
+                name="listener_component",
+                parameters=[{"use_sim_time": LaunchConfiguration("use_sim_time")}],
+            ),
         ],
-        output='screen'
+        output="screen",
     )
 
-    return LaunchDescription([
-        package_arg,
-        use_sim_arg,
-        included_launch,
-        conditional_group,
-        opaque,
-        container
-    ])
+    return LaunchDescription(
+        [package_arg, use_sim_arg, included_launch, conditional_group, opaque, container]
+    )

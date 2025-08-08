@@ -13,16 +13,18 @@
 # limitations under the License.
 
 import tempfile
-import yaml
+
 import pytest
-from parser.entrypoint.parser_runner import parse_launch_file
+import yaml
+
 from parser.entrypoint.user_interface import parse_and_format_launch_file
 from parser.plugin_loader import load_user_handlers_from_directory
 
+
 def load_yaml_tests(file_path):
-    with open(file_path, 'r') as f:
+    with open(file_path, "r") as f:
         data = yaml.safe_load(f)
-    
+
     tests = []
     for test in data["tests"]:
         code = test["input"]
@@ -32,9 +34,11 @@ def load_yaml_tests(file_path):
 
     return tests
 
+
 def load_custom_handler_tests(file_path, handler_directory):
     load_user_handlers_from_directory(handler_directory)
     return load_yaml_tests(file_path)
+
 
 def parse_launch_string(code: str) -> dict:
     with tempfile.NamedTemporaryFile("w", suffix=".py", delete=False) as tmp:

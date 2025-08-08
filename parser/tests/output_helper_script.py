@@ -12,8 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import os
 import json
+import os
+
 from parser.entrypoint.user_interface import parse_and_format_launch_file
 from parser.plugin_loader import load_user_handlers_from_directory
 
@@ -30,6 +31,6 @@ for fname in os.listdir(INPUT_DIR):
 
         output_path = os.path.join(OUTPUT_DIR, f"{fname}.json")
         with open(output_path, "w") as f:
-            json.dump(result, f, indent = 2)
-        
+            json.dump(result, f, indent=2)
+
         print(f"✅ Snapshot created: {output_path}")

@@ -12,10 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import ast
+
 from parser.context import ParseContext
 from parser.parser.registry import register_handler
 from parser.resolution.utils import resolve_call_signature
-import ast
+
 
 @register_handler("RegisterEventHandler", "launch_ros.actions.RegisterEventHandler")
 def handle_register_event_handler(node: ast.Call, context: ParseContext):

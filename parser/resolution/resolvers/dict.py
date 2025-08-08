@@ -12,12 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from parser.resolution.resolution_registry import register_resolver
 import ast
+
+from parser.resolution.resolution_registry import register_resolver
+
 
 @register_resolver(ast.Dict)
 def resolve_dict(node: ast.Dict, engine):
-    return {
-        engine.resolve(k): engine.resolve(v)
-        for k, v in zip(node.keys, node.values)
-    }
+    return {engine.resolve(k): engine.resolve(v) for k, v in zip(node.keys, node.values)}

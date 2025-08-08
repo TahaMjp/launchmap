@@ -14,11 +14,15 @@
 
 import os
 import warnings
-from parser.context import ParseContext
-from parser.resolution.resolution_engine import ResolutionEngine
-from parser.entrypoint.parser_runner import parse_launch_file
 
-def resolve_included_launch_file(filename: str, parent_context: ParseContext, passed_arguments: list) -> dict:
+from parser.context import ParseContext
+from parser.entrypoint.parser_runner import parse_launch_file
+from parser.resolution.resolution_engine import ResolutionEngine
+
+
+def resolve_included_launch_file(
+    filename: str, parent_context: ParseContext, passed_arguments: list
+) -> dict:
     """
     Parses the included launch file, applying passed arguments and merging introspection.
     """
@@ -37,6 +41,5 @@ def resolve_included_launch_file(filename: str, parent_context: ParseContext, pa
         if isinstance(pair, (list, tuple)) and len(pair) == 2:
             name, value = pair
             child_context.define_variable(name, value)
-    
+
     return parse_launch_file(filename, child_context)
-    

@@ -12,55 +12,66 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import os
+
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument, GroupAction, IncludeLaunchDescription, OpaqueFunction
+from launch.actions import (
+    DeclareLaunchArgument,
+    GroupAction,
+    IncludeLaunchDescription,
+    OpaqueFunction,
+)
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import LaunchConfiguration
 from launch_ros.actions import Node
-import os
+
 
 def launch_setup(context, *args, **kwargs):
     use_sim_time = LaunchConfiguration("use_sim_time").perform(context)
     sim = use_sim_time.lower() in ["true", "1"]
-    
+
     nodes = []
 
-    nodes.append(Node(
-        package="demo_camera",
-        executable="camera_node",
-        parameters=[{"use_sim_time": sim}],
-        name="camera"
-    ))
+    nodes.append(
+        Node(
+            package="demo_camera",
+            executable="camera_node",
+            parameters=[{"use_sim_time": sim}],
+            name="camera",
+        )
+    )
 
-    nodes.append(Node(
-        package="demo_robot",
-        executable="robot_state_publisher",
-        parameters=[{"use_sim_time": sim}],
-        name="state_pub"
-    ))
+    nodes.append(
+        Node(
+            package="demo_robot",
+            executable="robot_state_publisher",
+            parameters=[{"use_sim_time": sim}],
+            name="state_pub",
+        )
+    )
 
     return nodes
 
-def generate_launch_description():
-    return LaunchDescription([
-        DeclareLaunchArgument("use_sim_time", default_value="true"),
-        DeclareLaunchArgument("sub_package"),
-        GroupAction([
-            Node(
-                package="demo_bringup",
-                executable="base_node",
-                name="base"
-            ),
-            IncludeLaunchDescription(
-                PythonLaunchDescriptionSource(
-                    os.path.join(
-                        LaunchConfiguration("sub_package").perform({}),
-                        "launch",
-                        "sub_launch.py"
-                    )
-                )
-            )
-        ]),
 
-        OpaqueFunction(function=launch_setup)
-    ])
+def generate_launch_description():
+    return LaunchDescription(
+        [
+            DeclareLaunchArgument("use_sim_time", default_value="true"),
+            DeclareLaunchArgument("sub_package"),
+            GroupAction(
+                [
+                    Node(package="demo_bringup", executable="base_node", name="base"),
+                    IncludeLaunchDescription(
+                        PythonLaunchDescriptionSource(
+                            os.path.join(
+                                LaunchConfiguration("sub_package").perform({}),
+                                "launch",
+                                "sub_launch.py",
+                            )
+                        )
+                    ),
+                ]
+            ),
+            OpaqueFunction(function=launch_setup),
+        ]
+    )

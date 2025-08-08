@@ -13,9 +13,11 @@
 # limitations under the License.
 
 import ast
+
 from parser.context import ParseContext
 from parser.parser.registry import register_handler
 from parser.resolution.utils import resolve_call_signature
+
 
 @register_handler("FindExecutable", "launch.substitutions.FindExecutable")
 def handle_find_executable(node: ast.Call, context: ParseContext) -> dict:
@@ -25,7 +27,4 @@ def handle_find_executable(node: ast.Call, context: ParseContext) -> dict:
     if not name:
         raise ValueError("FindExecutable requires the name of the executable.")
 
-    return {
-        "type": "FindExecutable",
-        "name": name
-    }
+    return {"type": "FindExecutable", "name": name}

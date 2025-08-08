@@ -13,8 +13,10 @@
 # limitations under the License.
 
 import ast
+
 from parser.parser.postprocessing import simplify_launch_configurations
 from parser.resolution.resolution_registry import register_resolver
+
 
 @register_resolver(ast.Call, priority=10)
 def resolve_os_functions(node: ast.Call, engine):
@@ -23,7 +25,7 @@ def resolve_os_functions(node: ast.Call, engine):
     # Support any os.* or os.path.* function
     if not func_name.startswith("os.") and not func_name.startswith("os.path."):
         return None
-    
+
     args = [engine.resolve(arg) for arg in node.args]
     simplified_args = simplify_launch_configurations(args)
     return f"${{{func_name}:{simplified_args}}}"

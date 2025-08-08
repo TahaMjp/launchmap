@@ -12,20 +12,21 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import os
 import json
+import os
+
 import pytest
-from parser.plugin_loader import load_user_handlers_from_directory
+
 from parser.entrypoint.user_interface import parse_and_format_launch_file
+from parser.plugin_loader import load_user_handlers_from_directory
 
 BASE_DIR = os.path.dirname(__file__)
 INPUT_DIR = os.path.join(BASE_DIR, "real_cases/launch_files")
 OUTPUT_DIR = os.path.join(BASE_DIR, "real_cases/expected_outputs")
 PLUGIN_DIR = os.path.join(BASE_DIR, "real_cases/launch_files/custom_handlers")
 
-@pytest.mark.parametrize("filename", [
-    f for f in os.listdir(INPUT_DIR) if f.endswith(".py")
-])
+
+@pytest.mark.parametrize("filename", [f for f in os.listdir(INPUT_DIR) if f.endswith(".py")])
 def test_real_launch_file_snapshot(filename):
     input_path = os.path.join(INPUT_DIR, filename)
     output_path = os.path.join(OUTPUT_DIR, f"{filename}.json")
@@ -37,4 +38,3 @@ def test_real_launch_file_snapshot(filename):
     expected = json.load(open(output_path))
 
     assert result == expected, f"Mismatch in output for {filename}"
-

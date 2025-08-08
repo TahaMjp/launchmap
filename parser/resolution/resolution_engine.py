@@ -13,9 +13,11 @@
 # limitations under the License.
 
 import ast
+
 from parser.context import ParseContext
 from parser.resolution.loader import register_builtin_resolvers
 from parser.resolution.utils import try_all_resolvers
+
 
 class ResolutionEngine:
     def __init__(self, context: ParseContext):
@@ -25,4 +27,3 @@ class ResolutionEngine:
 
     def resolve(self, node: ast.AST):
         return try_all_resolvers(node, self)
-    

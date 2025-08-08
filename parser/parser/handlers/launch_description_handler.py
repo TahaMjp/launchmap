@@ -13,6 +13,7 @@
 # limitations under the License.
 
 import ast
+
 from parser.context import ParseContext
 from parser.parser.registry import register_handler
 from parser.parser.utils.common import flatten_once

@@ -12,20 +12,23 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import ast
+
 from parser.context import ParseContext
 from parser.parser.postprocessing import simplify_launch_configurations
 from parser.parser.registry import register_handler
 from parser.resolution.utils import resolve_call_signature
-import ast
+
 
 @register_handler("IfCondition", "launch.conditions.IfCondition")
 def handle_if_condition(node: ast.Call, context: ParseContext) -> dict:
     args, kwargs = resolve_call_signature(node, context.engine)
     if args:
         kwargs["expression"] = args[0]
-    
+
     expression = simplify_launch_configurations(kwargs["expression"])
     return f"${{IfCondition:{expression}}}"
+
 
 @register_handler("UnlessCondition", "launch.conditions.UnlessCondition")
 def handle_unless_condition(node: ast.Call, context: ParseContext) -> dict:

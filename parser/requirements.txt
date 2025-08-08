@@ -4,3 +4,4 @@ pluggy==1.6.0
 Pygments==2.19.1
 pytest==8.4.0
 PyYAML==6.0.2
+ruff==0.12.8

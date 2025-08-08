@@ -16,16 +16,15 @@ from parser.parser.postprocessing import simplify_launch_configurations
 from parser.parser.user_handler import register_user_handler
 from parser.resolution.utils import resolve_call_signature
 
+
 @register_user_handler("MyLaunch")
 def handle_my_launch(node, context):
     args, _ = resolve_call_signature(node, context.engine)
     if not args:
         raise ValueError("MyLaunch must have a name.")
-    
+
     name = args[0]
 
-    return simplify_launch_configurations({
-        "type": "CustomHandler", 
-        "type_name": "MyLaunch",
-        "name": name
-    })
+    return simplify_launch_configurations(
+        {"type": "CustomHandler", "type_name": "MyLaunch", "name": name}
+    )

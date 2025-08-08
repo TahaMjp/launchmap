@@ -22,5 +22,5 @@ TYPE_KEY_MAP = {
     "OpaqueFunction": "opaque_functions",
     "ComposableNode": "unattached_composable_nodes",
     "ComposableNodeContainer": "composable_nodes_container",
-    "CustomHandler": "custom_components"
+    "CustomHandler": "custom_components",
 }

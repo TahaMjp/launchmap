@@ -13,8 +13,9 @@
 # limitations under the License.
 
 import importlib
-import pkgutil
 import os
+import pkgutil
+
 
 def register_builtin_handlers():
     """

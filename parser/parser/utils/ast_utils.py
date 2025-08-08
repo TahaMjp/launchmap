@@ -13,7 +13,9 @@
 # limitations under the License.
 
 import ast
+
 from parser.context import ParseContext
+
 
 def collect_function_defs(body: list[ast.stmt], context: ParseContext):
     """
@@ -23,12 +25,13 @@ def collect_function_defs(body: list[ast.stmt], context: ParseContext):
     for stmt in body:
         if isinstance(stmt, ast.FunctionDef):
             context.define_function(stmt.name, stmt)
-        
+
         # Recursively handle compound statements
         for attr in ("body", "orelse", "finalbody"):
             inner = getattr(stmt, attr, None)
             if isinstance(inner, list):
                 collect_function_defs(inner, context)
+
 
 def extract_opaque_function(fn_def: ast.FunctionDef, context, symbolic_engine):
     """
@@ -47,8 +50,8 @@ def extract_opaque_function(fn_def: ast.FunctionDef, context, symbolic_engine):
         elif isinstance(stmt, ast.Return):
             if stmt.value is None:
                 return None
-            
+
             result = symbolic_engine.resolve(stmt.value)
             break
-    
+
     return result

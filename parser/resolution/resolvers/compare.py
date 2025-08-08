@@ -13,6 +13,7 @@
 # limitations under the License.
 
 import ast
+
 from parser.resolution.resolution_registry import register_resolver
 
 # Mapping from AST operator to symbolic string representation
@@ -28,6 +29,7 @@ COMPARE_OPS = {
     ast.Is: "is",
     ast.IsNot: "is not",
 }
+
 
 @register_resolver(ast.Compare)
 def resolve_compare(node: ast.Compare, engine):

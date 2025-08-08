@@ -12,10 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from parser.resolution.resolution_registry import register_resolver
-from warnings import warn
-import builtins
 import ast
+import builtins
+
+from parser.resolution.resolution_registry import register_resolver
+
 
 @register_resolver(ast.Name)
 def resolve_name(node: ast.Name, engine):
@@ -24,14 +25,14 @@ def resolve_name(node: ast.Name, engine):
     # Case 1: Defined variable
     if engine.context.has_variable(name):
         return engine.context.lookup_variable(name)
-    
+
     # Case 2: Defined function
     if engine.context.has_function(name):
         return engine.context.lookup_function(name)
-    
+
     # Case 3: Python built in
     if hasattr(builtins, name):
         return getattr(builtins, name)
-    
+
     # Case 4: Unknown: Fallback to string
     return f"${{var:{name}}}"

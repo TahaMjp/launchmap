@@ -13,10 +13,12 @@
 # limitations under the License.
 
 import ast
+
 from parser.context import ParseContext
 from parser.parser.registry import register_handler
 from parser.parser.utils.common import flatten_once, group_entities_by_type
 from parser.resolution.utils import resolve_call_signature
+
 
 @register_handler("GroupAction", "launch.actions.GroupAction")
 def handle_group_action(node: ast.Call, context: ParseContext) -> dict:
@@ -39,7 +41,7 @@ def handle_group_action(node: ast.Call, context: ParseContext) -> dict:
             context.push_namespace(namespace)
         else:
             actions.append(item)
-    
+
     grouped = group_entities_by_type(actions)
 
     if namespace:
@@ -55,4 +57,3 @@ def handle_group_action(node: ast.Call, context: ParseContext) -> dict:
         result["namespace"] = namespace
 
     return result
-        
