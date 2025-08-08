@@ -59,14 +59,15 @@ suite('End-to-End Workflow Test', () => {
   });
 
   test('4️⃣ Set Plugin Dir via command → Stored in .launchmap file', async () => {
-    const workspaceDir = path.join(tempDir, 'workspace');
-    await fs.promises.mkdir(workspaceDir, { recursive: true });
-
-    vscode.workspace.updateWorkspaceFolders(0, 0, { uri: vscode.Uri.file(workspaceDir) });
-
-    const pluginDir = path.join(workspaceDir, 'plugins');
+    const pluginDir = path.join(tempDir, 'plugins');
     await fs.promises.mkdir(pluginDir, { recursive: true });
-    const configPath = path.join(workspaceDir, '.launchmap');
+    const configPath = path.join(tempDir, '.launchmap');
+
+    // Stub workspace folder to point to temp directory
+    Object.defineProperty(vscode.workspace, 'workspaceFolders', {
+      get: () => [{ uri: vscode.Uri.file(tempDir) }],
+      configurable: true
+    });
 
     vscode.window.showOpenDialog = async () => [vscode.Uri.file(pluginDir)];
 
@@ -79,18 +80,19 @@ suite('End-to-End Workflow Test', () => {
   });
 
   test('5️⃣ Plugin Dir via .launchmap → Used in parser call', async () => {
-    const workspaceDir = path.join(tempDir, 'workspace');
-    await fs.promises.mkdir(workspaceDir, { recursive: true });
-
-    vscode.workspace.updateWorkspaceFolders(0, 0, { uri: vscode.Uri.file(workspaceDir) });
-
-    const pluginDir = path.join(workspaceDir, 'plugins');
+    const pluginDir = path.join(tempDir, 'plugins');
     await fs.promises.mkdir(pluginDir, { recursive: true });
     await fs.promises.writeFile(path.join(pluginDir, 'dummpy.py'), '# dummy plugin');
 
-    const configPath = path.join(workspaceDir, '.launchmap');
+    const configPath = path.join(tempDir, '.launchmap');
     const config = { pluginDir };
     await fs.promises.writeFile(configPath, JSON.stringify(config, null, 2));
+
+    // Stub workspace folder to point to temp directory
+    Object.defineProperty(vscode.workspace, 'workspaceFolders', {
+      get: () => [{ uri: vscode.Uri.file(tempDir) }],
+      configurable: true,
+    });
 
     const doc = await vscode.workspace.openTextDocument(fixturePath);
     await vscode.window.showTextDocument(doc);
