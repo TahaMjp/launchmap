@@ -18,60 +18,60 @@ import { renderComponent } from './renderComponent.js';
 import { LayoutManager } from '../core/layoutManager.js';
 
 export function renderOpaqueFunctionGroup(container, opaqueFcns, options = {}) {
-    opaqueFcns.forEach((opaqueFcn, idx) => {
-        const path = options.pathPrefix ? `${options.pathPrefix}.opaque_functions[${idx}]` : `opaque_functions[${idx}]`;
-        const block = renderOpaqueFunction(opaqueFcn, { ...options, path });
+  opaqueFcns.forEach((opaqueFcn, idx) => {
+    const path = options.pathPrefix ? `${options.pathPrefix}.opaque_functions[${idx}]` : `opaque_functions[${idx}]`;
+    const block = renderOpaqueFunction(opaqueFcn, { ...options, path });
 
-        container.appendChild(block);
-        options.renderBlock(block, "opaque-function")
-    });
+    container.appendChild(block);
+    options.renderBlock(block, 'opaque-function');
+  });
 }
 
 export function renderOpaqueFunction(opaqueFcn, options = {}) {
-    const fcnBox = renderBaseBlock({
-        type: "opaque-function",
-        options: {
-            ...options,
-            events: opaqueFcn.events
-        }
-    });
-
-    // Header
-    const header = document.createElement("div");
-    header.className = "opaque-function-header";
-
-    // Title
-    const title = document.createElement("div");
-    title.className = "opaque-function-title";
-    title.innerText = `${opaqueFcn.name}`;
-    header.appendChild(title);
-
-    fcnBox.append(header);
-
-    // Body
-    const body = document.createElement("div");
-    body.className = "opaque-function-body";
-    fcnBox.appendChild(body);
-
-    const innerLayoutManager = new LayoutManager(20, 40, 80, 40);
-    const childOptions = { 
-        ...options,
-        stopPropagation: true, 
-        constrainToParent: true,
-        pathPrefix: `${options.path}.returns`,
-        renderBlock: (block, columnType) => {
-            requestAnimationFrame(() => {
-                innerLayoutManager.placeBlock(block, columnType);
-            })
-        }
-    };
-
-    const returns = opaqueFcn.returns || {};
-    for (const [key, value] of Object.entries(returns)) {
-        renderComponent({ type: key, value: value }, body, childOptions);
+  const fcnBox = renderBaseBlock({
+    type: 'opaque-function',
+    options: {
+      ...options,
+      events: opaqueFcn.events
     }
+  });
 
-    renderAutoResizableBody(fcnBox, "block", [".opaque-function-header"]);
+  // Header
+  const header = document.createElement('div');
+  header.className = 'opaque-function-header';
 
-    return fcnBox;
+  // Title
+  const title = document.createElement('div');
+  title.className = 'opaque-function-title';
+  title.innerText = `${opaqueFcn.name}`;
+  header.appendChild(title);
+
+  fcnBox.append(header);
+
+  // Body
+  const body = document.createElement('div');
+  body.className = 'opaque-function-body';
+  fcnBox.appendChild(body);
+
+  const innerLayoutManager = new LayoutManager(20, 40, 80, 40);
+  const childOptions = {
+    ...options,
+    stopPropagation: true,
+    constrainToParent: true,
+    pathPrefix: `${options.path}.returns`,
+    renderBlock: (block, columnType) => {
+      requestAnimationFrame(() => {
+        innerLayoutManager.placeBlock(block, columnType);
+      });
+    }
+  };
+
+  const returns = opaqueFcn.returns || {};
+  for (const [key, value] of Object.entries(returns)) {
+    renderComponent({ type: key, value: value }, body, childOptions);
+  }
+
+  renderAutoResizableBody(fcnBox, 'block', ['.opaque-function-header']);
+
+  return fcnBox;
 }

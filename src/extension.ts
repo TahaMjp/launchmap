@@ -20,10 +20,10 @@ import { registerSetPluginDir } from './commands/setPluginDir';
 import { initPluginDirStatusBar } from './ui/pluginDirStatusBar';
 
 export function activate(context: vscode.ExtensionContext) {
-    registerOpenVisualizer(context);
-    registerExportJson(context);
-    registerImportJson(context);
-    registerSetPluginDir(context);
+  registerOpenVisualizer(context);
+  registerExportJson(context);
+  registerImportJson(context);
+  registerSetPluginDir(context);
 
-    initPluginDirStatusBar();
+  initPluginDirStatusBar();
 }

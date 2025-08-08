@@ -12,54 +12,54 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { makeDraggable } from "../utils/drag.js";
-import { getTypeLabel } from "../utils/labels.js";
-import { renderEventPortRow } from "./renderEventPortRow.js";
+import { makeDraggable } from '../utils/drag.js';
+import { getTypeLabel } from '../utils/labels.js';
+import { renderEventPortRow } from './renderEventPortRow.js';
 
 export function renderBaseBlock({ type, options }) {
-    const block = document.createElement("div");
-    block.className = `block ${type}-block`;
-    block.style.position = "absolute";
+  const block = document.createElement('div');
+  block.className = `block ${type}-block`;
+  block.style.position = 'absolute';
 
-    // Header container
-    const header = document.createElement("div");
-    header.className = "block-header";
+  // Header container
+  const header = document.createElement('div');
+  header.className = 'block-header';
 
-    // Top label
-    const heading = document.createElement("div");
-    heading.className = "block-title";
-    heading.innerText = getTypeLabel(type);
-    header.appendChild(heading);
+  // Top label
+  const heading = document.createElement('div');
+  heading.className = 'block-title';
+  heading.innerText = getTypeLabel(type);
+  header.appendChild(heading);
 
-    // Event ports
-    const path = options?.path;
-    const portRegistry = options?.portRegistry;
-    if (options?.events?.triggered_by?.length || options?.events?.triggers?.length) {
-        const leftLabel = options.eventLabels?.left || "← triggered by";
-        const rightLabel = options.eventLabels?.right || "triggers →";
+  // Event ports
+  const path = options?.path;
+  const portRegistry = options?.portRegistry;
+  if (options?.events?.triggered_by?.length || options?.events?.triggers?.length) {
+    const leftLabel = options.eventLabels?.left || '← triggered by';
+    const rightLabel = options.eventLabels?.right || 'triggers →';
 
-        const eventPortRow = renderEventPortRow(path, portRegistry, leftLabel, rightLabel);
-        header.appendChild(eventPortRow);
+    const eventPortRow = renderEventPortRow(path, portRegistry, leftLabel, rightLabel);
+    header.appendChild(eventPortRow);
+  }
+
+  block.appendChild(header);
+
+  // Metadata
+  if (options?.path) {
+    block.dataset.path = options.path;
+    block.dataset.type = type;
+  }
+
+  // Draggable
+  makeDraggable(block, {
+    ...options,
+    onDrag: () => {
+      if (options.renderEdges && options.parsedData) {
+        options.renderEdges(options.parsedData, options.portRegistry);
+      }
     }
+  });
 
-    block.appendChild(header);
-
-    // Metadata
-    if (options?.path) {
-        block.dataset.path = options.path;
-        block.dataset.type = type;
-    }
-
-    // Draggable
-    makeDraggable(block, {
-        ...options,
-        onDrag: () => {
-            if (options.renderEdges && options.parsedData) {
-                options.renderEdges(options.parsedData, options.portRegistry);
-            }
-        }
-    });
-
-    return block;
+  return block;
 }
 

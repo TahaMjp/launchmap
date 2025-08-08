@@ -12,32 +12,32 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { getRenderer } from "../core/dispatcher.js";
+import { getRenderer } from '../core/dispatcher.js';
 
 export function renderComponent(obj, container, options = {}) {
-    if (!obj || typeof obj !== "object") return;
+  if (!obj || typeof obj !== 'object') return;
 
-    const type = obj.type || detectType(obj);
-    const renderer = getRenderer(type);
+  const type = obj.type || detectType(obj);
+  const renderer = getRenderer(type);
 
-    if (!renderer) {
-        console.warn(`No renderer for type: ${type}`, obj);
-        return;
-    }
+  if (!renderer) {
+    console.warn(`No renderer for type: ${type}`, obj);
+    return;
+  }
 
-    renderer(obj, container, {
-        ...options,
-        renderComponent
-    });
+  renderer(obj, container, {
+    ...options,
+    renderComponent
+  });
 }
 
 function detectType(obj) {
-    if (obj.nodes || obj.groups || obj.composable_nodes) return "group";
-    if (Array.isArray(obj.arguments)) return "arguments";
-    if (Array.isArray(obj.includes)) return "includes";
-    if (Array.isArray(obj.nodes)) return "nodes";
-    if (Array.isArray(obj.opaque_functions)) return "opaque_functions";
-    if (Array.isArray(obj.composable_nodes)) return "composable-nodes";
-    if (Array.isArray(obj.composable_nodes_container)) return "composable-nodes-container";
-    return null;
+  if (obj.nodes || obj.groups || obj.composable_nodes) return 'group';
+  if (Array.isArray(obj.arguments)) return 'arguments';
+  if (Array.isArray(obj.includes)) return 'includes';
+  if (Array.isArray(obj.nodes)) return 'nodes';
+  if (Array.isArray(obj.opaque_functions)) return 'opaque_functions';
+  if (Array.isArray(obj.composable_nodes)) return 'composable-nodes';
+  if (Array.isArray(obj.composable_nodes_container)) return 'composable-nodes-container';
+  return null;
 }

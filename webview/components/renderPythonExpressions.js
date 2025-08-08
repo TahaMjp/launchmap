@@ -16,41 +16,41 @@ import { renderBaseBlock } from './renderBaseBlock.js';
 import { renderSection } from './renderSection.js';
 
 export function renderPythonExpressions(container, expressionsList, options) {
-    if (!expressionsList || expressionsList.length === 0) return;
+  if (!expressionsList || expressionsList.length === 0) return;
 
-    expressionsList.forEach((expr, idx) => {
-        const path = `python_expressions[${idx}]`;
-        const block = renderPythonExpression(expr, { ...options, path });
-        
-        container.appendChild(block);
-        options.renderBlock(block, "python-expression");
-    });
+  expressionsList.forEach((expr, idx) => {
+    const path = `python_expressions[${idx}]`;
+    const block = renderPythonExpression(expr, { ...options, path });
+
+    container.appendChild(block);
+    options.renderBlock(block, 'python-expression');
+  });
 }
 
 export function renderPythonExpression(expr, options) {
-    const block = renderBaseBlock({
-        type: "python-expression",
-        options
-    })
+  const block = renderBaseBlock({
+    type: 'python-expression',
+    options
+  });
 
-    // Code section
-    const codeSection = document.createElement("pre");
-    codeSection.className = "python-code";
-    codeSection.innerText = expr.body;
-    block.appendChild(codeSection);
+  // Code section
+  const codeSection = document.createElement('pre');
+  codeSection.className = 'python-code';
+  codeSection.innerText = expr.body;
+  block.appendChild(codeSection);
 
-    // Variables section (right port active)
-    if (expr.variables?.length > 0) {
-        expr.variables.forEach((v, i) => {
-            const varName = v.replace("${var:", "").replace("}", "");
-            const varSection = renderSection("variable", "📤", varName, "", {
-                includeRightPort: true,
-                portIdPrefix: `variable:${varName}`,
-                portRegistry: options.portRegistry
-            });
-            block.appendChild(varSection);
-        });
-    }
+  // Variables section (right port active)
+  if (expr.variables?.length > 0) {
+    expr.variables.forEach((v) => {
+      const varName = v.replace('${var:', '').replace('}', '');
+      const varSection = renderSection('variable', '📤', varName, '', {
+        includeRightPort: true,
+        portIdPrefix: `variable:${varName}`,
+        portRegistry: options.portRegistry
+      });
+      block.appendChild(varSection);
+    });
+  }
 
-    return block
+  return block;
 }

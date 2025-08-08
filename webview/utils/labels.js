@@ -13,18 +13,18 @@
 // limitations under the License.
 
 export function getTypeLabel(type) {
-    switch (type) {
-        case 'node': return 'NODE';
-        case 'include': return 'INCLUDE LAUNCH DESCRIPTION';
-        case 'group': return 'GROUP ACTION';
-        case 'timer-action': return 'TIMER ACTION';
-        case 'argument': return 'DECLARE LAUNCH ARGUMENT';
-        case 'environment-variable': return 'ENVIRONMENT VARIABLE';
-        case 'opaque-function': return 'OPAQUE FUNCTION';
-        case 'composable-node': return 'COMPOSABLE NODE';
-        case 'composable-container': return 'COMPOSABLE NODE CONTAINER';
-        case 'event-handler': return 'EVENT HANDLER';
-        case 'python-expression': return 'PYTHON EXPRESSION';
-        default: return `${type}`;
-    }
+  switch (type) {
+  case 'node': return 'NODE';
+  case 'include': return 'INCLUDE LAUNCH DESCRIPTION';
+  case 'group': return 'GROUP ACTION';
+  case 'timer-action': return 'TIMER ACTION';
+  case 'argument': return 'DECLARE LAUNCH ARGUMENT';
+  case 'environment-variable': return 'ENVIRONMENT VARIABLE';
+  case 'opaque-function': return 'OPAQUE FUNCTION';
+  case 'composable-node': return 'COMPOSABLE NODE';
+  case 'composable-container': return 'COMPOSABLE NODE CONTAINER';
+  case 'event-handler': return 'EVENT HANDLER';
+  case 'python-expression': return 'PYTHON EXPRESSION';
+  default: return `${type}`;
+  }
 }

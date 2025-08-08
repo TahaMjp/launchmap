@@ -12,44 +12,44 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-export function renderEventPortRow(path, portRegistry, 
-    leftLabelText = "← triggered by", rightLabelText = "triggers →") {
-    const eventPortRow = document.createElement("div");
-    eventPortRow.className = "event-port-row";
+export function renderEventPortRow(path, portRegistry,
+  leftLabelText = '← triggered by', rightLabelText = 'triggers →') {
+  const eventPortRow = document.createElement('div');
+  eventPortRow.className = 'event-port-row';
 
-    // Left port (triggered_by)
-    const leftWrapper = document.createElement("div");
-    leftWrapper.className = "event-port-wrapper left";
+  // Left port (triggered_by)
+  const leftWrapper = document.createElement('div');
+  leftWrapper.className = 'event-port-wrapper left';
 
-    const leftLabel = document.createElement("span");
-    leftLabel.className = "event-label";
-    leftLabel.innerText = leftLabelText;
+  const leftLabel = document.createElement('span');
+  leftLabel.className = 'event-label';
+  leftLabel.innerText = leftLabelText;
 
-    const leftPort = document.createElement("div");
-    leftPort.className = "port left";
-    leftWrapper.appendChild(leftPort);
-    leftWrapper.appendChild(leftLabel);
+  const leftPort = document.createElement('div');
+  leftPort.className = 'port left';
+  leftWrapper.appendChild(leftPort);
+  leftWrapper.appendChild(leftLabel);
 
-    eventPortRow.appendChild(leftWrapper);
+  eventPortRow.appendChild(leftWrapper);
 
-    if (portRegistry) portRegistry[`${path}.events.triggered_by`] = leftPort;
+  if (portRegistry) portRegistry[`${path}.events.triggered_by`] = leftPort;
 
-    // Right port (triggers)
-    const rightWrapper = document.createElement("div");
-    rightWrapper.className = "event-port-wrapper right";
+  // Right port (triggers)
+  const rightWrapper = document.createElement('div');
+  rightWrapper.className = 'event-port-wrapper right';
 
-    const rightLabel = document.createElement("span");
-    rightLabel.className = "event-label";
-    rightLabel.innerText = rightLabelText;
+  const rightLabel = document.createElement('span');
+  rightLabel.className = 'event-label';
+  rightLabel.innerText = rightLabelText;
 
-    const rightPort = document.createElement("div");
-    rightPort.className = "port right";
-    rightWrapper.appendChild(rightLabel);
-    rightWrapper.appendChild(rightPort);
+  const rightPort = document.createElement('div');
+  rightPort.className = 'port right';
+  rightWrapper.appendChild(rightLabel);
+  rightWrapper.appendChild(rightPort);
 
-    eventPortRow.appendChild(rightWrapper);
-    
-    if (portRegistry) portRegistry[`${path}.events.triggers`] = rightPort;
+  eventPortRow.appendChild(rightWrapper);
 
-    return eventPortRow;
+  if (portRegistry) portRegistry[`${path}.events.triggers`] = rightPort;
+
+  return eventPortRow;
 }

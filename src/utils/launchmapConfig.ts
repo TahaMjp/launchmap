@@ -19,30 +19,30 @@ import * as fs from 'fs/promises';
 const CONFIG_FILENAME = '.launchmap';
 
 export async function getPluginDir(): Promise<string | null> {
-    const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
-    if (!workspaceFolder) return null;
+  const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
+  if (!workspaceFolder) return null;
 
-    const configPath = path.join(workspaceFolder.uri.fsPath, CONFIG_FILENAME);
+  const configPath = path.join(workspaceFolder.uri.fsPath, CONFIG_FILENAME);
 
-    try {
-        const content = await fs.readFile(configPath, 'utf-8');
-        const json = JSON.parse(content);
-        return json.pluginDir || null;
-    } catch {
-        return null;
-    }
+  try {
+    const content = await fs.readFile(configPath, 'utf-8');
+    const json = JSON.parse(content);
+    return json.pluginDir || null;
+  } catch {
+    return null;
+  }
 }
 
 export async function setPluginDir(pluginDir: string): Promise<void> {
-    const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
-    if (!workspaceFolder) {
-        vscode.window.showErrorMessage("No workspace folder found to save plugin directory.");
-        return;
-    }
+  const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
+  if (!workspaceFolder) {
+    vscode.window.showErrorMessage('No workspace folder found to save plugin directory.');
+    return;
+  }
 
-    const configPath = path.join(workspaceFolder.uri.fsPath, CONFIG_FILENAME);
-    const config = { pluginDir };
+  const configPath = path.join(workspaceFolder.uri.fsPath, CONFIG_FILENAME);
+  const config = { pluginDir };
 
-    await fs.writeFile(configPath, JSON.stringify(config, null, 2), 'utf-8');
-    vscode.window.showInformationMessage(`Plugin directory saved to ${CONFIG_FILENAME}`);
+  await fs.writeFile(configPath, JSON.stringify(config, null, 2), 'utf-8');
+  vscode.window.showInformationMessage(`Plugin directory saved to ${CONFIG_FILENAME}`);
 }

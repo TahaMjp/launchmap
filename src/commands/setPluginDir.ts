@@ -17,20 +17,20 @@ import { setPluginDir } from '../utils/launchmapConfig';
 import { updatePluginDirStatusBar } from '../ui/pluginDirStatusBar';
 
 export function registerSetPluginDir(context: vscode.ExtensionContext) {
-    context.subscriptions.push(
-        vscode.commands.registerCommand('launchmap.setPluginDir', async () => {
-            const selected = await vscode.window.showOpenDialog({
-                canSelectFiles: false,
-                canSelectFolders: true,
-                canSelectMany: false,
-                openLabel: 'Select Plugin Directory'
-            });
+  context.subscriptions.push(
+    vscode.commands.registerCommand('launchmap.setPluginDir', async () => {
+      const selected = await vscode.window.showOpenDialog({
+        canSelectFiles: false,
+        canSelectFolders: true,
+        canSelectMany: false,
+        openLabel: 'Select Plugin Directory'
+      });
 
-            if (!selected || selected.length === 0) return;
+      if (!selected || selected.length === 0) return;
 
-            const pluginPath = selected[0].fsPath;
-            await setPluginDir(pluginPath);
-            await updatePluginDirStatusBar();
-        })
-    );
+      const pluginPath = selected[0].fsPath;
+      await setPluginDir(pluginPath);
+      await updatePluginDirStatusBar();
+    })
+  );
 }

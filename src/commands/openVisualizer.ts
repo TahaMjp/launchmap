@@ -17,31 +17,31 @@ import * as path from 'path';
 import { runPythonParser } from '../python/runParser';
 import { createVisualizerPanel } from '../panel/createVisualizerPanel';
 
-let lastParsedData: any = null;
+let lastParsedData: null = null;
 
 export function registerOpenVisualizer(context: vscode.ExtensionContext) {
-    context.subscriptions.push(
-        vscode.commands.registerCommand('launchmap.openVisualizer', async() => {
-            const editor = vscode.window.activeTextEditor;
-            if (!editor) {
-                vscode.window.showErrorMessage("No active editor with a launch file.");
-                return;
-            }
+  context.subscriptions.push(
+    vscode.commands.registerCommand('launchmap.openVisualizer', async() => {
+      const editor = vscode.window.activeTextEditor;
+      if (!editor) {
+        vscode.window.showErrorMessage('No active editor with a launch file.');
+        return;
+      }
 
-            const filePath = editor.document.fileName;
-            const fileName = path.basename(filePath);
-            const result = await runPythonParser(filePath);
+      const filePath = editor.document.fileName;
+      const fileName = path.basename(filePath);
+      const result = await runPythonParser(filePath);
 
-            lastParsedData = JSON.parse(result);
-            createVisualizerPanel(context, lastParsedData, fileName);
-        })
-    );
+      lastParsedData = JSON.parse(result);
+      createVisualizerPanel(context, lastParsedData, fileName);
+    })
+  );
 }
 
 export function getLastParsedData() {
-    return lastParsedData;
+  return lastParsedData;
 }
 
-export function setLastParsedData(data: any) {
-    lastParsedData = data;
+export function setLastParsedData(data: null) {
+  lastParsedData = data;
 }

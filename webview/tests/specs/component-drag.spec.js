@@ -15,30 +15,30 @@
 import { test, expect } from '@playwright/test';
 import { SAMPLE_DATA, COMPONENT_SELECTORS } from '../fixtures/sample-data';
 
-test.describe("Component Drag Tests", () => {
-    COMPONENT_SELECTORS.forEach(({ type, selector }) => {
-        test(`dragging ${type} works`, async ({ page }) => {
-            await page.goto(process.env.TEST_SERVER_URL);
+test.describe('Component Drag Tests', () => {
+  COMPONENT_SELECTORS.forEach(({ type, selector }) => {
+    test(`dragging ${type} works`, async ({ page }) => {
+      await page.goto(process.env.TEST_SERVER_URL);
 
-            await page.evaluate((data) => {
-                window.postMessage({ type: 'launchmap-data', data }, '*');
-            }, SAMPLE_DATA);
+      await page.evaluate((data) => {
+        window.postMessage({ type: 'launchmap-data', data }, '*');
+      }, SAMPLE_DATA);
 
-            const block = page.locator(selector).first();
-            const boxBefore = await block.boundingBox();
+      const block = page.locator(selector).first();
+      const boxBefore = await block.boundingBox();
 
-            await block.dragTo(page.locator('body'), {
-                targetPosition: { x: 300, y: 200 },
-            });
+      await block.dragTo(page.locator('body'), {
+        targetPosition: { x: 300, y: 200 },
+      });
 
-            const boxAfter = await block.boundingBox();
-            expect(boxAfter.x).not.toBe(boxBefore.x);
-            expect(boxAfter.y).not.toBe(boxBefore.y);
+      const boxAfter = await block.boundingBox();
+      expect(boxAfter.x).not.toBe(boxBefore.x);
+      expect(boxAfter.y).not.toBe(boxBefore.y);
 
-            await expect(page).toHaveScreenshot(`${type}-drag.png`, {
-                fullPage: true,
-                maxDiffPixelRatio: 0.02
-            });
-        });
+      await expect(page).toHaveScreenshot(`${type}-drag.png`, {
+        fullPage: true,
+        maxDiffPixelRatio: 0.02
+      });
     });
+  });
 });

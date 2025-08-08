@@ -16,15 +16,15 @@ import { TestServer } from './server.js';
 
 let server;
 
-async function globalSetup(config) {
-    server = new TestServer();
-    await server.start();
+async function globalSetup() {
+  server = new TestServer();
+  await server.start();
 
-    process.env.TEST_SERVER_URL = server.url;
+  process.env.TEST_SERVER_URL = server.url;
 
-    return async () => {
-        await server.stop();
-    };
+  return async () => {
+    await server.stop();
+  };
 }
 
 export default globalSetup;

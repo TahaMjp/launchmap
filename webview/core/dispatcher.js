@@ -15,13 +15,13 @@
 const registry = new Map();
 
 export function registerRenderer(type, fn) {
-    registry.set(type, fn);
+  registry.set(type, fn);
 }
 
 export function getRenderer(type) {
-    return registry.get(type);
+  return registry.get(type);
 }
 
 export function getRegisteredRenderKeys() {
-    return Array.from(registry.keys());
+  return Array.from(registry.keys());
 }
