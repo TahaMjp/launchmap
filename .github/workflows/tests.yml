@@ -1,4 +1,4 @@
-name: 🧪 Tests & 🧹 Linting
+name: Tests & Linting
 
 on:
   push:
