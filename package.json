@@ -65,6 +65,12 @@
     },
     "scripts": {
         "compile": "tsc",
+        "lint:py": "ruff check parser/",
+        "lint:py:fix": "ruff check --fix parser/",
+        "lint:js": "eslint webview/ src/ --ext .js,.ts,.tsx",
+        "lint:js:fix": "eslint webview/ src/ --ext .js,.ts,.tsx --fix",
+        "lint": "npm run lint:py && npm run lint:js",
+        "lint:fix": "npm run lint:py:fix && npm run lint:js:fix",
         "test:src": "npm run compile && node dist/test/runTest.js",
         "test:parser": "cd parser/tests && pytest . --maxfail=1 --disable-warnings -q",
         "test:webview": "cd webview/tests && npx playwright test",
