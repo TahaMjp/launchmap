@@ -1,3 +1,10 @@
+> **📌 Personal Note:**  
+> This fork was created to contribute to [Launchmap](https://github.com/Kodo-Robotics/launchmap) via  
+> [Pull Request #55](https://github.com/Kodo-Robotics/launchmap/pull/55), merged on **August 13, 2025**.  
+> This repo is now archived as a record of that contribution.
+
+---
+
 ## 🚀 LaunchMap – Visualize Your ROS 2 Launch Files
 <p align="center">
   <img src="assets/launchmap-logo.png" width="150" alt="LaunchMap Logo">
